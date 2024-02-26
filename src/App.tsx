@@ -1,14 +1,30 @@
-import React from "react";
+import { ThemeProvider } from "@emotion/react";
 import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import { theme } from "./theme";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import UserDashboard from "./components/UserDashboard";
+import { UserContext, User, UserContextProps } from "./UserContext";
+import { useState } from "react";
 
-const App = () => {
+const App: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const value: UserContextProps = { user, setUser };
   return (
     <div>
-      <Welcome />
-      <Login />
-      <Register />
+      <ThemeProvider theme={theme}>
+        <UserContext.Provider value={value}>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/userdashboard" element={<UserDashboard />} />
+            </Routes>
+          </Router>
+        </UserContext.Provider>
+      </ThemeProvider>
     </div>
   );
 };
