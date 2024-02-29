@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import Footer from "./Footer";
-import { css } from "@emotion/react";
-import { useTheme } from "../custom hooks/useTheme";
+import Footer from "../Footer/Footer";
+import { registerStyle } from "./Register.styles";
+import { useTheme } from "../../custom hooks/useTheme";
 import { useContext } from "react";
-import { UserContext, UserContextProps } from "../UserContext";
+import { UserContext, UserContextProps } from "../../UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -43,7 +43,7 @@ const Register = () => {
     const profileImage = (e.target as HTMLFormElement).elements.namedItem(
       "profileImage"
     ) as HTMLInputElement | null;
-    const profileImageValue = profileImage?.value;
+
     if (
       fullNameValue &&
       emailValue &&
@@ -55,14 +55,8 @@ const Register = () => {
       formData.append("email", emailValue);
       formData.append("password", passwordValue);
       formData.append("jobTitle", jobTitleValue);
-      if (profileImage?.files?.length ?? 0 > 0) {
-        if (
-          profileImage &&
-          profileImage.files &&
-          profileImage.files.length > 0
-        ) {
-          formData.append("profileImage", profileImage.files[0]);
-        }
+      if (profileImage?.files?.length) {
+        formData.append("profileImage", profileImage.files[0]);
       }
 
       try {
@@ -96,74 +90,8 @@ const Register = () => {
 
   const theme = useTheme();
 
-  const style = css`
-    background: ${theme.colors.secondary};
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-
-    h1 {
-      color: ${theme.colors.primary};
-      text-align: center;
-      padding: 2rem;
-      font-size: ${theme.sizes.xlarge};
-      /* margin-top: 10rem; */
-      letter-spacing: 5px;
-    }
-
-    form {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.25rem;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    label,
-    p {
-      color: ${theme.colors.primary};
-      font-size: ${theme.sizes.small};
-      margin: 1rem;
-    }
-    input {
-      border: 1px solid ${theme.colors.primary};
-      padding: ${theme.sizes.small};
-      width: 23rem;
-      margin: 1rem;
-      background-color: ${theme.colors.primary};
-      font-size: ${theme.sizes.small};
-    }
-    button {
-      background-color: ${theme.colors.primary};
-      color: ${theme.colors.text};
-      border: none;
-      border-radius: ${theme.sizes.xsmall};
-      padding: ${theme.sizes.small};
-      cursor: pointer;
-      margin-left: 12rem;
-      width: 10rem;
-      font-size: ${theme.sizes.small};
-      grid-column: 2;
-      justify-self: center;
-    }
-    button:hover {
-      background-color: ${theme.colors.hover};
-      color: ${theme.colors.secondary};
-    }
-  `;
-
   return (
-    <div css={style}>
+    <div css={registerStyle(theme)}>
       <h1>Register</h1>
       <form onSubmit={handleSubmit}>
         <div className="input-group">

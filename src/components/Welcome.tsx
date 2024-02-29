@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import Footer from "./Footer";
+import Footer from "./Footer/Footer";
 import { css } from "@emotion/react";
 import { useTheme } from "../custom hooks/useTheme";
 import { Link } from "react-router-dom";

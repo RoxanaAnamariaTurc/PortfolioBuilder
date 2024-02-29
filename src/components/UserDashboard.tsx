@@ -4,10 +4,10 @@ import { css, SerializedStyles } from "@emotion/react";
 import avatar from "../images/avatar.png";
 import { UserContext, UserContextProps } from "../UserContext";
 import { useContext } from "react";
+import Footer from "./Footer/Footer";
 
 const UserDashboard: React.FC = () => {
   const { user } = useContext(UserContext) as UserContextProps;
-  const blob = new Blob([user?.profileImage ?? ""], { type: "image/jpeg" });
   const theme = useTheme();
 
   const style: SerializedStyles = css`
@@ -38,6 +38,7 @@ const UserDashboard: React.FC = () => {
       width: 170px;
       height: 150px;
       border-radius: 35%;
+      object-fit: cover;
     }
     .user-image ul li {
       list-style: none;
@@ -87,6 +88,7 @@ const UserDashboard: React.FC = () => {
         width: 170px;
         height: 150px;
         border-radius: 35%;
+        object-fit: cover;
       }
       .user-image ul li {
         list-style: none;
@@ -148,7 +150,7 @@ const UserDashboard: React.FC = () => {
       width: 100px;
     }
   `;
-
+  console.log(user?.profileImage);
   return (
     <div css={style}>
       <div className="user-profile">
@@ -163,7 +165,6 @@ const UserDashboard: React.FC = () => {
               }
               alt="user avatar"
             />
-
             <ul>
               <li>Name: {user?.fullName}</li>
               <li>Email: {user?.email}</li>
@@ -192,6 +193,7 @@ const UserDashboard: React.FC = () => {
         <button id="preview">Preview</button>
         <button id="create">Create</button>
       </div>
+      <Footer />
     </div>
   );
 };

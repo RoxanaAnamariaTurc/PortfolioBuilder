@@ -6,6 +6,7 @@ const upload = multer({ dest: "uploads/" });
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 app.use(cors({ origin: "http://localhost:3000" }));
+app.use("/uploads", express.static("uploads"));
 
 app.use(express.json());
 

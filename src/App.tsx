@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@emotion/react";
 import Welcome from "./components/Welcome";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
 import { theme } from "./theme";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import UserDashboard from "./components/UserDashboard";
