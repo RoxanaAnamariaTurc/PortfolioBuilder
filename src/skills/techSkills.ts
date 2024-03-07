@@ -1,0 +1,42 @@
+export interface OptionType {
+  value: string;
+  label: string;
+}
+
+export const techSkills: OptionType[] = [
+  { value: "JavaScript", label: "JavaScript" },
+  { value: "HTML", label: "HTML" },
+  { value: "CSS", label: "CSS" },
+  { value: "React", label: "React" },
+  { value: "Node.js", label: "Node.js" },
+  { value: "Express.js", label: "Express.js" },
+  { value: "MongoDB", label: "MongoDB" },
+  { value: "SQL", label: "SQL" },
+  { value: "Python", label: "Python" },
+  { value: "Java", label: "Java" },
+  { value: "C++", label: "C++" },
+  { value: "C#", label: "C#" },
+  { value: "Ruby", label: "Ruby" },
+  { value: "TypeScript", label: "TypeScript" },
+  { value: "Angular", label: "Angular" },
+  { value: "Vue", label: "Vue" },
+  { value: "Django", label: "Django" },
+  { value: "Flask", label: "Flask" },
+  { value: "Spring", label: "Spring" },
+  { value: "Hibernate", label: "Hibernate" },
+  { value: "JPA", label: "JPA" },
+  { value: "JDBC", label: "JDBC" },
+  { value: "PostgreSQL", label: "PostgreSQL" },
+  { value: "MySQL", label: "MySQL" },
+  { value: "SQLite", label: "SQLite" },
+  { value: "Oracle", label: "Oracle" },
+  { value: "SQL Server", label: "SQL Server" },
+  { value: "Mongoose", label: "Mongoose" },
+  { value: "Sequelize", label: "Sequelize" },
+  { value: "Mocha", label: "Mocha" },
+  { value: "Chai", label: "Chai" },
+  { value: "Jest", label: "Jest" },
+  { value: "Cypress", label: "Cypress" },
+  { value: "Jasmine", label: "Jasmine" },
+  { value: "Karma", label: "Karma" },
+];

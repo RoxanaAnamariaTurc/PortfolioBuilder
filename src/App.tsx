@@ -1,10 +1,10 @@
 import { ThemeProvider } from "@emotion/react";
-import Welcome from "./components/Welcome";
+import Welcome from "./components/Welcome/Welcome";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import { theme } from "./theme";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import UserDashboard from "./components/UserDashboard";
+import UserDashboard from "./components/UserDashboard/UserDashboard";
 import { UserContext, User, UserContextProps } from "./UserContext";
 import { useState } from "react";
 
