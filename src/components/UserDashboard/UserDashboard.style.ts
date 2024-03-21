@@ -9,7 +9,7 @@ export const userDashboardStyle = (
   background: ${theme.colors.background};
   height: 100vh;
   width: 100vw;
-  filter: ${isModalOpen || isSkillsModalOpen ? "blur(2px)" : "none"};
+  filter: ${isModalOpen || isSkillsModalOpen ? "blur(15px)" : "none"};
 
   .user-profile {
     display: grid;
@@ -159,6 +159,10 @@ export const userDashboardStyle = (
 
   table th:last-child {
     border-right: none;
+  }
+  table td {
+    color: ${theme.colors.primary};
+    padding-left: 1em;
   }
   .blur {
     filter: blur(2px);

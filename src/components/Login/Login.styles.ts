@@ -7,16 +7,13 @@ export const loginStyle = (theme: MyTheme) => css`
   width: 100vw;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 
   form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    padding-bottom: 5rem;
-    /* margin-bottom: 15rem; */
   }
 
   .input-group {
@@ -45,20 +42,20 @@ export const loginStyle = (theme: MyTheme) => css`
     border-radius: ${theme.sizes.xsmall};
     padding: ${theme.sizes.small};
     cursor: pointer;
-    margin-left: 12rem;
+    margin-left: 10rem;
     width: 10rem;
     font-size: ${theme.sizes.small};
   }
   button:hover {
-    background-color: ${theme.colors.hover};
-    color: ${theme.colors.secondary};
+    background-color: ${theme.colors.text};
+    color: ${theme.colors.primary};
+    border: 2px solid ${theme.colors.hover};
   }
 
   h1 {
     color: ${theme.colors.primary};
     text-align: center;
-    padding: 2rem;
-    margin-top: 10rem;
+    padding: 1rem;
     font-size: ${theme.sizes.xlarge};
     letter-spacing: 5px;
   }

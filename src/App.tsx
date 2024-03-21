@@ -5,16 +5,13 @@ import Register from "./components/Register/Register";
 import { theme } from "./theme";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
-import { UserContext, User, UserContextProps } from "./UserContext";
-import { useState } from "react";
+import { UserProvider } from "./UserContext";
 
 const App: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const value: UserContextProps = { user, setUser };
   return (
     <div>
       <ThemeProvider theme={theme}>
-        <UserContext.Provider value={value}>
+        <UserProvider>
           <Router>
             <Routes>
               <Route path="/" element={<Welcome />} />
@@ -23,7 +20,7 @@ const App: React.FC = () => {
               <Route path="/userdashboard" element={<UserDashboard />} />
             </Routes>
           </Router>
-        </UserContext.Provider>
+        </UserProvider>
       </ThemeProvider>
     </div>
   );

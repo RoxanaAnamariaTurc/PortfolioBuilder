@@ -103,20 +103,21 @@ const Register = () => {
           <input type="email" id="email" />
         </div>
         <div className="input-group">
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" />
-        </div>
-        <div className="input-group">
-          <label htmlFor="passwordConfirmation">Repeat Password</label>
-          <input type="password" id="passwordConfirmation" />
-        </div>
-        <div className="input-group">
           <label htmlFor="jobTitle">Job Title</label>
           <input type="text" id="jobTitle" />
         </div>
         <div className="input-group">
+          <label htmlFor="password">Password</label>
+          <input type="password" id="password" />
+        </div>
+
+        <div className="input-group">
           <p>Profile image</p>
           <input type="file" id="profileImage" accept=".jpg,.jpeg,.png" />
+        </div>
+        <div className="input-group">
+          <label htmlFor="passwordConfirmation">Repeat Password</label>
+          <input type="password" id="passwordConfirmation" />
         </div>
         <button type="submit">Register</button>
       </form>

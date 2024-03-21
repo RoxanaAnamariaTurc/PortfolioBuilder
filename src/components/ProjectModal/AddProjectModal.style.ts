@@ -93,4 +93,11 @@ export const projectModalStyle = (theme: MyTheme) => css`
   .warning {
     color: red;
   }
+
+  .custom-file-upload {
+    padding: 10px;
+    background-color: ${theme.colors.secondary};
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
 `;

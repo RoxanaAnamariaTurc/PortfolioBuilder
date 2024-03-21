@@ -33,6 +33,7 @@ export const welcomeStyle = (theme: MyTheme) => css`
   #register-btn:hover {
     background-color: ${theme.colors.text};
     color: ${theme.colors.primary};
+    border: 2px solid ${theme.colors.hover};
   }
   main {
     display: flex;

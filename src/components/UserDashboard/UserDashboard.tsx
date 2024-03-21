@@ -3,10 +3,12 @@ import { useTheme } from "../../custom hooks/useTheme";
 import { userDashboardStyle } from "./UserDashboard.style";
 import avatar from "../../images/avatar.png";
 import { UserContext, UserContextProps } from "../../UserContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Footer from "../Footer/Footer";
 import AddProjectsModal from "../ProjectModal/AddProjectsModal";
 import AddSkillsModal from "../SkillsModal/AddSkillsModal";
+import axios from "axios";
+import Logout from "../Logout/Logout";
 
 export interface Project {
   name: string;
@@ -32,6 +34,23 @@ const UserDashboard: React.FC = () => {
   const { user } = useContext(UserContext) as UserContextProps;
   const theme = useTheme();
 
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      axios
+        .get(`http://localhost:3001/projects/${userId}`)
+        .then((response) => {
+          setProjects(response.data);
+        })
+        .catch((error) => {
+          console.error(
+            "An error occurred while trying to fetch the projects",
+            error
+          );
+        });
+    }
+  }, []);
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -39,8 +58,21 @@ const UserDashboard: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleAddProjects = (project: Project) => {
-    setProjects([...projects, project]);
+  const handleAddProjects = async (project: Project) => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/projects/${userId}`
+        );
+        setProjects(response.data);
+      } catch (error) {
+        console.error(
+          "An error occurred while trying to fetch the projects",
+          error
+        );
+      }
+    }
   };
 
   const handleOpenSkillsModal = () => {
@@ -133,7 +165,7 @@ const UserDashboard: React.FC = () => {
           <button id="preview">Preview</button>
           <button id="create">Create</button>
         </div>
-
+        <Logout />
         <Footer />
       </div>
       {isModalOpen && (

@@ -3,10 +3,13 @@ import Footer from "../Footer/Footer";
 import { loginStyle } from "./Login.styles";
 import { useTheme } from "../../custom hooks/useTheme";
 import { useNavigate } from "react-router-dom";
+import { UserContext, UserContextProps } from "../../UserContext";
 import axios from "axios";
+import { useContext } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext) as UserContextProps;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,6 +29,11 @@ const Login = () => {
           password: passwordValue,
         });
         if (response.status === 200) {
+          const user = response.data.user;
+          console.log("user", user);
+          setUser(user);
+          localStorage.setItem("userId", user.id);
+          console.log("userID in login", user.id);
           navigate("/userdashboard");
         } else {
           alert("Invalid email or password");
@@ -54,6 +62,7 @@ const Login = () => {
         </div>
         <button>Login</button>
       </form>
+
       <Footer />
     </div>
   );

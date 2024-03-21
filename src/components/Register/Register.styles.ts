@@ -6,40 +6,43 @@ export const registerStyle = (theme: MyTheme) => css`
   height: 100vh;
   width: 100vw;
   display: flex;
+  justify-content: flex;
   flex-direction: column;
-  justify-content: center;
-  align-content: center;
 
   h1 {
     color: ${theme.colors.primary};
     text-align: center;
     padding: 2rem;
     font-size: ${theme.sizes.xlarge};
-    /* margin-top: 10rem; */
     letter-spacing: 5px;
   }
 
   form {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.25rem;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    height: 80vh;
+    margin-bottom: 7em;
   }
 
   .input-group {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    margin-left: 10.5em;
   }
-  label,
+  label {
+    color: ${theme.colors.primary};
+    font-size: ${theme.sizes.small};
+    align-self: flex-start;
+    margin: 1rem;
+  }
   p {
     color: ${theme.colors.primary};
     font-size: ${theme.sizes.small};
     margin: 1rem;
   }
+
   input {
     border: 1px solid ${theme.colors.primary};
     padding: ${theme.sizes.small};
@@ -62,7 +65,11 @@ export const registerStyle = (theme: MyTheme) => css`
     justify-self: center;
   }
   button:hover {
-    background-color: ${theme.colors.hover};
-    color: ${theme.colors.secondary};
+    background-color: ${theme.colors.text};
+    color: ${theme.colors.primary};
+    border: 2px solid ${theme.colors.hover};
+  }
+
+  @media screen and (max-width: 768px) {
   }
 `;
