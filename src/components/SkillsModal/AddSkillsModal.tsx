@@ -8,6 +8,7 @@ import Select from "react-select";
 import { skillsModalStyle } from "./AddSkillsModal.style";
 import { useTheme } from "../../custom hooks/useTheme";
 import { Skills } from "../UserDashboard/UserDashboard";
+import axios from "axios";
 
 interface AddSkillsModalProps {
   closeModal: () => void;
@@ -41,12 +42,24 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
     setSelectedSoftSkills(Array.from(selectedOption) || []);
   };
 
-  const handleAddSkills = (e: React.MouseEvent) => {
+  const handleAddSkills = async (e: React.MouseEvent) => {
     e.preventDefault();
-    onAddSkills({
+    const skills = {
       techSkills: selectedTechSkills.map((skill) => skill.value),
       softSkills: selectedSoftSkills.map((skill) => skill.value),
-    });
+    };
+    onAddSkills(skills);
+
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      try {
+        await axios.post(`http://localhost:3001/user/${userId}/skills`, {
+          skills,
+        });
+      } catch (error) {
+        console.log("An error occurred while trying to add skills");
+      }
+    }
     closeModal();
   };
 

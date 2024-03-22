@@ -8,11 +8,17 @@ import axios from "axios";
 interface AddProjectsModalProps {
   closeModal: () => void;
   onAddProject: (project: Project) => void;
+  projectToEdit?: Project;
+  setProjectToEdit?: React.Dispatch<React.SetStateAction<Project | null>>;
+  onEditProject: (project: Project) => void;
 }
 
 const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   closeModal,
   onAddProject,
+  projectToEdit,
+  setProjectToEdit,
+  onEditProject,
 }) => {
   const theme = useTheme();
   const [isLimitExceeded, setLimitExceeded] = useState(false);
@@ -49,33 +55,45 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     );
 
     try {
-      const response = await axios.post(
-        "http://localhost:3001/projects",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      if (response.status === 200 || response.status === 201) {
-        const project = {
-          userId: userId,
-          name: (form.elements.namedItem("projectName") as HTMLInputElement)
-            ?.value,
-          description: (
-            form.elements.namedItem("projectDescription") as HTMLInputElement
-          )?.value,
-          image: (form.elements.namedItem("projectImage") as HTMLInputElement)
-            ?.value,
-          link: (form.elements.namedItem("projectLink") as HTMLInputElement)
-            ?.value,
+      if (projectToEdit) {
+        const project: Project = {
+          name: formData.get("name") as string,
+          description: formData.get("description") as string,
+          image: formData.get("image") as string,
+          link: formData.get("link") as string,
         };
-        onAddProject(project);
+        onEditProject(projectToEdit);
         closeModal();
       } else {
-        console.error(`Unexpected status code: ${response.status}`);
-        alert("An error occurred while trying to add the project");
+        const res = await axios.post(
+          "http://localhost:3001/projects",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (res.status === 200 || res.status === 201) {
+          const project = {
+            userId: userId,
+            name: (form.elements.namedItem("projectName") as HTMLInputElement)
+              ?.value,
+            description: (
+              form.elements.namedItem("projectDescription") as HTMLInputElement
+            )?.value,
+            image: (form.elements.namedItem("projectImage") as HTMLInputElement)
+              ?.value,
+            link: (form.elements.namedItem("projectLink") as HTMLInputElement)
+              ?.value,
+          };
+          onAddProject(project);
+          closeModal();
+        } else {
+          console.error(`Unexpected status code: ${res.status}`);
+          alert("An error occurred while trying to add the project");
+        }
       }
     } catch (error) {
       console.error("An error occurred while trying to add the project", error);
@@ -108,6 +126,17 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     }
   };
 
+  const handleInputChange = (field: keyof Project, value: string) => {
+    if (setProjectToEdit) {
+      setProjectToEdit((prev) => {
+        if (prev) {
+          return { ...prev, [field]: value };
+        }
+        return prev;
+      });
+    }
+  };
+
   return (
     <div css={projectModalStyle(theme)}>
       <div className="modal">
@@ -118,7 +147,14 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
           <form className="form-group" onSubmit={handleSubmit}>
             <div className="input-group">
               <label htmlFor="projectName">Project Name</label>
-              <input type="text" id="projectName" name="projectName" />
+              <input
+                type="text"
+                id="projectName"
+                name="projectName"
+                value={projectToEdit ? projectToEdit.name : ""}
+                onChange={(e) => handleInputChange("name", e.target.value)}
+                required
+              />
             </div>
             <div className="input-group">
               <label htmlFor="projectDescription">Description</label>
@@ -129,6 +165,8 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                 className={isLimitExceeded ? "limit-exceeded" : ""}
                 onInput={handleInputTextarea}
                 name="projectDescription"
+                value={projectToEdit ? projectToEdit.description : ""}
+                placeholder="Describe your project here..."
               />
               {isLimitExceeded && (
                 <p className="warning">Word limit exceeded!</p>
@@ -136,7 +174,13 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
             </div>
             <div className="input-group">
               <label htmlFor="projectLink">Link</label>
-              <input type="text" id="projectLink" name="projectLink" />
+              <input
+                type="text"
+                id="projectLink"
+                name="projectLink"
+                value={projectToEdit ? projectToEdit.link : ""}
+                onChange={(e) => handleInputChange("link", e.target.value)}
+              />
             </div>
             <div className="input-group">
               <label htmlFor="projectImage">Image</label>

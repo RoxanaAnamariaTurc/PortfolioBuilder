@@ -182,4 +182,19 @@ export const userDashboardStyle = (
     justify-content: space-between;
     gap: 2rem;
   }
+
+  .delete {
+    background: none;
+    color: red;
+    margin-left: 1em;
+    cursor: pointer;
+    padding: 0.25em;
+  }
+
+  .edit {
+    background: none;
+    color: ${theme.colors.hover};
+    cursor: pointer;
+    padding: 0.5em;
+  }
 `;

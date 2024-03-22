@@ -8,9 +8,10 @@ import Footer from "../Footer/Footer";
 import AddProjectsModal from "../ProjectModal/AddProjectsModal";
 import AddSkillsModal from "../SkillsModal/AddSkillsModal";
 import axios from "axios";
-import Logout from "../Logout/Logout";
+import Header from "../Header/Header";
 
 export interface Project {
+  _id?: string;
   name: string;
   description: string;
   image: string;
@@ -30,6 +31,7 @@ const UserDashboard: React.FC = () => {
     techSkills: [],
     softSkills: [],
   });
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
 
   const { user } = useContext(UserContext) as UserContextProps;
   const theme = useTheme();
@@ -37,6 +39,7 @@ const UserDashboard: React.FC = () => {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (userId) {
+      console.log("From here get in dashboard", userId);
       axios
         .get(`http://localhost:3001/projects/${userId}`)
         .then((response) => {
@@ -51,6 +54,71 @@ const UserDashboard: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchSkills = async () => {
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3001/user/${userId}/skills`
+          );
+          setSkills(response.data);
+        } catch (error) {
+          console.error(
+            "An error occurred while trying to fetch the skills",
+            error
+          );
+        }
+      }
+    };
+    fetchSkills();
+  }, []);
+
+  const handleEditProjects = async (project: Project) => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      alert("Please login to edit a project");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", project.name);
+    formData.append("description", project.description);
+    formData.append("link", project.link);
+    if (project.image) {
+      formData.append("image", project.image);
+    }
+
+    try {
+      console.log("project edited", project);
+      await axios.put(
+        `http://localhost:3001/projects/${userId}/${project._id}`,
+
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      axios
+        .get(`http://localhost:3001/projects/${userId}`)
+        .then((response): void => {
+          setProjects(response.data);
+        });
+    } catch (error) {
+      console.error(
+        "An error occurred while trying to edit the project",
+        error
+      );
+    }
+  };
+  const editProject = (project: Project) => {
+    setProjectToEdit(project);
+    setIsModalOpen(true);
+  };
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
@@ -62,10 +130,18 @@ const UserDashboard: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        const response = await axios.get(
-          `http://localhost:3001/projects/${userId}`
-        );
-        setProjects(response.data);
+        await axios.post(`http://localhost:3001/projects/${userId}`, project);
+        axios
+          .get(`http://localhost:3001/projects/${userId}`)
+          .then((response) => {
+            setProjects(response.data);
+          })
+          .catch((error) => {
+            console.error(
+              "An error occurred while trying to fetch the projects",
+              error
+            );
+          });
       } catch (error) {
         console.error(
           "An error occurred while trying to fetch the projects",
@@ -88,6 +164,7 @@ const UserDashboard: React.FC = () => {
 
   return (
     <div>
+      <Header />
       <div css={userDashboardStyle(theme, isModalOpen, isModalSkillOpen)}>
         <div className="user-profile">
           <section className="user-info">
@@ -150,12 +227,21 @@ const UserDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {projects.map((project, index) => (
-                <tr key={index}>
+              {projects.map((project) => (
+                <tr key={project._id}>
                   <td>{project.name}</td>
                   <td>{project.description}</td>
                   <td>{project.image}</td>
                   <td>{project.link}</td>
+                  <td>
+                    <button
+                      className="edit"
+                      onClick={() => editProject(project)}
+                    >
+                      Edit
+                    </button>
+                    <button className="delete">Delete</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -165,7 +251,7 @@ const UserDashboard: React.FC = () => {
           <button id="preview">Preview</button>
           <button id="create">Create</button>
         </div>
-        <Logout />
+
         <Footer />
       </div>
       {isModalOpen && (
@@ -173,6 +259,9 @@ const UserDashboard: React.FC = () => {
           <AddProjectsModal
             closeModal={handleCloseModal}
             onAddProject={handleAddProjects}
+            onEditProject={handleEditProjects}
+            projectToEdit={projectToEdit || undefined}
+            setProjectToEdit={setProjectToEdit}
           />
         </div>
       )}
