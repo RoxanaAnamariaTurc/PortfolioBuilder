@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { projectModalStyle } from "./AddProjectModal.style";
 import { useTheme } from "../../hooks/useTheme";
 import { Project } from "../UserDashboard/UserDashboard";
@@ -18,12 +18,9 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   closeModal,
   onAddProject,
   projectToEdit,
-  setProjectToEdit,
   onEditProject,
 }) => {
   const theme = useTheme();
-  // const [isLimitExceeded, setLimitExceeded] = useState(false);
-  // const [isBlocked, setIsBlocked] = useState(false);
   const [newProject, setNewProject] = useState<Project>({
     _id: "",
     name: "",
@@ -31,6 +28,22 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     image: "",
     link: "",
   });
+  const [editedProject, setEditedProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    setEditedProject(projectToEdit || null);
+  }, [projectToEdit]);
+  useEffect(() => {
+    setNewProject(
+      projectToEdit || {
+        _id: "",
+        name: "",
+        description: "",
+        image: "",
+        link: "",
+      }
+    );
+  }, [projectToEdit]);
 
   const handleSubmit = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -65,9 +78,23 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     );
 
     try {
-      if (projectToEdit) {
-        onEditProject(projectToEdit);
-        closeModal();
+      if (editedProject) {
+        const res = await axios.put(
+          `http://localhost:3001/projects/${editedProject._id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (res.status === 200) {
+          onEditProject(res.data);
+          closeModal();
+        } else {
+          console.error(`Unexpected status code: ${res.status}`);
+          alert("An error occurred while trying to edit the project");
+        }
       } else {
         const res = await axios.post(
           "http://localhost:3001/projects",
@@ -80,8 +107,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
         );
 
         if (res.status === 200 || res.status === 201) {
-          const project: Project = newProject;
-          onAddProject(project);
+          onAddProject(res.data);
           closeModal();
         } else {
           console.error(`Unexpected status code: ${res.status}`);
@@ -97,33 +123,13 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     closeModal();
   };
 
-  // const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-  //   if (isBlocked && (e.key === "Backspace" || e.key === "Delete")) {
-  //     setIsBlocked(false);
-  //     setLimitExceeded(false);
-  //   }
-  // };
-
-  // const handleInputTextarea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   const wordLimit = 250;
-  //   const words = e.target.value.trim().split(/\s+/);
-  //   if (words.length > wordLimit) {
-  //     setLimitExceeded(true);
-  //     setIsBlocked(true);
-  //   } else {
-  //     setLimitExceeded(false);
-  //     setIsBlocked(false);
-  //   }
-  // };
-
   const handleInputChange = (field: keyof Project, value: string) => {
-    if (projectToEdit) {
-      setProjectToEdit((prev) => (prev ? { ...prev, [field]: value } : null));
-    } else {
-      setNewProject((prev) => ({ ...prev, [field]: value }));
+    setNewProject((prev) => ({ ...prev, [field]: value }));
+    if (editedProject) {
+      setEditedProject((prev) => (prev ? { ...prev, [field]: value } : null));
     }
   };
-  console.log("render");
+
   return (
     <div css={projectModalStyle(theme)}>
       <div className="modal">
@@ -138,34 +144,16 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                 type="text"
                 id="projectName"
                 name="projectName"
-                value={projectToEdit ? projectToEdit.name : newProject.name}
+                value={newProject.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 required
               />
             </div>
             <div className="input-group">
               <label htmlFor="projectDescription">Description</label>
-              {/* <textarea
-                onKeyDown={handleKeyDown}
-                readOnly={isBlocked}
-                id="projectDescription"
-                className={isLimitExceeded ? "limit-exceeded" : ""}
-                onInput={handleInputTextarea}
-                name="projectDescription"
-                value={
-                  projectToEdit
-                    ? projectToEdit.description
-                    : newProject.description
-                }
-                placeholder="Describe your project here..."
-              /> */}
               <TextArea
                 limit={250}
-                value={
-                  projectToEdit
-                    ? projectToEdit.description
-                    : newProject.description
-                }
+                value={newProject.description}
                 onChange={(value) => handleInputChange("description", value)}
               />
             </div>
@@ -175,7 +163,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                 type="text"
                 id="projectLink"
                 name="projectLink"
-                value={projectToEdit ? projectToEdit.link : ""}
+                value={newProject.link}
                 onChange={(e) => handleInputChange("link", e.target.value)}
               />
             </div>

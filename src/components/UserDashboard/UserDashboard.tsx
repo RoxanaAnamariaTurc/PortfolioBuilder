@@ -37,41 +37,31 @@ const UserDashboard: React.FC = () => {
   const theme = useTheme();
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      console.log("From here get in dashboard", userId);
-      axios
-        .get(`http://localhost:3001/projects/${userId}`)
-        .then((response) => {
-          setProjects(response.data);
-        })
-        .catch((error) => {
-          console.error(
-            "An error occurred while trying to fetch the projects",
-            error
-          );
-        });
-    }
-  }, []);
-
-  useEffect(() => {
-    const fetchSkills = async () => {
+    const fetchUserData = async () => {
       const userId = localStorage.getItem("userId");
       if (userId) {
         try {
-          const response = await axios.get(
+          // Fetch projects
+          const projectsResponse = await axios.get(
+            `http://localhost:3001/projects/${userId}`
+          );
+          setProjects(projectsResponse.data);
+
+          // Fetch skills
+          const skillsResponse = await axios.get(
             `http://localhost:3001/user/${userId}/skills`
           );
-          setSkills(response.data);
+          setSkills(skillsResponse.data);
         } catch (error) {
           console.error(
-            "An error occurred while trying to fetch the skills",
+            "An error occurred while trying to fetch the user data",
             error
           );
         }
       }
     };
-    fetchSkills();
+
+    fetchUserData();
   }, []);
 
   const handleEditProjects = async (project: Project) => {
@@ -125,56 +115,12 @@ const UserDashboard: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
-  // const handleAddProjects = async (project: Project) => {
-  //   const userId = localStorage.getItem("userId");
-  //   if (userId) {
-  //     try {
-  //       await axios.post(`http://localhost:3001/projects/`, {
-  //         ...project,
-  //         userId,
-  //       });
-  //       axios
-  //         .get(`http://localhost:3001/projects/${userId}`)
-  //         .then((response) => {
-  //           setProjects(response.data);
-  //         })
-  //         .catch((error) => {
-  //           console.error(
-  //             "An error occurred while trying to fetch the projects",
-  //             error
-  //           );
-  //         });
-  //     } catch (error) {
-  //       console.error(
-  //         "An error occurred while trying to fetch the projects",
-  //         error
-  //       );
-  //     }
-  //   }
-  // };
-  const handleAddProjects = async (project: Project) => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      try {
-        const response = await axios.post(`http://localhost:3001/projects/`, {
-          ...project,
-          userId,
-        });
-        if (response.data) {
-          setProjects((prevProjects) => [...prevProjects, response.data]);
-        } else {
-          console.error("Expected a project object, but got:", response.data);
-        }
-      } catch (error) {
-        console.error(
-          "An error occurred while trying to add the project",
-          error
-        );
-      }
+  const handleAddProjects = (project: Project) => {
+    const projectExists = projects.some((p) => p._id === project._id);
+    if (!projectExists) {
+      setProjects((prevProjects) => [...prevProjects, project]);
     }
   };
-
   const handleOpenSkillsModal = () => {
     setIsModalSkillOpen(true);
   };
