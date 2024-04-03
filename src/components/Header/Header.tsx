@@ -3,7 +3,7 @@ import React from "react";
 import Logout from "../Logout/Logout";
 import logo from "../../images/logo.jpg";
 import { headerStyle } from "./Header.styles";
-import { useTheme } from "../../custom hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { Link } from "react-router-dom";
 
 const Header = () => {

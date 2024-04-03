@@ -224,6 +224,29 @@ app.put("/projects/:userId/:projectId", upload.single("image"), (req, res) => {
     });
 });
 
+app.delete("/users/:userId/projects/:projectId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    const projectIndex = user.projects.findIndex(
+      (project) => project._id.toString() === req.params.projectId
+    );
+    if (projectIndex === -1) {
+      return res.status(404).send({ message: "Project not found" });
+    }
+
+    user.projects.splice(projectIndex, 1);
+    await user.save();
+
+    res.status(200).send({ message: "Project deleted successfully" });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
 const dbURI =
   "mongodb+srv://roxanaturc25:FdpFiOq9fL2eciTz@portfoliobuilder.rfciaq1.mongodb.net/Users?retryWrites=true&w=majority";
 

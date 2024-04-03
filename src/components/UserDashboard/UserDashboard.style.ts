@@ -197,4 +197,11 @@ export const userDashboardStyle = (
     cursor: pointer;
     padding: 0.5em;
   }
+
+  td img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10%;
+  }
 `;

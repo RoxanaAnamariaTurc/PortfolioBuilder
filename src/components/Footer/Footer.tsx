@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { footerStyle } from "./Footer.styles";
-import { useTheme } from "../../custom hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 
 const Footer = () => {
   const theme = useTheme();

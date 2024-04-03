@@ -4,7 +4,6 @@ export interface MyTheme {
     secondary: string;
     danger: string;
     background: string;
-    text: string;
     hover: string;
   };
   fonts: {
@@ -25,7 +24,6 @@ export const theme: MyTheme = {
     primary: "#D1E8E2",
     secondary: "#2C3531",
     danger: "#F60909",
-    text: "#2C3531",
     background: "linear-gradient(to bottom, #2C3531, #0C2F3B)",
     hover: "#D9B08C",
   },

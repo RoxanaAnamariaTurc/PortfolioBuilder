@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useTheme } from "../../custom hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { userDashboardStyle } from "./UserDashboard.style";
 import avatar from "../../images/avatar.png";
 import { UserContext, UserContextProps } from "../../UserContext";
@@ -90,7 +90,6 @@ const UserDashboard: React.FC = () => {
     }
 
     try {
-      console.log("project edited", project);
       await axios.put(
         `http://localhost:3001/projects/${userId}/${project._id}`,
 
@@ -120,31 +119,56 @@ const UserDashboard: React.FC = () => {
   };
 
   const handleOpenModal = () => {
+    setProjectToEdit(null);
     setIsModalOpen(true);
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
+  // const handleAddProjects = async (project: Project) => {
+  //   const userId = localStorage.getItem("userId");
+  //   if (userId) {
+  //     try {
+  //       await axios.post(`http://localhost:3001/projects/`, {
+  //         ...project,
+  //         userId,
+  //       });
+  //       axios
+  //         .get(`http://localhost:3001/projects/${userId}`)
+  //         .then((response) => {
+  //           setProjects(response.data);
+  //         })
+  //         .catch((error) => {
+  //           console.error(
+  //             "An error occurred while trying to fetch the projects",
+  //             error
+  //           );
+  //         });
+  //     } catch (error) {
+  //       console.error(
+  //         "An error occurred while trying to fetch the projects",
+  //         error
+  //       );
+  //     }
+  //   }
+  // };
   const handleAddProjects = async (project: Project) => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        await axios.post(`http://localhost:3001/projects/${userId}`, project);
-        axios
-          .get(`http://localhost:3001/projects/${userId}`)
-          .then((response) => {
-            setProjects(response.data);
-          })
-          .catch((error) => {
-            console.error(
-              "An error occurred while trying to fetch the projects",
-              error
-            );
-          });
+        const response = await axios.post(`http://localhost:3001/projects/`, {
+          ...project,
+          userId,
+        });
+        if (response.data) {
+          setProjects((prevProjects) => [...prevProjects, response.data]);
+        } else {
+          console.error("Expected a project object, but got:", response.data);
+        }
       } catch (error) {
         console.error(
-          "An error occurred while trying to fetch the projects",
+          "An error occurred while trying to add the project",
           error
         );
       }
@@ -160,6 +184,23 @@ const UserDashboard: React.FC = () => {
 
   const handleAddSkills = (skills: Skills) => {
     setSkills(skills);
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      try {
+        await axios.delete(
+          `http://localhost:3001/users/${userId}/projects/${projectId}`
+        );
+        setProjects(projects.filter((project) => project._id !== projectId));
+      } catch (error) {
+        console.error(
+          "An error occurred while trying to delete the project",
+          error
+        );
+      }
+    }
   };
 
   return (
@@ -231,7 +272,12 @@ const UserDashboard: React.FC = () => {
                 <tr key={project._id}>
                   <td>{project.name}</td>
                   <td>{project.description}</td>
-                  <td>{project.image}</td>
+                  <td>
+                    <img
+                      src={`http://localhost:3001/${project.image}`}
+                      alt={project.name}
+                    />
+                  </td>
                   <td>{project.link}</td>
                   <td>
                     <button
@@ -240,7 +286,12 @@ const UserDashboard: React.FC = () => {
                     >
                       Edit
                     </button>
-                    <button className="delete">Delete</button>
+                    <button
+                      className="delete"
+                      onClick={() => handleDeleteProject(project._id || "")}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

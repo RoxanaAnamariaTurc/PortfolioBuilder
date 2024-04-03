@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import Footer from "../Footer/Footer";
 import { welcomeStyle } from "./Welcome.style";
-import { useTheme } from "../../custom hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { Link } from "react-router-dom";
 
 const Welcome = () => {

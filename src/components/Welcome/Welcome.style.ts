@@ -19,8 +19,8 @@ export const welcomeStyle = (theme: MyTheme) => css`
   #login-btn,
   #register-btn {
     background-color: ${theme.colors.primary};
-    color: ${theme.colors.text};
-    border: none;
+    color: ${theme.colors.secondary};
+    border: 2px solid transparent;
     border-radius: ${theme.sizes.small};
     padding: ${theme.sizes.small};
     cursor: pointer;
@@ -31,9 +31,9 @@ export const welcomeStyle = (theme: MyTheme) => css`
   }
   #login-btn:hover,
   #register-btn:hover {
-    background-color: ${theme.colors.text};
+    background-color: ${theme.colors.hover};
     color: ${theme.colors.primary};
-    border: 2px solid ${theme.colors.hover};
+    border-color: ${theme.colors.hover};
   }
   main {
     display: flex;

@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import Footer from "../Footer/Footer";
 import { loginStyle } from "./Login.styles";
-import { useTheme } from "../../custom hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { useNavigate } from "react-router-dom";
 import { UserContext, UserContextProps } from "../../UserContext";
 import axios from "axios";

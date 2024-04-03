@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import React, { useState } from "react";
 import { ActionMeta, OnChangeValue } from "react-select";
-import { softSkills } from "../../skills/softSkills";
-import { techSkills } from "../../skills/techSkills";
-import { OptionType } from "../../skills/techSkills";
+import { softSkills } from "../../skills/skills";
+import { techSkills } from "../../skills/skills";
+import { OptionType } from "../../skills/skills";
 import Select from "react-select";
 import { skillsModalStyle } from "./AddSkillsModal.style";
-import { useTheme } from "../../custom hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 import { Skills } from "../UserDashboard/UserDashboard";
 import axios from "axios";
 

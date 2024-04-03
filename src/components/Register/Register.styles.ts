@@ -53,7 +53,7 @@ export const registerStyle = (theme: MyTheme) => css`
   }
   button {
     background-color: ${theme.colors.primary};
-    color: ${theme.colors.text};
+    color: ${theme.colors.secondary};
     border: none;
     border-radius: ${theme.sizes.xsmall};
     padding: ${theme.sizes.small};
@@ -65,7 +65,7 @@ export const registerStyle = (theme: MyTheme) => css`
     justify-self: center;
   }
   button:hover {
-    background-color: ${theme.colors.text};
+    background-color: ${theme.colors.hover};
     color: ${theme.colors.primary};
     border: 2px solid ${theme.colors.hover};
   }

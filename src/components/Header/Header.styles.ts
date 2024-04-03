@@ -6,7 +6,6 @@ export const headerStyle = (theme: MyTheme) => css`
   justify-content: space-between;
   align-items: center;
   padding: 1em;
-  background: ${theme.colors.text};
   color: ${theme.colors.primary};
   box-shadow: 0 0 10px 5px ${theme.colors.hover};
   z-index: 1000;
@@ -28,14 +27,14 @@ export const headerStyle = (theme: MyTheme) => css`
     background: ${theme.colors.primary};
     color: ${theme.colors.background};
     padding: 0.5em;
-    border: none;
+    border: 2px solid transparent;
     border-radius: 0.5em;
     cursor: pointer;
   }
 
   button:hover {
-    background-color: ${theme.colors.text};
+    background-color: ${theme.colors.hover};
     color: ${theme.colors.primary};
-    border: 2px solid ${theme.colors.hover};
+    border-color: ${theme.colors.hover};
   }
 `;

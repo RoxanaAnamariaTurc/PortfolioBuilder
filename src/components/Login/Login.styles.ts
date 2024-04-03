@@ -37,7 +37,7 @@ export const loginStyle = (theme: MyTheme) => css`
   }
   button {
     background-color: ${theme.colors.primary};
-    color: ${theme.colors.text};
+    color: ${theme.colors.secondary};
     border: none;
     border-radius: ${theme.sizes.xsmall};
     padding: ${theme.sizes.small};
@@ -47,7 +47,7 @@ export const loginStyle = (theme: MyTheme) => css`
     font-size: ${theme.sizes.small};
   }
   button:hover {
-    background-color: ${theme.colors.text};
+    background-color: ${theme.colors.hover};
     color: ${theme.colors.primary};
     border: 2px solid ${theme.colors.hover};
   }
