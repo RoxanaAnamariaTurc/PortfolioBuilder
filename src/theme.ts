@@ -36,6 +36,6 @@ export const theme: MyTheme = {
     small: "1em",
     medium: "2em",
     large: "3em",
-    xlarge: "4em",
+    xlarge: "10em",
   },
 };
