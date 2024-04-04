@@ -5,6 +5,7 @@ export interface MyTheme {
     danger: string;
     background: string;
     hover: string;
+    transparent: string;
   };
   fonts: {
     body: string;
@@ -26,6 +27,7 @@ export const theme: MyTheme = {
     danger: "#F60909",
     background: "linear-gradient(to bottom, #2C3531, #0C2F3B)",
     hover: "#D9B08C",
+    transparent: "transparent",
   },
   fonts: {
     body: "Arial, sans serif",
@@ -33,9 +35,9 @@ export const theme: MyTheme = {
   },
   sizes: {
     xsmall: "0.25rem",
-    small: "1em",
-    medium: "2em",
-    large: "3em",
-    xlarge: "10em",
+    small: "1rem",
+    medium: "2rem",
+    large: "5rem",
+    xlarge: "10rem",
   },
 };

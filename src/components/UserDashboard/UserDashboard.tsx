@@ -9,6 +9,7 @@ import AddProjectsModal from "../ProjectModal/AddProjectsModal";
 import AddSkillsModal from "../SkillsModal/AddSkillsModal";
 import axios from "axios";
 import Header from "../Header/Header";
+import Button from "../Button/Button";
 
 export interface Project {
   _id?: string;
@@ -174,9 +175,16 @@ const UserDashboard: React.FC = () => {
           </section>
           <section className="user-skills">
             <h4>Skills</h4>
-            <button className="add-button" onClick={handleOpenSkillsModal}>
+            <Button
+              onClick={handleOpenSkillsModal}
+              width={"large"}
+              height={"medium"}
+              borderRadius={"xsmall"}
+              padding={"xsmall"}
+              backgroundColor={"primary"}
+            >
               + Add
-            </button>
+            </Button>
             <div className="skills">
               <div>
                 <h5>Technical Skills</h5>
@@ -200,9 +208,16 @@ const UserDashboard: React.FC = () => {
         <section className="user-projects">
           <div>
             <h2>Projects</h2>
-            <button className="add-button" onClick={handleOpenModal}>
+            <Button
+              onClick={handleOpenModal}
+              width={"large"}
+              height={"medium"}
+              borderRadius={"xsmall"}
+              padding={"xsmall"}
+              backgroundColor={"primary"}
+            >
               + Add
-            </button>
+            </Button>
           </div>
           <table>
             <thead>
@@ -226,18 +241,28 @@ const UserDashboard: React.FC = () => {
                   </td>
                   <td>{project.link}</td>
                   <td>
-                    <button
-                      className="edit"
-                      onClick={() => editProject(project)}
+                    <Button
+                      onClick={handleOpenModal}
+                      width={"large"}
+                      height={"medium"}
+                      borderRadius={"xsmall"}
+                      padding={"xsmall"}
+                      backgroundColor={"transparent"}
+                      color={"primary"}
                     >
                       Edit
-                    </button>
-                    <button
-                      className="delete"
-                      onClick={() => handleDeleteProject(project._id || "")}
+                    </Button>
+                    <Button
+                      onClick={handleOpenModal}
+                      width={"large"}
+                      height={"medium"}
+                      borderRadius={"xsmall"}
+                      padding={"xsmall"}
+                      backgroundColor={"transparent"}
+                      color={"danger"}
                     >
                       Delete
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -245,8 +270,28 @@ const UserDashboard: React.FC = () => {
           </table>
         </section>
         <div className="user-btns">
-          <button id="preview">Preview</button>
-          <button id="create">Create</button>
+          {/* <button id="preview">Preview</button>
+          <button id="create">Create</button> */}
+          <Button
+            onClick={handleOpenModal}
+            width={"large"}
+            height={"medium"}
+            borderRadius={"xsmall"}
+            padding={"xsmall"}
+            backgroundColor={"primary"}
+          >
+            Preview
+          </Button>
+          <Button
+            onClick={handleOpenModal}
+            width={"large"}
+            height={"medium"}
+            borderRadius={"xsmall"}
+            padding={"xsmall"}
+            backgroundColor={"primary"}
+          >
+            Create
+          </Button>
         </div>
 
         <Footer />

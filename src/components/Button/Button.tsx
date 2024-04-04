@@ -24,6 +24,7 @@ export interface ButtonProps {
   width?: ButtonSize;
   height?: ButtonSize;
   hover?: HoverProps;
+  margin?: ButtonSize;
 }
 
 const Button: React.FC<ButtonProps> = (props) => {

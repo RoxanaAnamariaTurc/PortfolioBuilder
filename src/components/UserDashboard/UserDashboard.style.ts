@@ -50,16 +50,7 @@ export const userDashboardStyle = (
   .user-skills h4 {
     color: ${theme.colors.primary};
   }
-  .add-button {
-    background: ${theme.colors.primary};
-    color: ${theme.colors.background};
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem;
-    margin-top: 1rem;
-    cursor: pointer;
-    width: 100px;
-  }
+
   @media screen and (max-width: 680px) {
     .user-profile {
       display: flex;
@@ -103,9 +94,6 @@ export const userDashboardStyle = (
     gap: 1rem;
     font-size: 1.4rem;
   }
-  .user-projects .add-button {
-    height: 30px;
-  }
   .user-projects h2 {
     color: ${theme.colors.primary};
   }
@@ -136,16 +124,6 @@ export const userDashboardStyle = (
     margin-top: 2rem;
     padding: 1rem;
   }
-  .user-btns button {
-    background: ${theme.colors.primary};
-    color: ${theme.colors.background};
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem;
-    cursor: pointer;
-    width: 100px;
-  }
-
   table {
     width: 100%;
     overflow-y: scroll;
@@ -181,21 +159,6 @@ export const userDashboardStyle = (
     flex-direction: row;
     justify-content: space-between;
     gap: 2rem;
-  }
-
-  .delete {
-    background: none;
-    color: red;
-    margin-left: 1em;
-    cursor: pointer;
-    padding: 0.25em;
-  }
-
-  .edit {
-    background: none;
-    color: ${theme.colors.hover};
-    cursor: pointer;
-    padding: 0.5em;
   }
 
   td img {

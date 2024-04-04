@@ -12,6 +12,7 @@ export const getButtonStyles = (theme: MyTheme, props: ButtonProps) => {
     width = "xlarge",
     height = "large",
     hover,
+    margin = "xsmall",
   } = props;
   return {
     button: css({
@@ -22,6 +23,7 @@ export const getButtonStyles = (theme: MyTheme, props: ButtonProps) => {
       padding: theme.sizes[padding],
       width: theme.sizes[width],
       height: theme.sizes[height],
+      margin: theme.sizes[margin],
       transition: "all 0.3s ease",
       "&:hover": {
         backgroundColor: theme.colors[hover?.backgroundColor || "hover"],

@@ -32,8 +32,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
 
   useEffect(() => {
     setEditedProject(projectToEdit || null);
-  }, [projectToEdit]);
-  useEffect(() => {
     setNewProject(
       projectToEdit || {
         _id: "",
