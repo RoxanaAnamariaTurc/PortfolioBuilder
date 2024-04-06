@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ActionMeta, OnChangeValue } from "react-select";
 import { softSkills } from "../../skills/skills";
 import { techSkills } from "../../skills/skills";
@@ -13,33 +13,38 @@ import axios from "axios";
 interface AddSkillsModalProps {
   closeModal: () => void;
   onAddSkills: (skills: Skills) => void;
+  currentTechSkills: OptionType[];
+  currentSoftSkills: OptionType[];
 }
 
 const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
   closeModal,
   onAddSkills,
+  currentSoftSkills,
+  currentTechSkills,
 }) => {
-  const [selectedTechSkills, setSelectedTechSkills] = useState<OptionType[]>(
-    []
-  );
-  const [selectedSoftSkills, setSelectedSoftSkills] = useState<OptionType[]>(
-    []
-  );
+  const [selectedTechSkills, setSelectedTechSkills] =
+    useState<OptionType[]>(currentTechSkills);
+  const [selectedSoftSkills, setSelectedSoftSkills] =
+    useState<OptionType[]>(currentSoftSkills);
 
   const theme = useTheme();
+  useEffect(() => {
+    setSelectedTechSkills(currentTechSkills);
+    setSelectedSoftSkills(currentSoftSkills);
+  }, [currentTechSkills, currentSoftSkills]);
 
-  const handleTechnicalSkills = (
+  const handleSkills = (
+    skillType: "tech" | "soft",
     selectedOption: OnChangeValue<OptionType, true>,
     actionMeta: ActionMeta<OptionType>
   ) => {
-    setSelectedTechSkills(Array.from(selectedOption) || []);
-  };
-
-  const handleSoftSkills = (
-    selectedOption: OnChangeValue<OptionType, true>,
-    actionMeta: ActionMeta<OptionType>
-  ) => {
-    setSelectedSoftSkills(Array.from(selectedOption) || []);
+    const skills = Array.from(selectedOption) || [];
+    if (skillType === "tech") {
+      setSelectedTechSkills(skills);
+    } else {
+      setSelectedSoftSkills(skills);
+    }
   };
 
   const handleAddSkills = async (e: React.MouseEvent) => {
@@ -48,7 +53,6 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
       techSkills: selectedTechSkills.map((skill) => skill.value),
       softSkills: selectedSoftSkills.map((skill) => skill.value),
     };
-    onAddSkills(skills);
 
     const userId = localStorage.getItem("userId");
     if (userId) {
@@ -56,8 +60,9 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
         await axios.post(`http://localhost:3001/user/${userId}/skills`, {
           skills,
         });
+        onAddSkills(skills);
       } catch (error) {
-        console.log("An error occurred while trying to add skills");
+        console.error("An error occurred while trying to add skills", error);
       }
     }
     closeModal();
@@ -78,7 +83,7 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
             options={techSkills}
             className="basic-multi-select"
             classNamePrefix="select"
-            onChange={handleTechnicalSkills}
+            onChange={handleSkills.bind(null, "tech")}
             value={selectedTechSkills}
           />
         </div>
@@ -91,7 +96,7 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
             options={softSkills}
             className="basic-multi-select"
             classNamePrefix="select"
-            onChange={handleSoftSkills}
+            onChange={handleSkills.bind(null, "soft")}
             value={selectedSoftSkills}
           />
         </div>

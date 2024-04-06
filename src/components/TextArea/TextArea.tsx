@@ -5,6 +5,7 @@ interface TextAreaProps {
   limit: number;
   value: string;
   onChange: (value: string) => void;
+  name: string;
 }
 
 const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
@@ -25,7 +26,13 @@ const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
 
   return (
     <div>
-      <textarea value={text} onChange={handleChange} rows={4} cols={50} />
+      <textarea
+        value={text}
+        onChange={handleChange}
+        rows={4}
+        cols={50}
+        name="description"
+      />
       <div
         style={{ color: theme.colors.primary, marginLeft: theme.sizes.small }}
       >

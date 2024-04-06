@@ -6,7 +6,6 @@ export const userDashboardStyle = (
   isModalOpen: boolean,
   isSkillsModalOpen: boolean
 ) => css`
-  background: ${theme.colors.background};
   height: 100vh;
   width: 100vw;
   filter: ${isModalOpen || isSkillsModalOpen ? "blur(15px)" : "none"};

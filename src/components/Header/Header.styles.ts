@@ -7,7 +7,6 @@ export const headerStyle = (theme: MyTheme) => css`
   align-items: center;
   padding: 1em;
   color: ${theme.colors.primary};
-  box-shadow: 0 0 10px 5px ${theme.colors.hover};
   z-index: 1000;
 
   header {

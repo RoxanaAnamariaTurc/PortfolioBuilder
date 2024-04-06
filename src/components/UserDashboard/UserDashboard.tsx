@@ -33,9 +33,21 @@ const UserDashboard: React.FC = () => {
     softSkills: [],
   });
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
+  const [showFullDescription, setShowFullDescription] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const { user } = useContext(UserContext) as UserContextProps;
   const theme = useTheme();
+  const techSkillsOption = skills.techSkills.map((skill) => ({
+    value: skill,
+    label: skill,
+  }));
+
+  const softSkillsOption = skills.softSkills.map((skill) => ({
+    value: skill,
+    label: skill,
+  }));
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -65,77 +77,69 @@ const UserDashboard: React.FC = () => {
     fetchUserData();
   }, []);
 
-  const handleEditProjects = async (project: Project) => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      alert("Please login to edit a project");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("name", project.name);
-    formData.append("description", project.description);
-    formData.append("link", project.link);
-    if (project.image) {
-      formData.append("image", project.image);
-    }
-
-    try {
-      await axios.put(
-        `http://localhost:3001/projects/${userId}/${project._id}`,
-
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      axios
-        .get(`http://localhost:3001/projects/${userId}`)
-        .then((response): void => {
-          setProjects(response.data);
-        });
-    } catch (error) {
-      console.error(
-        "An error occurred while trying to edit the project",
-        error
-      );
-    }
-  };
-  const editProject = (project: Project) => {
-    setProjectToEdit(project);
-    setIsModalOpen(true);
+  const toggleDescription = (projectId: string) => {
+    setShowFullDescription((prevState) => ({
+      ...prevState,
+      [projectId]: !prevState[projectId],
+    }));
   };
 
-  const handleOpenModal = () => {
-    setProjectToEdit(null);
+  const handleOpenModal = (project?: Project) => {
+    setProjectToEdit(project || null);
     setIsModalOpen(true);
   };
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-  const handleAddProjects = (project: Project) => {
-    const projectExists = projects.some((p) => p._id === project._id);
-    if (!projectExists) {
-      setProjects((prevProjects) => [...prevProjects, project]);
-    }
-  };
+
   const handleOpenSkillsModal = () => {
     setIsModalSkillOpen(true);
   };
   const handleCloseSkillsModal = () => {
     setIsModalSkillOpen(false);
   };
+  const handleProjectSubmission = (projects: Project[], isEdit: boolean) => {
+    if (isEdit) {
+      setProjects(projects);
+    } else {
+      const newProject = projects[projects.length - 1];
+      setProjects((prevProjects) => [...prevProjects, newProject]);
+    }
+    setIsModalOpen(false);
+  };
 
-  const handleAddSkills = (skills: Skills) => {
-    setSkills(skills);
+  const handleAddSkills = async (newSkills: Skills) => {
+    setSkills((prevSkills) => ({
+      techSkills: Array.from(
+        new Set([...prevSkills.techSkills, ...newSkills.techSkills])
+      ),
+      softSkills: Array.from(
+        new Set([...prevSkills.softSkills, ...newSkills.softSkills])
+      ),
+    }));
+
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/user/${userId}/skills`
+        );
+        const updatedSkills = response.data;
+
+        setSkills(updatedSkills);
+      } catch (error) {
+        console.error(
+          "An error occurred while trying to get updated skills",
+          error
+        );
+      }
+    }
   };
 
   const handleDeleteProject = async (projectId: string) => {
     const userId = localStorage.getItem("userId");
     if (userId) {
+      console.log(`Deleting project with ID: ${projectId}`);
       try {
         await axios.delete(
           `http://localhost:3001/users/${userId}/projects/${projectId}`
@@ -166,11 +170,22 @@ const UserDashboard: React.FC = () => {
                 }
                 alt="user avatar"
               />
-              <ul>
-                <li>Name: {user?.fullName}</li>
-                <li>Email: {user?.email}</li>
-                <li>Job Title: {user?.jobTitle}</li>
-              </ul>
+              <table>
+                <tbody>
+                  <tr>
+                    <th>Name</th>
+                    <td>{user?.fullName}</td>
+                  </tr>
+                  <tr>
+                    <th>Email</th>
+                    <td>{user?.email}</td>
+                  </tr>
+                  <tr>
+                    <th>Job Title</th>
+                    <td>{user?.jobTitle}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </section>
           <section className="user-skills">
@@ -209,7 +224,7 @@ const UserDashboard: React.FC = () => {
           <div>
             <h2>Projects</h2>
             <Button
-              onClick={handleOpenModal}
+              onClick={() => handleOpenModal()}
               width={"large"}
               height={"medium"}
               borderRadius={"xsmall"}
@@ -232,17 +247,37 @@ const UserDashboard: React.FC = () => {
               {projects.map((project) => (
                 <tr key={project._id}>
                   <td>{project.name}</td>
-                  <td>{project.description}</td>
+                  <td>
+                    {showFullDescription[project._id ?? ""]
+                      ? project.description
+                      : `${project.description.slice(0, 50)}...`}
+                    <Button
+                      onClick={() => toggleDescription(project._id ?? "")}
+                      width={"large"}
+                      height={"medium"}
+                      padding={"xsmall"}
+                      borderRadius={"xsmall"}
+                      backgroundColor={"transparent"}
+                      color={"primary"}
+                    >
+                      {showFullDescription[project._id ?? ""]
+                        ? "Read Less"
+                        : "Read More"}
+                    </Button>
+                  </td>
                   <td>
                     <img
                       src={`http://localhost:3001/${project.image}`}
                       alt={project.name}
                     />
                   </td>
-                  <td>{project.link}</td>
+                  <td>
+                    <a href={project.link}>{project.link}</a>
+                  </td>
                   <td>
                     <Button
-                      onClick={handleOpenModal}
+                      // onClick={() => editProject(project)}
+                      onClick={() => handleOpenModal(project)}
                       width={"large"}
                       height={"medium"}
                       borderRadius={"xsmall"}
@@ -253,7 +288,7 @@ const UserDashboard: React.FC = () => {
                       Edit
                     </Button>
                     <Button
-                      onClick={handleOpenModal}
+                      onClick={() => handleDeleteProject(project._id ?? "")}
                       width={"large"}
                       height={"medium"}
                       borderRadius={"xsmall"}
@@ -270,8 +305,6 @@ const UserDashboard: React.FC = () => {
           </table>
         </section>
         <div className="user-btns">
-          {/* <button id="preview">Preview</button>
-          <button id="create">Create</button> */}
           <Button
             onClick={handleOpenModal}
             width={"large"}
@@ -300,10 +333,8 @@ const UserDashboard: React.FC = () => {
         <div>
           <AddProjectsModal
             closeModal={handleCloseModal}
-            onAddProject={handleAddProjects}
-            onEditProject={handleEditProjects}
+            onProjectSubmission={handleProjectSubmission}
             projectToEdit={projectToEdit || undefined}
-            setProjectToEdit={setProjectToEdit}
           />
         </div>
       )}
@@ -311,6 +342,8 @@ const UserDashboard: React.FC = () => {
         <AddSkillsModal
           closeModal={handleCloseSkillsModal}
           onAddSkills={handleAddSkills}
+          currentSoftSkills={softSkillsOption}
+          currentTechSkills={techSkillsOption}
         />
       )}
     </div>
