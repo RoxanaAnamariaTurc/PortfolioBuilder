@@ -6,8 +6,9 @@ export const userDashboardStyle = (
   isModalOpen: boolean,
   isSkillsModalOpen: boolean
 ) => css`
-  height: 100vh;
+  height: 100%;
   width: 100vw;
+  flex-grow: 1;
   filter: ${isModalOpen || isSkillsModalOpen ? "blur(15px)" : "none"};
 
   .user-profile {
@@ -15,6 +16,11 @@ export const userDashboardStyle = (
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     padding: 2rem;
+    background-color: ${theme.colors.background};
+    border-radius: 10px;
+    box-shadow: inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c,
+      inset 4px 0 8px -4px #3d3c4c, inset 0 4px 8px -4px #3d3c4c;
+    margin: 2em;
   }
   .user-profile h3 {
     color: ${theme.colors.primary};
@@ -22,7 +28,14 @@ export const userDashboardStyle = (
   .user-info {
     display: flex;
     flex-direction: column;
-    border-right: 1px solid ${theme.colors.hover};
+    box-shadow: inset -8px 0 8px -10px ${theme.colors.primary};
+  }
+
+  .user-info-table,
+  .user-info-table th,
+  .user-info-table td {
+    border: none;
+    border-collapse: collapse;
   }
 
   .user-image {
@@ -45,6 +58,7 @@ export const userDashboardStyle = (
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    font-family: ${theme.fonts.body};
   }
   .user-skills h4 {
     color: ${theme.colors.primary};
@@ -123,24 +137,67 @@ export const userDashboardStyle = (
     margin-top: 2rem;
     padding: 1rem;
   }
-  table {
-    width: 100%;
-    overflow-y: scroll;
-  }
-  table th {
-    color: ${theme.colors.primary};
-    border-right: 2px solid ${theme.colors.hover};
-    text-align: left;
+
+  .table-container {
+    overflow-y: auto;
+    max-height: 500px;
+    background-color: ${theme.colors.background};
+    border-radius: 10px;
+    box-shadow: inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c,
+      inset 4px 0 8px -4px #3d3c4c, inset 0 4px 8px -4px #3d3c4c;
+
     padding: 1em;
   }
 
-  table th:last-child {
-    border-right: none;
-  }
-  table td {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: transparent;
+    font-size: medium;
     color: ${theme.colors.primary};
-    padding-left: 1em;
+    font-family: ${theme.fonts.body};
   }
+
+  tbody {
+    padding: 1em;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: ${theme.colors.background};
+    color: ${theme.colors.primary};
+    padding: 2em;
+    z-index: 10;
+  }
+
+  tbody img {
+    max-width: 100%;
+    border-radius: 5px;
+  }
+
+  tbody a {
+    color: ${theme.colors.primary};
+  }
+
+  .table-container::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .table-container::-webkit-scrollbar-track {
+    background: #3d3c4c;
+    box-shadow: inset 0 0 5px grey;
+  }
+
+  .table-container::-webkit-scrollbar-thumb {
+    background: #3d3c4c;
+    border-radius: 5px;
+  }
+
+  .table-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+
   .blur {
     filter: blur(2px);
   }

@@ -39,10 +39,16 @@ export const projectModalStyle = (theme: MyTheme) => css`
   textarea {
     width: 35em;
     height: 10em;
+    background-color: ${theme.colors.transparent};
+    color: ${theme.colors.primary};
+    border: ${theme.colors.primary} 1px solid;
   }
 
   input {
     padding: 0.5rem;
+    background-color: ${theme.colors.transparent};
+    color: ${theme.colors.primary};
+    border: ${theme.colors.primary} 1px solid;
   }
 
   .close-button {
@@ -57,9 +63,9 @@ export const projectModalStyle = (theme: MyTheme) => css`
   }
 
   button {
-    background: ${theme.colors.primary};
-    color: ${theme.colors.background};
-    border: none;
+    background: ${theme.colors.transparent};
+    color: ${theme.colors.primary};
+    border: 2px solid ${theme.colors.primary};
     border-radius: 5px;
     padding: 0.5rem;
     cursor: pointer;

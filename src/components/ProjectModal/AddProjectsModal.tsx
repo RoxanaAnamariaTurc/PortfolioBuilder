@@ -20,13 +20,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   onProjectSubmission,
 }) => {
   const theme = useTheme();
-  const [project, setProject] = useState<Project>({
-    _id: "",
-    name: "",
-    description: "",
-    image: "",
-    link: "",
-  });
 
   type FormState = {
     userId: string | null;
@@ -81,7 +74,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
             formData
           )
         : axios.post("http://localhost:3001/projects", formData));
-      console.log(response.data);
       onProjectSubmission(response.data, isEdit);
       closeModal();
     } catch (error) {
@@ -116,7 +108,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
               <input
                 type="text"
                 id="projectName"
-                name="projectName"
+                name="name"
                 value={formState.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 required
@@ -126,7 +118,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
               <label htmlFor="projectDescription">Description</label>
               <TextArea
                 limit={250}
-                value={project.description}
+                value={formState.description}
                 name="projectDescription"
                 onChange={(value) => handleInputChange("description", value)}
               />

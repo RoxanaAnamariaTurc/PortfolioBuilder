@@ -6,6 +6,8 @@ import { theme } from "./theme";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import UserDashboard from "./components/UserDashboard/UserDashboard";
 import { UserProvider } from "./UserContext";
+import "typeface-roboto";
+import Portfolio from "./components/Portfolio/Portfolio";
 
 const App: React.FC = () => {
   return (
@@ -18,6 +20,7 @@ const App: React.FC = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/userdashboard" element={<UserDashboard />} />
+              <Route path="/portfolio/:userId" element={<Portfolio />} />
             </Routes>
           </Router>
         </UserProvider>

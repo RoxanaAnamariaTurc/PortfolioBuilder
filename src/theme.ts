@@ -22,15 +22,15 @@ export interface MyTheme {
 
 export const theme: MyTheme = {
   colors: {
-    primary: "#D1E8E2",
+    primary: "#add8e6",
     secondary: "#2C3531",
-    danger: "#F60909",
-    background: "linear-gradient(to bottom, #2C3531, #0C2F3B)",
-    hover: "#D9B08C",
+    danger: "darkorange",
+    background: "linear-gradient(to bottom, black, #2d2c3c)",
+    hover: "#967BB6",
     transparent: "transparent",
   },
   fonts: {
-    body: "Arial, sans serif",
+    body: "Roboto",
     heading: "Georgia, sans serif",
   },
   sizes: {

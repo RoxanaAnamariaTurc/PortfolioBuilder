@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { theme } from "../../theme";
 
 interface TextAreaProps {
@@ -9,8 +9,13 @@ interface TextAreaProps {
 }
 
 const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(value);
   const [remaining, setRemaining] = useState(limit);
+
+  useEffect(() => {
+    setText(value);
+    setRemaining(limit - value.split(/\s+/).length);
+  }, [value, limit]);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputText = event.target.value;

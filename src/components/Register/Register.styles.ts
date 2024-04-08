@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import { MyTheme } from "../../theme";
 
 export const registerStyle = (theme: MyTheme) => css`
-  background: ${theme.colors.secondary};
+  background: ${theme.colors.background};
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -48,13 +48,14 @@ export const registerStyle = (theme: MyTheme) => css`
     padding: ${theme.sizes.small};
     width: 23rem;
     margin: 1rem;
-    background-color: ${theme.colors.primary};
+    background-color: ${theme.colors.transparent};
     font-size: ${theme.sizes.small};
+    color: ${theme.colors.primary};
   }
   button {
-    background-color: ${theme.colors.primary};
+    background-color: ${theme.colors.transparent};
     color: ${theme.colors.secondary};
-    border: none;
+    border: 2px solid ${theme.colors.primary};
     border-radius: ${theme.sizes.xsmall};
     padding: ${theme.sizes.small};
     cursor: pointer;
@@ -63,6 +64,7 @@ export const registerStyle = (theme: MyTheme) => css`
     font-size: ${theme.sizes.small};
     grid-column: 2;
     justify-self: center;
+    color: ${theme.colors.primary};
   }
   button:hover {
     background-color: ${theme.colors.hover};

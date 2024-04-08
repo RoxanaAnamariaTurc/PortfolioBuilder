@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import { MyTheme } from "../../theme";
 
 export const loginStyle = (theme: MyTheme) => css`
-  background: ${theme.colors.secondary};
+  background: ${theme.colors.background};
   height: 100vh;
   width: 100vw;
   display: flex;
@@ -33,12 +33,13 @@ export const loginStyle = (theme: MyTheme) => css`
     padding: ${theme.sizes.small};
     width: 20rem;
     margin: 1rem;
-    background-color: ${theme.colors.primary};
+    background-color: ${theme.colors.transparent};
+    color: ${theme.colors.primary};
   }
   button {
-    background-color: ${theme.colors.primary};
-    color: ${theme.colors.secondary};
-    border: none;
+    background-color: ${theme.colors.transparent};
+    color: ${theme.colors.primary};
+    border: ${theme.colors.primary} 2px solid;
     border-radius: ${theme.sizes.xsmall};
     padding: ${theme.sizes.small};
     cursor: pointer;
