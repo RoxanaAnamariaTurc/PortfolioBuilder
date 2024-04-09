@@ -223,4 +223,11 @@ export const userDashboardStyle = (
     object-fit: cover;
     border-radius: 10%;
   }
+
+  .theme {
+    width: 2em;
+    height: 1em;
+    border-radius: 2px;
+    border: 2px solid ${theme.colors.primary};
+  }
 `;

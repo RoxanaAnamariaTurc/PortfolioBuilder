@@ -8,21 +8,24 @@ import UserDashboard from "./components/UserDashboard/UserDashboard";
 import { UserProvider } from "./UserContext";
 import "typeface-roboto";
 import Portfolio from "./components/Portfolio/Portfolio";
+import { ThemeStateProvider } from "./components/ThemeContext";
 
 const App: React.FC = () => {
   return (
     <div>
       <ThemeProvider theme={theme}>
         <UserProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Welcome />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/userdashboard" element={<UserDashboard />} />
-              <Route path="/portfolio/:userId" element={<Portfolio />} />
-            </Routes>
-          </Router>
+          <ThemeStateProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Welcome />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/userdashboard" element={<UserDashboard />} />
+                <Route path="/portfolio/:userId" element={<Portfolio />} />
+              </Routes>
+            </Router>
+          </ThemeStateProvider>
         </UserProvider>
       </ThemeProvider>
     </div>

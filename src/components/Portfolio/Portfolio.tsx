@@ -2,11 +2,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getPortfolioStyles } from "./Portfolio.styles";
-import { useTheme } from "@emotion/react";
-import { MyTheme } from "../../theme";
 import { User } from "../../UserContext";
 import { Skills } from "../UserDashboard/UserDashboard";
+import { useThemeContext } from "../ThemeContext";
 
 interface Project {
   _id?: string;
@@ -23,9 +21,9 @@ const Portfolio: React.FC = () => {
     techSkills: [],
     softSkills: [],
   });
+
   const { userId } = useParams<{ userId: string }>();
-  const theme = useTheme() as MyTheme;
-  const style = getPortfolioStyles(theme);
+  const { style } = useThemeContext();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +48,6 @@ const Portfolio: React.FC = () => {
   if (!user) {
     return <div>Loading...</div>;
   }
-  console.log(projects);
 
   return (
     <div css={style.portfolio}>

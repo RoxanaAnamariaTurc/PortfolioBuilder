@@ -54,11 +54,11 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <label htmlFor="email">Email address</label>
-          <input type="email" id="email" />
+          <input type="email" id="email" required />
         </div>
         <div className="input-group">
           <label htmlFor="password">Password</label>
-          <input type="password" id="password" />
+          <input type="password" id="password" required />
         </div>
         <button>Login</button>
       </form>

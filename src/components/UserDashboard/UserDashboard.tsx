@@ -11,6 +11,11 @@ import axios from "axios";
 import Header from "../Header/Header";
 import Button from "../Button/Button";
 import { useNavigate } from "react-router-dom";
+import {
+  getPortfolioStylesDark,
+  getPortfolioStylesLight,
+} from "../Portfolio/Portfolio.styles";
+import { useThemeContext } from "../ThemeContext";
 
 export interface Project {
   _id?: string;
@@ -26,6 +31,7 @@ export interface Skills {
 }
 
 const UserDashboard: React.FC = () => {
+  const { toggleTheme } = useThemeContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [isModalSkillOpen, setIsModalSkillOpen] = useState(false);
@@ -37,9 +43,11 @@ const UserDashboard: React.FC = () => {
   const [showFullDescription, setShowFullDescription] = useState<{
     [key: string]: boolean;
   }>({});
+  const theme = useTheme();
+  const [themeName, setThemeName] = useState("#F0E2F0");
 
   const { user } = useContext(UserContext) as UserContextProps;
-  const theme = useTheme();
+
   const techSkillsOption = skills.techSkills.map((skill) => ({
     value: skill,
     label: skill,
@@ -84,6 +92,13 @@ const UserDashboard: React.FC = () => {
       ...prevState,
       [projectId]: !prevState[projectId],
     }));
+  };
+
+  const toggleThemeState = () => {
+    toggleTheme();
+    setThemeName((prevThemeName) =>
+      prevThemeName === "#F0E2F0" ? "#2d2c3c" : "#F0E2F0"
+    );
   };
 
   const handleOpenModal = (project?: Project) => {
@@ -239,6 +254,37 @@ const UserDashboard: React.FC = () => {
             >
               + Add
             </Button>
+            <div className="user-btns">
+              <Button
+                onClick={toggleThemeState}
+                width={"xlarge"}
+                height={"medium"}
+                borderRadius={"xsmall"}
+                padding={"xsmall"}
+                backgroundColor={"transparent"}
+                color={"primary"}
+              >
+                Toggle Theme
+              </Button>
+              <div
+                className="theme"
+                style={{ backgroundColor: themeName }}
+              ></div>
+              <Button
+                onClick={() => {
+                  const userId = localStorage.getItem("userId");
+                  userId && navigate(`/portfolio/${userId}`);
+                }}
+                width={"large"}
+                height={"medium"}
+                borderRadius={"xsmall"}
+                padding={"xsmall"}
+                backgroundColor={"transparent"}
+                color={"primary"}
+              >
+                Create
+              </Button>
+            </div>
           </div>
           <div className="table-container">
             <table>
@@ -314,33 +360,6 @@ const UserDashboard: React.FC = () => {
             </table>
           </div>
         </section>
-        <div className="user-btns">
-          <Button
-            onClick={handleOpenModal}
-            width={"large"}
-            height={"medium"}
-            borderRadius={"xsmall"}
-            padding={"xsmall"}
-            backgroundColor={"transparent"}
-            color={"primary"}
-          >
-            Preview
-          </Button>
-          <Button
-            onClick={() => {
-              const userId = localStorage.getItem("userId");
-              userId && navigate(`/portfolio/${userId}`);
-            }}
-            width={"large"}
-            height={"medium"}
-            borderRadius={"xsmall"}
-            padding={"xsmall"}
-            backgroundColor={"transparent"}
-            color={"primary"}
-          >
-            Create
-          </Button>
-        </div>
 
         <Footer />
       </div>
