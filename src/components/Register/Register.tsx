@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import Footer from "../Footer/Footer";
-import { registerStyle } from "./Register.styles";
+import { getRegisterStyle } from "./Register.styles";
 import { useTheme } from "../../hooks/useTheme";
 import { useContext } from "react";
 import { UserContext, UserContextProps } from "../../UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Button from "../Button/Button";
 
 const Register = () => {
   const { setUser } = useContext(UserContext) as UserContextProps;
@@ -69,7 +70,6 @@ const Register = () => {
             },
           }
         );
-        console.log(response);
 
         if (response.status === 201) {
           setUser(response.data);
@@ -89,38 +89,54 @@ const Register = () => {
   };
 
   const theme = useTheme();
+  const style = getRegisterStyle(theme);
 
   return (
-    <div css={registerStyle(theme)}>
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="fullName">Full Name</label>
-          <input type="text" id="fullName" />
-        </div>
-        <div className="input-group">
-          <label htmlFor="email">Email</label>
-          <input type="email" id="email" />
-        </div>
-        <div className="input-group">
-          <label htmlFor="jobTitle">Job Title</label>
-          <input type="text" id="jobTitle" />
-        </div>
-        <div className="input-group">
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" />
-        </div>
+    <div>
+      <div css={style.registerDiv}>
+        <h1 css={style.h1}>Register</h1>
+        <form css={style.form} onSubmit={handleSubmit}>
+          <div css={style.inputGroup}>
+            <label htmlFor="fullName">Full Name</label>
+            <input type="text" id="fullName" />
+          </div>
+          <div css={style.inputGroup}>
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" />
+          </div>
+          <div css={style.inputGroup}>
+            <label htmlFor="jobTitle">Job Title</label>
+            <input type="text" id="jobTitle" />
+          </div>
+          <div css={style.inputGroup}>
+            <label htmlFor="password">Password</label>
+            <input type="password" id="password" />
+          </div>
 
-        <div className="input-group">
-          <p>Profile image</p>
-          <input type="file" id="profileImage" accept=".jpg,.jpeg,.png" />
-        </div>
-        <div className="input-group">
-          <label htmlFor="passwordConfirmation">Repeat Password</label>
-          <input type="password" id="passwordConfirmation" />
-        </div>
-        <button type="submit">Register</button>
-      </form>
+          <div css={style.inputGroup}>
+            <p>Profile image</p>
+            <input type="file" id="profileImage" accept=".jpg,.jpeg,.png" />
+          </div>
+          <div css={style.inputGroup}>
+            <label htmlFor="passwordConfirmation">Repeat Password</label>
+            <input type="password" id="passwordConfirmation" />
+          </div>
+          <Button
+            css={style.buttonStyle}
+            color={"primary"}
+            backgroundColor={"transparent"}
+            borderRadius={"xsmall"}
+            padding={"xsmall"}
+            width={"xlarge"}
+            fontSize={"small"}
+            height={"medium"}
+            margin={"small"}
+            textAlign={"center"}
+          >
+            Register
+          </Button>
+        </form>
+      </div>
       <Footer />
     </div>
   );

@@ -74,9 +74,11 @@ const Portfolio: React.FC = () => {
           ))}
         </div>
       </div>
+      <h2 css={style.h1}>Projects</h2>
       {projects.map((project) => (
         <div key={project._id} css={style.div}>
           <h3 css={style.title}>{project.name}</h3>
+
           <div css={style.container}>
             <img
               css={style.img}
@@ -87,11 +89,13 @@ const Portfolio: React.FC = () => {
               <p css={style.p}>{project.description}</p>
             </div>
           </div>
+
           <a css={style.a} href={project.link}>
             View project
           </a>
         </div>
       ))}
+      <footer css={style.footer}>Made with ❤️</footer>
     </div>
   );
 };

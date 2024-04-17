@@ -1,5 +1,7 @@
+/** @jsxImportSource @emotion/react */
 import React, { useEffect, useState } from "react";
 import { theme } from "../../theme";
+import { getTextAreaStyles } from "./TextArea.style";
 
 interface TextAreaProps {
   limit: number;
@@ -11,6 +13,7 @@ interface TextAreaProps {
 const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
   const [text, setText] = useState(value);
   const [remaining, setRemaining] = useState(limit);
+  const style = getTextAreaStyles(theme);
 
   useEffect(() => {
     setText(value);
@@ -32,18 +35,17 @@ const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
   return (
     <div>
       <textarea
+        css={style.textarea}
         value={text}
         onChange={handleChange}
         rows={4}
         cols={50}
         name="description"
       />
-      <div
-        style={{ color: theme.colors.primary, marginLeft: theme.sizes.small }}
-      >
+      <div css={style.div}>
         Words remaining: {remaining}
         {remaining <= 0 && (
-          <span style={{ color: "red" }}>You have exceeded the limit!</span>
+          <span css={style.span}>You have exceeded the limit!</span>
         )}
       </div>
     </div>

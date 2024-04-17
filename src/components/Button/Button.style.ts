@@ -13,6 +13,9 @@ export const getButtonStyles = (theme: MyTheme, props: ButtonProps) => {
     height = "large",
     hover,
     margin = "xsmall",
+    fontSize = "small",
+    cursor,
+    textAlign,
   } = props;
   return {
     button: css({
@@ -24,7 +27,10 @@ export const getButtonStyles = (theme: MyTheme, props: ButtonProps) => {
       width: theme.sizes[width],
       height: theme.sizes[height],
       margin: theme.sizes[margin],
+      cursor: cursor || "pointer",
+      fontSize: theme.sizes[fontSize],
       transition: "all 0.3s ease",
+      textAlign: textAlign || "center",
       "&:hover": {
         backgroundColor: theme.colors[hover?.backgroundColor || "hover"],
         border: `2px solid ${theme.colors[hover?.color || "secondary"]}`,

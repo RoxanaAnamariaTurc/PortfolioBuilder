@@ -6,11 +6,13 @@ export const getPortfolioStylesDark = (theme: MyTheme) => ({
     height: "100%",
     width: "100vw",
     backgroundColor: theme.colors.portfolioBackground,
+    scrollBehavior: "smooth",
   }),
   div: css({
     width: "80%",
     margin: "10px auto",
     display: "flex",
+    flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "flex-end",
     padding: "2em",
@@ -24,9 +26,11 @@ export const getPortfolioStylesDark = (theme: MyTheme) => ({
     textAlign: "center",
     fontSize: theme.sizes.medium,
     letterSpacing: "5px",
+    paddingTop: "1rem",
   }),
   title: css({
     alignSelf: "flex-start",
+    width: "560px",
   }),
   p: css({
     color: theme.colors.primary,
@@ -40,6 +44,7 @@ export const getPortfolioStylesDark = (theme: MyTheme) => ({
     boxShadow:
       "inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c,inset 4px 0 8px -4px #3d3c4c,inset 0 4px 8px -4px #3d3c4c",
     borderRadius: theme.sizes.small,
+    objectFit: "cover",
   }),
   a: css({
     alignSelf: "flex-end",
@@ -72,19 +77,25 @@ export const getPortfolioStylesDark = (theme: MyTheme) => ({
     color: theme.colors.primary,
     width: "80%",
     margin: "auto",
+    marginTop: "20px",
+    marginBottom: "200px",
   }),
   description: css({
     alignSelf: "end",
     width: "360px",
     height: "300px",
-    boxShadow:
-      "inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c,inset 4px 0 8px -4px #3d3c4c,inset 0 4px 8px -4px #3d3c4c",
+    // boxShadow:
+    //   "inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c,inset 4px 0 8px -4px #3d3c4c,inset 0 4px 8px -4px #3d3c4c",
   }),
   container: css({
     display: "flex",
     justifyContent: "space-around",
     alignItems: "center",
     gap: "1rem",
+  }),
+  footer: css({
+    color: theme.colors.primary,
+    textAlign: "center",
   }),
 });
 
@@ -94,11 +105,13 @@ export const getPortfolioStylesLight = (theme: MyTheme) => ({
     width: "100vw",
     backgroundColor: theme.lightTheme.colors.background,
     margin: 0,
+    scrollBehavior: "smooth",
   }),
   div: css({
     width: "80%",
     margin: "10px auto",
     display: "flex",
+    flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "flex-end",
     padding: "2em",
@@ -112,6 +125,7 @@ export const getPortfolioStylesLight = (theme: MyTheme) => ({
     textAlign: "center",
     fontSize: theme.sizes.medium,
     letterSpacing: "5px",
+    paddingTop: "1rem",
   }),
   title: css({
     alignSelf: "flex-start",
@@ -128,6 +142,7 @@ export const getPortfolioStylesLight = (theme: MyTheme) => ({
     boxShadow:
       "inset -4px 0 8px -4px #d9c9d9, inset 0 -4px 8px -4px #d9c9d9,inset 4px 0 8px -4px #ffffff,inset 0 4px 8px -4px #ffffff",
     borderRadius: theme.sizes.small,
+    objectFit: "cover",
   }),
   a: css({
     alignSelf: "flex-end",
@@ -160,6 +175,8 @@ export const getPortfolioStylesLight = (theme: MyTheme) => ({
     color: theme.lightTheme.colors.primary,
     width: "80%",
     margin: "auto",
+    marginTop: "20px",
+    marginBottom: "200px",
   }),
   description: css({
     alignSelf: "end",
@@ -171,5 +188,9 @@ export const getPortfolioStylesLight = (theme: MyTheme) => ({
     justifyContent: "space-around",
     alignItems: "center",
     gap: "1rem",
+  }),
+  footer: css({
+    color: theme.lightTheme.colors.primary,
+    textAlign: "center",
   }),
 });

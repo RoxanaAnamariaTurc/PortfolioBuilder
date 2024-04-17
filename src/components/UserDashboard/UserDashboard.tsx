@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { useTheme } from "../../hooks/useTheme";
-import { userDashboardStyle } from "./UserDashboard.style";
+import { getUserdashboardStyles } from "./UserDashboard.style";
 import avatar from "../../images/avatar.png";
 import { UserContext, UserContextProps } from "../../UserContext";
 import { useContext, useEffect, useState } from "react";
 import Footer from "../Footer/Footer";
-import AddProjectsModal from "../ProjectModal/AddProjectsModal";
-import AddSkillsModal from "../SkillsModal/AddSkillsModal";
+import AddProjectsModal from "../Modal/AddProjectsModal";
+import AddSkillsModal from "../Modal/AddSkillsModal";
 import axios from "axios";
 import Header from "../Header/Header";
 import Button from "../Button/Button";
@@ -44,6 +44,7 @@ const UserDashboard: React.FC = () => {
     [key: string]: boolean;
   }>({});
   const theme = useTheme();
+  const style = getUserdashboardStyles(theme, isModalOpen, isModalSkillOpen);
   const [themeName, setThemeName] = useState("#F0E2F0");
 
   const { user } = useContext(UserContext) as UserContextProps;
@@ -176,12 +177,13 @@ const UserDashboard: React.FC = () => {
   return (
     <div>
       <Header />
-      <div css={userDashboardStyle(theme, isModalOpen, isModalSkillOpen)}>
-        <div className="user-profile">
-          <section className="user-info">
-            <h3>{`${user?.fullName}'s profile`}</h3>
-            <div className="user-image">
+      <div css={style.userDashboard}>
+        <div css={style.userProfile}>
+          <section css={style.userInfo}>
+            <h3 css={style.h3}>{`${user?.fullName}'s profile`}</h3>
+            <div css={style.userImage}>
               <img
+                css={style.img}
                 src={
                   user?.profileImage
                     ? `http://localhost:3001/${user.profileImage}`
@@ -189,26 +191,26 @@ const UserDashboard: React.FC = () => {
                 }
                 alt="user avatar"
               />
-              <table className="user-info-table">
+              <table css={style.userInfoTable}>
                 <tbody>
                   <tr>
-                    <th>Name</th>
+                    <th css={style.th}>Name</th>
                     <td>{user?.fullName}</td>
                   </tr>
                   <tr>
-                    <th>Email</th>
+                    <th css={style.th}>Email</th>
                     <td>{user?.email}</td>
                   </tr>
                   <tr>
-                    <th>Job Title</th>
+                    <th css={style.th}>Job Title</th>
                     <td>{user?.jobTitle}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </section>
-          <section className="user-skills">
-            <h4>Skills</h4>
+          <section css={style.userSkills}>
+            <h4 css={style.h4}>Skills</h4>
             <Button
               onClick={handleOpenSkillsModal}
               width={"large"}
@@ -220,29 +222,33 @@ const UserDashboard: React.FC = () => {
             >
               + Add
             </Button>
-            <div className="skills">
+            <div css={style.skills}>
               <div>
-                <h5>Technical Skills</h5>
-                <ul>
+                <h5 css={style.h5}>Technical Skills</h5>
+                <ul css={style.ul}>
                   {skills.techSkills.map((skill, index) => (
-                    <li key={index}>{skill}</li>
+                    <li css={style.li} key={index}>
+                      {skill}
+                    </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h5>Soft Skills</h5>
-                <ul>
+                <h5 css={style.h5}>Soft Skills</h5>
+                <ul css={style.ul}>
                   {skills.softSkills.map((skill, index) => (
-                    <li key={index}>{skill}</li>
+                    <li css={style.li} key={index}>
+                      {skill}
+                    </li>
                   ))}
                 </ul>
               </div>
             </div>
           </section>
         </div>
-        <section className="user-projects">
-          <div>
-            <h2>Projects</h2>
+        <section css={style.userProjects}>
+          <div css={style.userProjectsDiv}>
+            <h2 css={style.h2}>Projects</h2>
             <Button
               onClick={() => handleOpenModal()}
               width={"large"}
@@ -254,7 +260,7 @@ const UserDashboard: React.FC = () => {
             >
               + Add
             </Button>
-            <div className="user-btns">
+            <div css={style.userBtns}>
               <Button
                 onClick={toggleThemeState}
                 width={"xlarge"}
@@ -266,10 +272,6 @@ const UserDashboard: React.FC = () => {
               >
                 Toggle Theme
               </Button>
-              <div
-                className="theme"
-                style={{ backgroundColor: themeName }}
-              ></div>
               <Button
                 onClick={() => {
                   const userId = localStorage.getItem("userId");
@@ -285,10 +287,14 @@ const UserDashboard: React.FC = () => {
                 Create
               </Button>
             </div>
+            <div
+              css={style.themeDiv}
+              style={{ backgroundColor: themeName }}
+            ></div>
           </div>
-          <div className="table-container">
-            <table>
-              <thead>
+          <div css={style.tableContainer}>
+            <table css={style.table}>
+              <thead css={style.thead}>
                 <tr>
                   <th>Name</th>
                   <th>Description</th>
@@ -297,6 +303,7 @@ const UserDashboard: React.FC = () => {
                   <th>Edit/Delete</th>
                 </tr>
               </thead>
+
               <tbody>
                 {projects
                   .filter((project) => project !== undefined)
@@ -315,6 +322,7 @@ const UserDashboard: React.FC = () => {
                           borderRadius={"xsmall"}
                           backgroundColor={"transparent"}
                           color={"primary"}
+                          fontSize={"small"}
                         >
                           {showFullDescription[project._id ?? ""]
                             ? "Read Less"
@@ -323,12 +331,15 @@ const UserDashboard: React.FC = () => {
                       </td>
                       <td>
                         <img
+                          css={style.tableImg}
                           src={`http://localhost:3001/${project.image}`}
                           alt={project.name}
                         />
                       </td>
                       <td>
-                        <a href={project.link}>{project.link}</a>
+                        <a css={style.a} href={project.link}>
+                          {project.link}
+                        </a>
                       </td>
                       <td>
                         <Button

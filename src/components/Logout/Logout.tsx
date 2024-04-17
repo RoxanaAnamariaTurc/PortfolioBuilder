@@ -15,7 +15,8 @@ const Logout = () => {
       height={"medium"}
       borderRadius={"xsmall"}
       padding={"xsmall"}
-      backgroundColor={"primary"}
+      backgroundColor={"transparent"}
+      color={"primary"}
     >
       Logout
     </Button>

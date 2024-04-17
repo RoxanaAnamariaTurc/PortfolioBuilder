@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import Footer from "../Footer/Footer";
-import { loginStyle } from "./Login.styles";
+import { getLoginStyle } from "./Login.styles";
 import { useTheme } from "../../hooks/useTheme";
 import { useNavigate } from "react-router-dom";
 import { UserContext, UserContextProps } from "../../UserContext";
 import axios from "axios";
 import { useContext } from "react";
+import Button from "../Button/Button";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,10 +31,10 @@ const Login = () => {
         });
         if (response.status === 200) {
           const user = response.data.user;
-          console.log("user", user);
+
           setUser(user);
           localStorage.setItem("userId", user.id);
-          console.log("userID in login", user.id);
+
           navigate("/userdashboard");
         } else {
           alert("Invalid email or password");
@@ -47,22 +48,40 @@ const Login = () => {
     }
   };
   const theme = useTheme();
+  const style = getLoginStyle(theme);
 
   return (
-    <div css={loginStyle(theme)}>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="email">Email address</label>
-          <input type="email" id="email" required />
-        </div>
-        <div className="input-group">
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" required />
-        </div>
-        <button>Login</button>
-      </form>
-
+    <div>
+      <div css={style.container}>
+        <h1 css={style.h1}>Login</h1>
+        <form css={style.form} onSubmit={handleSubmit}>
+          <div css={style.inputGroup}>
+            <label css={style.label} htmlFor="email">
+              Email address
+            </label>
+            <input css={style.input} type="email" id="email" required />
+          </div>
+          <div css={style.inputGroup}>
+            <label css={style.label} htmlFor="password">
+              Password
+            </label>
+            <input css={style.input} type="password" id="password" required />
+          </div>
+          <Button
+            color={"primary"}
+            backgroundColor={"transparent"}
+            borderRadius={"xsmall"}
+            padding={"xsmall"}
+            width={"xlarge"}
+            fontSize={"small"}
+            height={"medium"}
+            margin={"small"}
+            textAlign={"center"}
+          >
+            Login
+          </Button>
+        </form>
+      </div>
       <Footer />
     </div>
   );

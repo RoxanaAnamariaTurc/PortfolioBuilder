@@ -14,7 +14,7 @@ interface HoverProps {
   border?: ButtonSize;
 }
 export interface ButtonProps {
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   children?: React.ReactNode;
   color?: ButtonColor;
   backgroundColor?: ButtonColor;
@@ -25,6 +25,10 @@ export interface ButtonProps {
   height?: ButtonSize;
   hover?: HoverProps;
   margin?: ButtonSize;
+  cursor?: string;
+  fontSize?: ButtonSize;
+  textAlign?: "left" | "center" | "right";
+  css?: any;
 }
 
 const Button: React.FC<ButtonProps> = (props) => {
