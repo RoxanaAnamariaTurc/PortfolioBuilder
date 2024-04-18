@@ -100,9 +100,7 @@ export const getUserdashboardStyles = (
     }),
     a: css({
       color: theme.colors.primary,
-      "&:hover": {
-        textDecoration: "underline",
-      },
+      cursor: "pointer",
     }),
     tableContainer: css({
       backgroundColor: theme.colors.background,
@@ -113,6 +111,16 @@ export const getUserdashboardStyles = (
       width: "100%",
       overflowY: "scroll",
       maxHeight: "500px",
+      "&::-webkit-scrollbar": {
+        width: "10px",
+      },
+      "&::-webkit-scrollbar-track": {
+        background: theme.colors.transparent,
+      },
+      "&::-webkit-scrollbar-thumb": {
+        background: theme.colors.background,
+        borderRadius: "10px",
+      },
     }),
     table: css({
       width: "100%",
@@ -132,9 +140,9 @@ export const getUserdashboardStyles = (
     }),
     themeDiv: css({
       width: "2em",
-      height: "1em",
+      height: "30px",
       borderRadius: "2px",
-      border: `2px solid ${theme.colors.primary}`,
+      border: `1px solid ${theme.colors.primary}`,
     }),
     h5: css({
       color: theme.colors.primary,
@@ -150,9 +158,11 @@ export const getUserdashboardStyles = (
     userBtns: css({
       display: "flex",
       justifyContent: "flex-end",
+      alignItems: "center",
       gap: "1rem",
       marginTop: "2rem",
       padding: "1rem",
+      marginLeft: "auto",
     }),
     thead: css({
       padding: "2em",
@@ -162,6 +172,22 @@ export const getUserdashboardStyles = (
       color: theme.colors.primary,
       zIndex: 1,
       height: "5em",
+      borderBottom: `1px solid ${theme.colors.primary}`,
+    }),
+    link: css({
+      alignSelf: "flex-end",
+      color: theme.colors.secondary,
+      boxShadow:
+        "inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c,inset 4px 0 8px -4px #3d3c4c,inset 0 4px 8px -4px #3d3c4c",
+      padding: "0.35rem",
+      cursor: "pointer",
+      fontSize: ".75rem",
+      marginLeft: "1em",
+      transition: "all 0.2s ease",
+      ":hover": {
+        boxShadow: "none",
+        transform: "translateY(4px)",
+      },
     }),
   };
 };

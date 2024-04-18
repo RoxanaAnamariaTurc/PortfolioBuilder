@@ -7,15 +7,11 @@ import { useContext, useEffect, useState } from "react";
 import Footer from "../Footer/Footer";
 import AddProjectsModal from "../Modal/AddProjectsModal";
 import AddSkillsModal from "../Modal/AddSkillsModal";
-import axios from "axios";
 import Header from "../Header/Header";
 import Button from "../Button/Button";
 import { useNavigate } from "react-router-dom";
-import {
-  getPortfolioStylesDark,
-  getPortfolioStylesLight,
-} from "../Portfolio/Portfolio.styles";
 import { useThemeContext } from "../ThemeContext";
+import { fetchProjects, fetchSkills, deleteProject } from "../../api";
 
 export interface Project {
   _id?: string;
@@ -31,7 +27,7 @@ export interface Skills {
 }
 
 const UserDashboard: React.FC = () => {
-  const { toggleTheme } = useThemeContext();
+  const { toggleTheme, currentTheme } = useThemeContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [isModalSkillOpen, setIsModalSkillOpen] = useState(false);
@@ -44,8 +40,7 @@ const UserDashboard: React.FC = () => {
     [key: string]: boolean;
   }>({});
   const theme = useTheme();
-  const style = getUserdashboardStyles(theme, isModalOpen, isModalSkillOpen);
-  const [themeName, setThemeName] = useState("#F0E2F0");
+  const styles = getUserdashboardStyles(theme, isModalOpen, isModalSkillOpen);
 
   const { user } = useContext(UserContext) as UserContextProps;
 
@@ -66,16 +61,12 @@ const UserDashboard: React.FC = () => {
       if (userId) {
         try {
           // Fetch projects
-          const projectsResponse = await axios.get(
-            `http://localhost:3001/projects/${userId}`
-          );
-          setProjects(projectsResponse.data);
+          const projectsData = await fetchProjects();
+          setProjects(projectsData);
 
           // Fetch skills
-          const skillsResponse = await axios.get(
-            `http://localhost:3001/user/${userId}/skills`
-          );
-          setSkills(skillsResponse.data);
+          const skillsData = await fetchSkills();
+          setSkills(skillsData);
         } catch (error) {
           console.error(
             "An error occurred while trying to fetch the user data",
@@ -97,9 +88,6 @@ const UserDashboard: React.FC = () => {
 
   const toggleThemeState = () => {
     toggleTheme();
-    setThemeName((prevThemeName) =>
-      prevThemeName === "#F0E2F0" ? "#2d2c3c" : "#F0E2F0"
-    );
   };
 
   const handleOpenModal = (project?: Project) => {
@@ -121,7 +109,11 @@ const UserDashboard: React.FC = () => {
     isEdit: boolean
   ) => {
     if (isEdit) {
-      setProjects(project as Project[]);
+      setProjects((prevProjects) =>
+        prevProjects.map((p) =>
+          p._id === (project as Project)._id ? (project as Project) : p
+        )
+      );
     } else {
       setProjects((prevProjects) => [...prevProjects, project as Project]);
     }
@@ -141,11 +133,7 @@ const UserDashboard: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        const response = await axios.get(
-          `http://localhost:3001/user/${userId}/skills`
-        );
-        const updatedSkills = response.data;
-
+        const updatedSkills = await fetchSkills();
         setSkills(updatedSkills);
       } catch (error) {
         console.error(
@@ -161,9 +149,7 @@ const UserDashboard: React.FC = () => {
     if (userId) {
       console.log(`Deleting project with ID: ${projectId}`);
       try {
-        await axios.delete(
-          `http://localhost:3001/users/${userId}/projects/${projectId}`
-        );
+        await deleteProject(userId, projectId);
         setProjects(projects.filter((project) => project._id !== projectId));
       } catch (error) {
         console.error(
@@ -177,13 +163,13 @@ const UserDashboard: React.FC = () => {
   return (
     <div>
       <Header />
-      <div css={style.userDashboard}>
-        <div css={style.userProfile}>
-          <section css={style.userInfo}>
-            <h3 css={style.h3}>{`${user?.fullName}'s profile`}</h3>
-            <div css={style.userImage}>
+      <div css={styles.userDashboard}>
+        <div css={styles.userProfile}>
+          <section css={styles.userInfo}>
+            <h3 css={styles.h3}>{`${user?.fullName}'s profile`}</h3>
+            <div css={styles.userImage}>
               <img
-                css={style.img}
+                css={styles.img}
                 src={
                   user?.profileImage
                     ? `http://localhost:3001/${user.profileImage}`
@@ -191,53 +177,53 @@ const UserDashboard: React.FC = () => {
                 }
                 alt="user avatar"
               />
-              <table css={style.userInfoTable}>
+              <table css={styles.userInfoTable}>
                 <tbody>
                   <tr>
-                    <th css={style.th}>Name</th>
+                    <th css={styles.th}>Name</th>
                     <td>{user?.fullName}</td>
                   </tr>
                   <tr>
-                    <th css={style.th}>Email</th>
+                    <th css={styles.th}>Email</th>
                     <td>{user?.email}</td>
                   </tr>
                   <tr>
-                    <th css={style.th}>Job Title</th>
+                    <th css={styles.th}>Job Title</th>
                     <td>{user?.jobTitle}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </section>
-          <section css={style.userSkills}>
-            <h4 css={style.h4}>Skills</h4>
+          <section css={styles.userSkills}>
+            <h4 css={styles.h4}>Skills</h4>
             <Button
               onClick={handleOpenSkillsModal}
-              width={"large"}
+              width={"xlarge"}
               height={"medium"}
               borderRadius={"xsmall"}
               padding={"xsmall"}
               backgroundColor={"transparent"}
               color={"primary"}
             >
-              + Add
+              + Add skills
             </Button>
-            <div css={style.skills}>
+            <div css={styles.skills}>
               <div>
-                <h5 css={style.h5}>Technical Skills</h5>
-                <ul css={style.ul}>
+                <h5 css={styles.h5}>Technical Skills</h5>
+                <ul css={styles.ul}>
                   {skills.techSkills.map((skill, index) => (
-                    <li css={style.li} key={index}>
+                    <li css={styles.li} key={index}>
                       {skill}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h5 css={style.h5}>Soft Skills</h5>
-                <ul css={style.ul}>
+                <h5 css={styles.h5}>Soft Skills</h5>
+                <ul css={styles.ul}>
                   {skills.softSkills.map((skill, index) => (
-                    <li css={style.li} key={index}>
+                    <li css={styles.li} key={index}>
                       {skill}
                     </li>
                   ))}
@@ -246,21 +232,21 @@ const UserDashboard: React.FC = () => {
             </div>
           </section>
         </div>
-        <section css={style.userProjects}>
-          <div css={style.userProjectsDiv}>
-            <h2 css={style.h2}>Projects</h2>
+        <section css={styles.userProjects}>
+          <div css={styles.userProjectsDiv}>
+            <h2 css={styles.h2}>Projects</h2>
             <Button
               onClick={() => handleOpenModal()}
-              width={"large"}
+              width={"xlarge"}
               height={"medium"}
               borderRadius={"xsmall"}
               padding={"xsmall"}
               backgroundColor={"transparent"}
               color={"primary"}
             >
-              + Add
+              + Add new project
             </Button>
-            <div css={style.userBtns}>
+            <div css={styles.userBtns}>
               <Button
                 onClick={toggleThemeState}
                 width={"xlarge"}
@@ -270,31 +256,36 @@ const UserDashboard: React.FC = () => {
                 backgroundColor={"transparent"}
                 color={"primary"}
               >
-                Toggle Theme
+                Portfolio Theme
               </Button>
+              <div
+                css={styles.themeDiv}
+                style={{
+                  backgroundColor:
+                    currentTheme === "light"
+                      ? theme.lightTheme.colors.background
+                      : theme.colors.portfolioBackground,
+                }}
+              ></div>
               <Button
                 onClick={() => {
                   const userId = localStorage.getItem("userId");
                   userId && navigate(`/portfolio/${userId}`);
                 }}
-                width={"large"}
+                width={"xlarge"}
                 height={"medium"}
                 borderRadius={"xsmall"}
                 padding={"xsmall"}
                 backgroundColor={"transparent"}
                 color={"primary"}
               >
-                Create
+                Generate Portfolio
               </Button>
             </div>
-            <div
-              css={style.themeDiv}
-              style={{ backgroundColor: themeName }}
-            ></div>
           </div>
-          <div css={style.tableContainer}>
-            <table css={style.table}>
-              <thead css={style.thead}>
+          <div css={styles.tableContainer}>
+            <table css={styles.table}>
+              <thead css={styles.thead}>
                 <tr>
                   <th>Name</th>
                   <th>Description</th>
@@ -305,68 +296,69 @@ const UserDashboard: React.FC = () => {
               </thead>
 
               <tbody>
-                {projects
-                  .filter((project) => project !== undefined)
-                  .map((project) => (
-                    <tr key={project._id}>
-                      <td>{project.name}</td>
-                      <td>
-                        {showFullDescription[project._id ?? ""]
-                          ? project.description
-                          : `${project.description.slice(0, 50)}...`}
-                        <Button
-                          onClick={() => toggleDescription(project._id ?? "")}
-                          width={"large"}
-                          height={"medium"}
-                          padding={"xsmall"}
-                          borderRadius={"xsmall"}
-                          backgroundColor={"transparent"}
-                          color={"primary"}
-                          fontSize={"small"}
-                        >
+                {projects &&
+                  projects
+                    .filter((project) => project)
+                    .map((project) => (
+                      <tr key={project._id}>
+                        <td>{project.name}</td>
+                        <td>
                           {showFullDescription[project._id ?? ""]
-                            ? "Read Less"
-                            : "Read More"}
-                        </Button>
-                      </td>
-                      <td>
-                        <img
-                          css={style.tableImg}
-                          src={`http://localhost:3001/${project.image}`}
-                          alt={project.name}
-                        />
-                      </td>
-                      <td>
-                        <a css={style.a} href={project.link}>
-                          {project.link}
-                        </a>
-                      </td>
-                      <td>
-                        <Button
-                          onClick={() => handleOpenModal(project)}
-                          width={"large"}
-                          height={"medium"}
-                          borderRadius={"xsmall"}
-                          padding={"xsmall"}
-                          backgroundColor={"transparent"}
-                          color={"primary"}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          onClick={() => handleDeleteProject(project._id ?? "")}
-                          width={"large"}
-                          height={"medium"}
-                          borderRadius={"xsmall"}
-                          padding={"xsmall"}
-                          backgroundColor={"transparent"}
-                          color={"danger"}
-                        >
-                          DELETE
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                            ? project.description
+                            : `${project.description.slice(0, 50)}...`}
+                          <a
+                            css={styles.link}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleDescription(project._id ?? "");
+                            }}
+                            href="#"
+                          >
+                            {showFullDescription[project._id ?? ""]
+                              ? "Read Less"
+                              : "Read More"}
+                          </a>
+                        </td>
+                        <td>
+                          <img
+                            css={styles.tableImg}
+                            src={`http://localhost:3001/${project.image}`}
+                            alt={project.name}
+                          />
+                        </td>
+                        <td>
+                          <a css={styles.a} href={project.link}>
+                            {project.link}
+                          </a>
+                        </td>
+                        <td>
+                          <Button
+                            onClick={() => handleOpenModal(project)}
+                            width={"large"}
+                            height={"medium"}
+                            borderRadius={"xsmall"}
+                            padding={"xsmall"}
+                            backgroundColor={"transparent"}
+                            color={"primary"}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              handleDeleteProject(project._id ?? "")
+                            }
+                            width={"large"}
+                            height={"medium"}
+                            borderRadius={"xsmall"}
+                            padding={"xsmall"}
+                            backgroundColor={"transparent"}
+                            color={"danger"}
+                          >
+                            DELETE
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

@@ -6,10 +6,11 @@ export const getModalStyles = (theme: MyTheme) => {
     div: css({
       position: "fixed",
       top: "5em",
-      left: "25em",
+      left: "50%",
+      transform: "translateX(-50%)",
       background: theme.colors.background,
-      height: "50vh",
-      width: "50vw",
+      height: "80vh",
+      width: "70vw",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -18,6 +19,10 @@ export const getModalStyles = (theme: MyTheme) => {
       boxShadow: `0 0 10px 5px ${theme.colors.hover}`,
       zIndex: 1000,
       padding: "2em",
+      "@media(min-width: 600px)": {
+        height: "50vh",
+        width: "50vw",
+      },
     }),
     inputGroup: css({
       display: "flex",
@@ -37,6 +42,7 @@ export const getModalStyles = (theme: MyTheme) => {
       border: `${theme.colors.primary} 1px solid`,
       width: "35em",
     }),
+
     closeButton: css({
       position: "absolute",
       top: "2%",
@@ -63,6 +69,7 @@ export const getModalStyles = (theme: MyTheme) => {
       gap: "1em",
       width: "39em",
     }),
+
     customFile: css({
       padding: "10px",
       backgroundColor: theme.colors.transparent,
@@ -73,6 +80,12 @@ export const getModalStyles = (theme: MyTheme) => {
       width: "25em",
       padding: theme.sizes.xsmall,
       margin: theme.sizes.small,
+    }),
+
+    h2: css({
+      color: theme.colors.primary,
+      textAlign: "center",
+      marginBottom: "1em",
     }),
   };
 };

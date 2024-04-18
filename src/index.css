@@ -10,7 +10,6 @@ body {
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* background: linear-gradient(to bottom, black, #2d2c3c); */
   background-color: #2d2c3c;
   min-height: 100vh;
   display: flex;

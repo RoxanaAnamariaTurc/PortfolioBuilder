@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../hooks/useTheme";
 import { Project } from "../UserDashboard/UserDashboard";
-import axios from "axios";
 import TextArea from "../TextArea/TextArea";
 import Button from "../Button/Button";
+import { createProject, editProject } from "../../api";
 
 interface AddProjectsModalProps {
   closeModal: () => void;
@@ -53,7 +53,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   const handleSubmit = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    console.log("handleSubmit function called");
     e.preventDefault();
     const userId = localStorage.getItem("userId");
     if (!userId) {
@@ -71,12 +70,10 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     try {
       const isEdit = !!projectToEdit?._id;
       const response = await (isEdit
-        ? axios.put(
-            `http://localhost:3001/projects/${userId}/${projectToEdit._id}`,
-            formData
-          )
-        : axios.post("http://localhost:3001/projects", formData));
-      onProjectSubmission(response.data, isEdit);
+        ? editProject(userId, projectToEdit?._id, formData)
+        : createProject(formData));
+      console.log(response);
+      onProjectSubmission(response, isEdit);
       closeModal();
     } catch (error) {
       console.error("An error occurred while trying to add the project", error);
@@ -99,6 +96,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   };
   return (
     <div css={style.div}>
+      <h2 css={style.h2}>Project Details</h2>
       <div css={style.modal}>
         <span css={style.closeButton} onClick={closeModal}>
           &times;

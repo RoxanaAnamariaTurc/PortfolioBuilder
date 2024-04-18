@@ -4,13 +4,14 @@ import { getLoginStyle } from "./Login.styles";
 import { useTheme } from "../../hooks/useTheme";
 import { useNavigate } from "react-router-dom";
 import { UserContext, UserContextProps } from "../../UserContext";
-import axios from "axios";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Button from "../Button/Button";
+import { loginUser } from "../../api";
 
 const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext) as UserContextProps;
+  const [error, setError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,47 +26,63 @@ const Login = () => {
 
     if (email && passwordValue) {
       try {
-        const response = await axios.post("http://localhost:3001/login", {
-          email,
-          password: passwordValue,
-        });
-        if (response.status === 200) {
-          const user = response.data.user;
-
+        const data = await loginUser(email, passwordValue);
+        if (data.user) {
+          const user = data.user;
           setUser(user);
+          setError(false);
           localStorage.setItem("userId", user.id);
-
           navigate("/userdashboard");
         } else {
-          alert("Invalid email or password");
+          setError(true);
         }
       } catch (error) {
-        console.log(error);
-        alert("An error occurred while trying to login");
+        setError(true);
       }
     } else {
-      alert("Please enter a valid email and password");
+      setError(true);
     }
   };
   const theme = useTheme();
   const style = getLoginStyle(theme);
 
+  const inputStyle = error
+    ? { border: `1px solid ${theme.colors.danger}` }
+    : {};
+
   return (
     <div>
       <div css={style.container}>
         <h1 css={style.h1}>Login</h1>
+        {error && (
+          <div style={{ color: theme.colors.danger, textAlign: "center" }}>
+            Invalid email or password
+          </div>
+        )}
         <form css={style.form} onSubmit={handleSubmit}>
           <div css={style.inputGroup}>
             <label css={style.label} htmlFor="email">
               Email address
             </label>
-            <input css={style.input} type="email" id="email" required />
+            <input
+              css={style.input}
+              style={inputStyle}
+              type="email"
+              id="email"
+              required
+            />
           </div>
           <div css={style.inputGroup}>
             <label css={style.label} htmlFor="password">
               Password
             </label>
-            <input css={style.input} type="password" id="password" required />
+            <input
+              css={style.input}
+              style={inputStyle}
+              type="password"
+              id="password"
+              required
+            />
           </div>
           <Button
             color={"primary"}

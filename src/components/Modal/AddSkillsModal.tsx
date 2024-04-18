@@ -5,12 +5,11 @@ import { softSkills } from "../../skills/skills";
 import { techSkills } from "../../skills/skills";
 import { OptionType } from "../../skills/skills";
 import Select from "react-select";
-// import { skillsModalStyle } from "./AddSkillsModal.style";
 import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../hooks/useTheme";
 import { Skills } from "../UserDashboard/UserDashboard";
-import axios from "axios";
 import Button from "../Button/Button";
+import { addSkils } from "../../api";
 
 interface AddSkillsModalProps {
   closeModal: () => void;
@@ -60,9 +59,7 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        await axios.post(`http://localhost:3001/user/${userId}/skills`, {
-          skills,
-        });
+        await addSkils(userId, skills);
         onAddSkills(skills);
       } catch (error) {
         console.error("An error occurred while trying to add skills", error);
@@ -77,6 +74,7 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
         <span css={style.closeButton} onClick={closeModal}>
           &times;
         </span>
+        <h2 css={style.h2}>Skills</h2>
         <div css={style.inputGroup}>
           <label css={style.label} htmlFor="technicalSkills">
             Technical Skills

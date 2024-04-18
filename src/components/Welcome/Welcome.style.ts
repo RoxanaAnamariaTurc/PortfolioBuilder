@@ -20,7 +20,7 @@ export const getWelcomeStyle = (theme: MyTheme) => {
     }),
     link: css({
       backgroundColor: theme.colors.primary,
-      color: theme.colors.secondary,
+      color: theme.colors.background,
       border: `2px solid transparent`,
       borderRadius: theme.sizes.small,
       padding: theme.sizes.small,

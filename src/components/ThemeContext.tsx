@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useTheme } from "../hooks/useTheme";
 import { MyTheme } from "../theme";
 import {
@@ -22,20 +22,31 @@ export const ThemeStateProvider = ({
       ? getPortfolioStylesDark(theme)
       : getPortfolioStylesLight(theme);
   });
+  const [currentTheme, setCurrentTheme] = useState(
+    localStorage.getItem("theme") || "light"
+  );
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    setStyle(
+      savedTheme === "dark"
+        ? getPortfolioStylesDark(theme)
+        : getPortfolioStylesLight(theme)
+    );
+  }, [theme]);
 
   const toggleTheme = () => {
-    const currentTheme = localStorage.getItem("theme");
     if (currentTheme === "light") {
-      setStyle(getPortfolioStylesDark(theme));
+      setCurrentTheme("dark");
       localStorage.setItem("theme", "dark");
     } else {
-      setStyle(getPortfolioStylesLight(theme));
+      setCurrentTheme("light");
       localStorage.setItem("theme", "light");
     }
   };
 
   return (
-    <ThemeContext.Provider value={{ style, toggleTheme }}>
+    <ThemeContext.Provider value={{ style, toggleTheme, currentTheme }}>
       {children}
     </ThemeContext.Provider>
   );

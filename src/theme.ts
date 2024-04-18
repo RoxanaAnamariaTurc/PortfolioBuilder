@@ -28,12 +28,13 @@ export interface MyTheme {
       transparent?: string;
     };
   };
+  currentTheme: "light" | "dark";
 }
 
 export const theme: MyTheme = {
   colors: {
     primary: "#add8e6",
-    secondary: "#2C3531",
+    secondary: "#F0E2F0",
     danger: "darkorange",
     background: "linear-gradient(to bottom, black, #2d2c3c)",
     portfolioBackground: "#2d2c3c",
@@ -59,4 +60,5 @@ export const theme: MyTheme = {
       hover: "#2d2c3c",
     },
   },
+  currentTheme: (localStorage.getItem("theme") as "light" | "dark") || "light",
 };
