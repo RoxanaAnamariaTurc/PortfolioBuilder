@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Project } from "./components/UserDashboard/UserDashboard";
+import { Project } from "./frontend/components/UserDashboard/UserDashboard";
 
 const userId = localStorage.getItem("userId");
 

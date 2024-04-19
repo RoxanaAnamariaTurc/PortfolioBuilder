@@ -1,14 +1,14 @@
 import { ThemeProvider } from "@emotion/react";
-import Welcome from "./components/Welcome/Welcome";
-import Login from "./components/Login/Login";
-import Register from "./components/Register/Register";
+import Welcome from "./frontend/components/Welcome/Welcome";
+import Login from "./frontend/components/Login/Login";
+import Register from "./frontend/components/Register/Register";
 import { theme } from "./theme";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import UserDashboard from "./components/UserDashboard/UserDashboard";
+import UserDashboard from "./frontend/components/UserDashboard/UserDashboard";
 import { UserProvider } from "./UserContext";
 import "typeface-roboto";
-import Portfolio from "./components/Portfolio/Portfolio";
-import { ThemeStateProvider } from "./components/ThemeContext";
+import Portfolio from "./frontend/components/Portfolio/Portfolio";
+import { ThemeStateProvider } from "./frontend/components/ThemeContext";
 
 const App: React.FC = () => {
   return (
