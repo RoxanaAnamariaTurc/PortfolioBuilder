@@ -19,9 +19,15 @@ export const getModalStyles = (theme: MyTheme) => {
       boxShadow: `0 0 10px 5px ${theme.colors.hover}`,
       zIndex: 1000,
       padding: "2em",
-      "@media(min-width: 600px)": {
-        height: "50vh",
-        width: "50vw",
+      "@media(max-width: 1024px)": {
+        width: "80vw",
+        height: "auto",
+        overflowY: "auto",
+        padding: "1em",
+      },
+      "@media(max-width: 768px)": {
+        top: "3em",
+        width: "90vw",
       },
     }),
     inputGroup: css({
@@ -30,6 +36,10 @@ export const getModalStyles = (theme: MyTheme) => {
       justifyContent: "space-between",
       gap: "3rem",
       width: "100%",
+      "@media(max-width: 768px)": {
+        flexDirection: "column",
+        gap: "1rem",
+      },
     }),
     label: css({
       textAlign: "left",
@@ -41,6 +51,9 @@ export const getModalStyles = (theme: MyTheme) => {
       color: theme.colors.primary,
       border: `${theme.colors.primary} 1px solid`,
       width: "35em",
+      "@media(max-width: 768px)": {
+        width: "auto",
+      },
     }),
 
     closeButton: css({
@@ -68,6 +81,9 @@ export const getModalStyles = (theme: MyTheme) => {
       justifyContent: "flex-end",
       gap: "1em",
       width: "39em",
+      "@media(max-width: 768px)": {
+        width: "auto",
+      },
     }),
 
     customFile: css({
@@ -87,6 +103,9 @@ export const getModalStyles = (theme: MyTheme) => {
       textAlign: "center",
       marginBottom: "1em",
       fontSize: theme.sizes.medium,
+      "@media(max-width: 768px)": {
+        fontSize: theme.sizes.small,
+      },
     }),
   };
 };

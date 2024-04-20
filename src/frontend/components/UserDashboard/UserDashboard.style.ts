@@ -13,6 +13,9 @@ export const getUserdashboardStyles = (
       flexGrow: 1,
       filter: isModalOpen || inSkillsModalOpen ? "blur(15px)" : "none",
       transition: ".3s ease-out",
+      "@media(max-width: 768px)": {
+        padding: "10px",
+      },
     }),
     userProfile: css({
       display: "grid",
@@ -24,6 +27,11 @@ export const getUserdashboardStyles = (
       boxShadow:
         "inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c,inset 4px 0 8px -4px #3d3c4c,inset 0 4px 8px -4px #3d3c4c",
       margin: "2em",
+      "@media(max-width: 768px)": {
+        gridTemplateColumns: "1fr",
+        padding: "1rem",
+        margin: "1rem",
+      },
     }),
     h3: css({
       color: theme.colors.primary,
@@ -59,6 +67,10 @@ export const getUserdashboardStyles = (
       height: "150px",
       borderRadius: "35%",
       objectFit: "cover",
+      "@media(max-width: 768px)": {
+        width: "100px",
+        height: "100px",
+      },
     }),
     li: css({
       listStyle: "none",
@@ -84,6 +96,11 @@ export const getUserdashboardStyles = (
       alignItems: "baseline",
       gap: "1rem",
       fontSize: "1.4rem",
+      "@media(max-width: 768px)": {
+        fontSize: "1rem",
+        flexDirection: "column",
+        alignItems: "center",
+      },
     }),
     h2: css({
       color: theme.colors.primary,
@@ -97,6 +114,10 @@ export const getUserdashboardStyles = (
     userProjectsImg: css({
       width: "100px",
       height: "100px",
+      "@media(max-width: 768px)": {
+        width: "50px",
+        height: "50px",
+      },
     }),
     a: css({
       color: theme.colors.primary,
@@ -121,6 +142,10 @@ export const getUserdashboardStyles = (
         background: theme.colors.background,
         borderRadius: "10px",
       },
+      "@media(max-width: 768px)": {
+        padding: "1em",
+        maxHeight: "400px",
+      },
     }),
     table: css({
       width: "100%",
@@ -130,6 +155,9 @@ export const getUserdashboardStyles = (
       color: theme.colors.primary,
       fontFamily: theme.fonts.body,
       height: "100%",
+      "@media(max-width: 768px)": {
+        fontSize: "small",
+      },
     }),
 
     tableImg: css({
@@ -137,6 +165,10 @@ export const getUserdashboardStyles = (
       height: "7em",
       borderRadius: "5px",
       objectFit: "cover",
+      "@media(max-width: 768px)": {
+        width: "50px",
+        height: "50px",
+      },
     }),
     themeDiv: css({
       width: "2em",

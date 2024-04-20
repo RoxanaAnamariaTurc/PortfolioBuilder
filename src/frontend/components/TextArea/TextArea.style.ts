@@ -9,6 +9,9 @@ export const getTextAreaStyles = (theme: MyTheme) => {
       color: theme.colors.primary,
       border: `${theme.colors.primary} 1px solid`,
       width: "35em",
+      "@media (max-width: 768px)": {
+        width: "100%",
+      },
     }),
     div: css({
       color: theme.colors.primary,

@@ -17,6 +17,12 @@ export const getRegisterStyle = (theme: MyTheme) => {
       flexDirection: "column",
       boxShadow:
         "inset -4px 0 8px -4px #1d1c2c, inset 0 -4px 8px -4px #1d1c2c, inset 4px 0 8px -4px #3d3c4c, inset 0 4px 8px -4px #3d3c4c",
+      "@media(max-width: 768px)": {
+        width: "100vw",
+        height: "auto",
+        overflowY: "auto",
+        padding: "1rem",
+      },
     }),
     h1: css({
       color: theme.colors.primary,
@@ -24,16 +30,22 @@ export const getRegisterStyle = (theme: MyTheme) => {
       padding: "2rem",
       fontSize: theme.sizes.large,
       letterSpacing: "5px",
+      "@media(max-width: 768px)": {
+        fontSize: "2rem",
+        padding: "1rem",
+      },
     }),
     form: css({
       boxSizing: "border-box",
       display: "grid",
-      gridTemplateColumns: "1fr",
+      gridTemplateColumns: "1fr 1fr",
       alignItems: "start",
       height: "80vh",
       marginBottom: "7em",
-      "@media(min-width: 600px)": {
-        gridTemplateColumns: "1fr 1fr",
+      "@media(max-width: 768px)": {
+        gridTemplateColumns: "1fr",
+        height: "auto",
+        marginBottom: "2em",
       },
     }),
     inputGroup: css({
@@ -50,6 +62,9 @@ export const getRegisterStyle = (theme: MyTheme) => {
           content: "' *'",
           color: theme.colors.danger,
         },
+        "@media(max-width: 768px)": {
+          fontSize: "0.9rem",
+        },
       }),
       p: css({
         color: theme.colors.primary,
@@ -64,6 +79,10 @@ export const getRegisterStyle = (theme: MyTheme) => {
         backgroundColor: theme.colors.transparent,
         fontSize: theme.sizes.small,
         color: theme.colors.primary,
+        "@media(max-width: 768px)": {
+          padding: "0.8rem",
+          width: "100%",
+        },
       }),
     }),
 

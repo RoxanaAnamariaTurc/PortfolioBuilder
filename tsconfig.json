@@ -16,5 +16,9 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*", "emotion.d.ts"]
+  "include": [
+    "src/**/*",
+    "emotion.d.ts",
+    "src/frontend/components/Header/Header.stories.tsx"
+  ]
 }
