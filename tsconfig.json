@@ -14,11 +14,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": ["jest"]
   },
-  "include": [
-    "src/**/*",
-    "emotion.d.ts",
-    "src/frontend/components/Header/Header.stories.tsx"
-  ]
+  "include": ["src/**/*", "src/setupTests.ts"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "node_modules"]
 }

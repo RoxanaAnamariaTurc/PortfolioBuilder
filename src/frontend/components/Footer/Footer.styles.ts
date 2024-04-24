@@ -10,6 +10,10 @@ export const getFooterStyles = (theme: MyTheme) => {
       left: 0,
       bottom: 0,
       width: "100%",
+      "@media (max-width: 768px)": {
+        position: "relative",
+        fontSize: "0.8rem",
+      },
     }),
   };
 };
