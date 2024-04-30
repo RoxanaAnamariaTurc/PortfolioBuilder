@@ -68,8 +68,9 @@ const Register = () => {
       }
       try {
         const response = await registerUser(formData);
+        console.log(response);
 
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 200) {
           setUser(response.data);
           navigate("/login");
         } else if (response.status === 400) {
@@ -97,7 +98,11 @@ const Register = () => {
             {error}
           </p>
         )}
-        <form css={style.form} onSubmit={handleSubmit}>
+        <form
+          css={style.form}
+          onSubmit={handleSubmit}
+          data-testid="register-form"
+        >
           <div css={style.inputGroup}>
             <label className="required" htmlFor="fullName">
               Full Name

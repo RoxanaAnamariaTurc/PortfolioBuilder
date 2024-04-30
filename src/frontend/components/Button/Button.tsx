@@ -29,6 +29,7 @@ export interface ButtonProps {
   fontSize?: ButtonSize;
   textAlign?: "left" | "center" | "right";
   css?: any;
+  type?: "button" | "submit" | "reset";
 }
 
 const Button: React.FC<ButtonProps> = (props) => {

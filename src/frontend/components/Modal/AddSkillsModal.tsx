@@ -9,7 +9,7 @@ import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../../hooks/useTheme";
 import { Skills } from "../UserDashboard/UserDashboard";
 import Button from "../Button/Button";
-import { addSkils } from "../../../api";
+import { addSkills } from "../../../api";
 
 interface AddSkillsModalProps {
   closeModal: () => void;
@@ -59,7 +59,7 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        await addSkils(userId, skills);
+        await addSkills(userId, skills);
         onAddSkills(skills);
       } catch (error) {
         console.error("An error occurred while trying to add skills", error);
@@ -76,10 +76,11 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
         </span>
         <h2 css={style.h2}>Skills</h2>
         <div css={style.inputGroup}>
-          <label css={style.label} htmlFor="technicalSkills">
+          <label css={style.label} id="tech-skills">
             Technical Skills
           </label>
           <Select
+            aria-labelledby="tech-skills"
             css={style.skills}
             isMulti
             name="technicalSkills"
@@ -91,10 +92,11 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
           />
         </div>
         <div css={style.inputGroup}>
-          <label css={style.label} htmlFor="softSkills">
+          <label css={style.label} id="soft-skills">
             Soft Skills
           </label>
           <Select
+            aria-labelledby="soft-skills"
             css={style.skills}
             isMulti
             name="softSkills"

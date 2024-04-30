@@ -3,14 +3,14 @@ import { Project } from "./frontend/components/UserDashboard/UserDashboard";
 
 const userId = localStorage.getItem("userId");
 
-export const fetchProjects = async () => {
+export const fetchProjects = async (userId: string) => {
   const projectsResponse = await axios.get(
     `http://localhost:3001/projects/${userId}`
   );
   return projectsResponse.data;
 };
 
-export const fetchSkills = async () => {
+export const fetchSkills = async (userId: string) => {
   const skillsResponse = await axios.get(
     `http://localhost:3001/user/${userId}/skills`
   );
@@ -41,11 +41,12 @@ export const registerUser = async (formData: FormData) => {
       },
     }
   );
-  return response.data;
+  return response;
 };
 
 export const createProject = async (formData: FormData) => {
   const response = await axios.post("http://localhost:3001/projects", formData);
+  console.log(response.data);
   return response.data;
 };
 
@@ -54,17 +55,20 @@ export const editProject = async (
   projectId: string | undefined,
   formData: FormData
 ) => {
+  console.log(userId, projectId, formData);
   const response = await axios.put(
     `http://localhost:3001/projects/${userId}/${projectId}`,
     formData
   );
+  console.log(response.data);
+
   const updatedProject = response.data.find(
     (project: Project) => project._id === projectId
   );
   return updatedProject;
 };
 
-export const addSkils = async (
+export const addSkills = async (
   userId: string,
   skills: { techSkills: string[]; softSkills: string[] }
 ) => {

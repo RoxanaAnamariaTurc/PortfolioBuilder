@@ -8,6 +8,7 @@ interface TextAreaProps {
   value: string;
   onChange: (value: string) => void;
   name: string;
+  id?: string;
 }
 
 const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {

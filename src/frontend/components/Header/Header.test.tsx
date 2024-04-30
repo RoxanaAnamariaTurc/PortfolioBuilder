@@ -25,7 +25,6 @@ describe("Header", () => {
         </ThemeProvider>
       </MemoryRouter>
     );
-    screen.debug();
     expect(document.querySelector("button")?.textContent).toBe("Logout");
   });
 

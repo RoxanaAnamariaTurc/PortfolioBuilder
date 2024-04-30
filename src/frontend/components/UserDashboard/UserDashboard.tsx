@@ -61,11 +61,11 @@ const UserDashboard: React.FC = () => {
       if (userId) {
         try {
           // Fetch projects
-          const projectsData = await fetchProjects();
+          const projectsData = await fetchProjects(userId);
           setProjects(projectsData);
 
           // Fetch skills
-          const skillsData = await fetchSkills();
+          const skillsData = await fetchSkills(userId);
           setSkills(skillsData);
         } catch (error) {
           console.error(
@@ -133,7 +133,7 @@ const UserDashboard: React.FC = () => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        const updatedSkills = await fetchSkills();
+        const updatedSkills = await fetchSkills(userId);
         setSkills(updatedSkills);
       } catch (error) {
         console.error(

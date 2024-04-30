@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../../hooks/useTheme";
 import { Project } from "../UserDashboard/UserDashboard";
@@ -12,6 +12,14 @@ interface AddProjectsModalProps {
   projectToEdit?: Project;
   onProjectSubmission: (project: Project[], isEdit: boolean) => void;
 }
+
+const initialFormState = {
+  userId: localStorage.getItem("userId"),
+  name: "",
+  description: "",
+  link: "",
+  image: null,
+};
 
 const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   closeModal,
@@ -30,13 +38,14 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     link: string;
     image: File | null;
   };
-  const [formState, setFormState] = useState<FormState>({
-    userId: localStorage.getItem("userId"),
-    name: "",
-    description: "",
-    link: "",
-    image: null,
-  });
+  // const [formState, setFormState] = useState<FormState>({
+  //   userId: localStorage.getItem("userId"),
+  //   name: "",
+  //   description: "",
+  //   link: "",
+  //   image: null,
+  // });
+  const [formState, setFormState] = useState<FormState>(initialFormState);
 
   useEffect(() => {
     if (projectToEdit) {
@@ -49,6 +58,8 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
       });
     }
   }, [projectToEdit]);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -75,8 +86,24 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
       console.log(response);
       onProjectSubmission(response, isEdit);
       closeModal();
+
+      setFormState(initialFormState);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
-      console.error("An error occurred while trying to add the project", error);
+      if (error instanceof Error) {
+        console.error(
+          "An error occurred while trying to add the project",
+          error.message
+        );
+        console.error(error.stack);
+      } else {
+        console.error(
+          "An error occurred while trying to add the project",
+          error
+        );
+      }
     }
   };
 
@@ -126,6 +153,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                 value={formState.description}
                 name="projectDescription"
                 onChange={(value) => handleInputChange("description", value)}
+                id="projectDescription"
               />
             </div>
             <div css={style.inputGroup}>
@@ -148,6 +176,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                 Choose File
               </label>
               <input
+                ref={fileInputRef}
                 type="file"
                 id="projectImage"
                 name="projectImage"
@@ -172,6 +201,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                 Save
               </Button>
               <Button
+                type="button"
                 color="primary"
                 backgroundColor={"transparent"}
                 borderRadius={"xsmall"}
