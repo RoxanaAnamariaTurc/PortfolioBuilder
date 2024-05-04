@@ -55,11 +55,14 @@ const Login = () => {
       <div css={style.container}>
         <h1 css={style.h1}>Login</h1>
         {error && (
-          <div style={{ color: theme.colors.danger, textAlign: "center" }}>
+          <div
+            data-testid="error-message"
+            style={{ color: theme.colors.danger, textAlign: "center" }}
+          >
             Invalid email or password
           </div>
         )}
-        <form css={style.form} onSubmit={handleSubmit}>
+        <form role="form" css={style.form} onSubmit={handleSubmit}>
           <div css={style.inputGroup}>
             <label css={style.label} htmlFor="email">
               Email address

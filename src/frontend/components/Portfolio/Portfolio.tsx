@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -21,55 +22,75 @@ const Portfolio: React.FC = () => {
     techSkills: [],
     softSkills: [],
   });
+  const [loading, setLoading] = useState(true);
 
   const { userId } = useParams<{ userId: string }>();
   const { style } = useThemeContext();
 
   useEffect(() => {
+    console.log("userId:", userId);
     const fetchData = async () => {
       try {
         const [userResponse, projectsResponse, skillsResponse] =
           await Promise.all([
             axios.get(`http://localhost:3001/user/${userId}`),
             axios.get(`http://localhost:3001/projects/${userId}`),
+
             axios.get(`http://localhost:3001/user/${userId}/skills`),
           ]);
-        console.log("User:", userResponse.data);
+
+        console.log(userResponse.data.user);
         setUser(userResponse.data.user);
+        console.log(projectsResponse.data);
         setProjects(projectsResponse.data);
-        setSkills(skillsResponse.data);
+        console.log(skillsResponse.data);
+
+        setSkills({
+          techSkills: [...skillsResponse.data.techSkills],
+          softSkills: [...skillsResponse.data.softSkills],
+        });
+
+        console.log("Tech Skills:", skills.techSkills);
+        console.log("Soft Skills:", skills.softSkills);
       } catch (error) {
         console.log(error);
       }
+      setLoading(false);
     };
     fetchData();
   }, [userId]);
 
-  if (!user) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return <div data-testid="loading">Loading...</div>;
   }
 
   return (
     <div css={style.portfolio}>
-      <h1 css={style.h1}>
-        👋, I am {user.fullName}, <br /> The {user.jobTitle}, you are looking
-        for.
+      <h1 data-testid="username" css={style.h1}>
+        {user && (
+          <>
+            👋, I am {user.fullName}, <br /> The {user.jobTitle}, you are
+            looking for.
+          </>
+        )}
       </h1>
 
       <div css={style.skillsContainer}>
-        <div>
-          <h4>Email: {user.email}</h4>
-          <h4>Job title: {user.jobTitle}</h4>
-        </div>
+        {user && (
+          <div>
+            <h4>Email: {user.email}</h4>
+            <h4>Job title: {user.jobTitle}</h4>
+          </div>
+        )}
         <div css={style.skillDiv}>
           <h4>Technical Skills</h4>
-          {skills.techSkills.map((skill) => (
+          {skills?.techSkills?.map((skill) => (
             <span>{skill}</span>
           ))}
         </div>
         <div css={style.skillDiv}>
           <h4>Soft Skills</h4>
-          {skills.softSkills.map((skill) => (
+          {skills?.softSkills?.map((skill) => (
             <span>{skill}</span>
           ))}
         </div>

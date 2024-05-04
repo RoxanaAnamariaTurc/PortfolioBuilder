@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
-const express = require("express");
+import mongoose from "mongoose";
+import express from "express";
 const app = express();
-const multer = require("multer");
+import multer from "multer";
 const upload = multer({ dest: "uploads/" });
-const cors = require("cors");
-const bcrypt = require("bcrypt");
+import cors from "cors";
+import bcrypt from "bcrypt";
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use("/uploads", express.static("uploads"));
 

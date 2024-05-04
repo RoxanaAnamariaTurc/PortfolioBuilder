@@ -5,7 +5,7 @@ import { useTheme } from "../../../hooks/useTheme";
 import { useContext, useState } from "react";
 import { UserContext, UserContextProps } from "../../../UserContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import * as axios from "axios";
 import Button from "../Button/Button";
 import { registerUser } from "../../../api";
 
@@ -13,6 +13,10 @@ const Register = () => {
   const { setUser } = useContext(UserContext) as UserContextProps;
   const navigate = useNavigate();
   const [error, setError] = useState("");
+
+  const isAxiosError = (error: any): error is axios.AxiosError => {
+    return error.isAxiosError;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,8 +81,8 @@ const Register = () => {
           setError("User already registered!");
         }
       } catch (err) {
-        if (axios.isAxiosError(err) && err.response) {
-          setError(err.response.data.message);
+        if (isAxiosError(err) && err.response) {
+          setError((err.response.data as any).message);
         } else {
           setError("Server Error");
         }
@@ -94,7 +98,10 @@ const Register = () => {
       <div css={style.registerDiv}>
         <h1 css={style.h1}>Register</h1>
         {error && (
-          <p style={{ color: theme.colors.danger, textAlign: "center" }}>
+          <p
+            data-testid="error-message"
+            style={{ color: theme.colors.danger, textAlign: "center" }}
+          >
             {error}
           </p>
         )}
@@ -154,7 +161,7 @@ const Register = () => {
           </div>
           <div css={style.inputGroup}>
             <label className="required" htmlFor="passwordConfirmation">
-              Repeat Password
+              Confirm Password
             </label>
             <input
               style={{ borderColor: error ? theme.colors.danger : "initial" }}
