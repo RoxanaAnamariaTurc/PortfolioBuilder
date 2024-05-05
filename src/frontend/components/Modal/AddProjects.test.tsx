@@ -87,7 +87,7 @@ describe("Add Projects Modal", () => {
     expect(nameInput.value).toBe("Project Name");
   });
 
-  it("handles cancel  button click", () => {
+  it("handles cancel  button click", async () => {
     window.alert = jest.fn();
     const mockCloseModal = jest.fn();
     const { getByText } = render(
@@ -112,7 +112,9 @@ describe("Add Projects Modal", () => {
     }
     userEvent.click(clickableElement);
 
-    expect(mockCloseModal).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockCloseModal).toHaveBeenCalled();
+    });
   });
   it("updates formState on input change", () => {
     const { getByLabelText } = render(

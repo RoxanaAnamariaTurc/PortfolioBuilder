@@ -12,6 +12,7 @@ import Button from "../Button/Button";
 import { useNavigate } from "react-router-dom";
 import { useThemeContext } from "../ThemeContext";
 import { fetchProjects, fetchSkills, deleteProject } from "../../../api";
+import DeleteModal from "../Modal/DeleteModal";
 
 export interface Project {
   _id?: string;
@@ -39,6 +40,11 @@ const UserDashboard: React.FC = () => {
   const [showFullDescription, setShowFullDescription] = useState<{
     [key: string]: boolean;
   }>({});
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [projectIdToDelete, setProjectIdToDelete] = useState<string | null>(
+    null
+  );
   const theme = useTheme();
   const styles = getUserdashboardStyles(theme, isModalOpen, isModalSkillOpen);
 
@@ -78,6 +84,11 @@ const UserDashboard: React.FC = () => {
 
     fetchUserData();
   }, []);
+
+  const handleOpenDeleteModal = (projectId: string) => {
+    setProjectIdToDelete(projectId);
+    setIsDeleteModalOpen(true);
+  };
 
   const toggleDescription = (projectId: string) => {
     setShowFullDescription((prevState) => ({
@@ -144,20 +155,9 @@ const UserDashboard: React.FC = () => {
     }
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      console.log(`Deleting project with ID: ${projectId}`);
-      try {
-        await deleteProject(userId, projectId);
-        setProjects(projects.filter((project) => project._id !== projectId));
-      } catch (error) {
-        console.error(
-          "An error occurred while trying to delete the project",
-          error
-        );
-      }
-    }
+  const handleCloseDeleteModal = () => {
+    setProjectIdToDelete(null);
+    setIsDeleteModalOpen(false);
   };
 
   return (
@@ -345,7 +345,7 @@ const UserDashboard: React.FC = () => {
                           </Button>
                           <Button
                             onClick={() =>
-                              handleDeleteProject(project._id ?? "")
+                              handleOpenDeleteModal(project._id ?? "")
                             }
                             width={"large"}
                             height={"medium"}
@@ -381,6 +381,14 @@ const UserDashboard: React.FC = () => {
           onAddSkills={handleAddSkills}
           currentSoftSkills={softSkillsOption}
           currentTechSkills={techSkillsOption}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <DeleteModal
+          projectId={projectIdToDelete}
+          closeModal={handleCloseDeleteModal}
+          projects={projects}
+          setProjects={setProjects}
         />
       )}
     </div>

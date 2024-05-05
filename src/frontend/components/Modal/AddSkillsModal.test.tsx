@@ -8,6 +8,7 @@ import {
   act,
   waitFor,
   getByRole,
+  findByText,
 } from "@testing-library/react";
 import AddSkillsModal from "./AddSkillsModal";
 import { ThemeProvider } from "@emotion/react";
@@ -92,7 +93,14 @@ describe("AddSkillsModal", () => {
     const techSkillsSelect = getByRole("combobox", {
       name: "Technical Skills",
     });
+    userEvent.click(techSkillsSelect);
+
     userEvent.type(techSkillsSelect, "JavaScript{enter}");
+
+    await waitFor(() =>
+      expect((techSkillsSelect as HTMLInputElement).value).toBe("JavaScript")
+    );
+
     const saveButton = getByText("Save");
     userEvent.click(saveButton);
 
