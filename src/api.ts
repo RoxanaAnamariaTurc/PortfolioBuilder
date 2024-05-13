@@ -22,7 +22,7 @@ export const deleteProject = async (userId: string, projectId: string) => {
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const response = await axios.post(`{API_BASE_URL}/login`, {
+  const response = await axios.post(`${API_BASE_URL}/login`, {
     email,
     password,
   });
