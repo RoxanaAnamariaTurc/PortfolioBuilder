@@ -315,7 +315,7 @@ const UserDashboard: React.FC = () => {
                             padding={"xsmall"}
                             backgroundColor={"transparent"}
                             color={"primary"}
-                            fontSize="xsmall"
+                            fontSize="small"
                             onClick={(e) => {
                               e.preventDefault();
                               toggleDescription(project._id ?? "");
