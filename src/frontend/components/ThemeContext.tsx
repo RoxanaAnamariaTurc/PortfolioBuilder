@@ -1,12 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useTheme } from "../../hooks/useTheme";
-import { MyTheme } from "../../theme";
+import { MyTheme, theme } from "../../theme";
 import {
   getPortfolioStylesLight,
   getPortfolioStylesDark,
 } from "./Portfolio/Portfolio.styles";
 
-const ThemeContext = createContext<any>(null);
+const ThemeContext = createContext({
+  toggleTheme: () => {},
+  currentTheme: "light",
+  style: getPortfolioStylesLight(theme),
+});
 
 export const useThemeContext = () => useContext(ThemeContext);
 
