@@ -11,7 +11,7 @@ import Header from "../Header/Header";
 import Button from "../Button/Button";
 import { useNavigate } from "react-router-dom";
 import { useThemeContext } from "../ThemeContext";
-import { fetchProjects, fetchSkills, deleteProject } from "../../../api";
+import { fetchProjects, fetchSkills } from "../../../api";
 import DeleteModal from "../Modal/DeleteModal";
 
 export interface Project {

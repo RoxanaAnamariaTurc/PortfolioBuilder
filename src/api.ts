@@ -2,7 +2,6 @@ import axios from "axios";
 import { Project } from "./frontend/components/UserDashboard/UserDashboard";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
-const userId = localStorage.getItem("userId");
 
 export const fetchProjects = async (userId: string) => {
   const projectsResponse = await axios.get(
