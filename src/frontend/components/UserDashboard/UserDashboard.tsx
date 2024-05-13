@@ -306,18 +306,17 @@ const UserDashboard: React.FC = () => {
                           {showFullDescription[project._id ?? ""]
                             ? project.description
                             : `${project.description.slice(0, 50)}...`}
-                          <a
+                          <button
                             css={styles.link}
                             onClick={(e) => {
                               e.preventDefault();
                               toggleDescription(project._id ?? "");
                             }}
-                            href="#"
                           >
                             {showFullDescription[project._id ?? ""]
                               ? "Read Less"
                               : "Read More"}
-                          </a>
+                          </button>
                         </td>
                         <td>
                           <img

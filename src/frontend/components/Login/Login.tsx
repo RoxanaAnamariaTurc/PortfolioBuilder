@@ -62,7 +62,7 @@ const Login = () => {
             Invalid email or password
           </div>
         )}
-        <form role="form" css={style.form} onSubmit={handleSubmit}>
+        <form css={style.form} onSubmit={handleSubmit}>
           <div css={style.inputGroup}>
             <label css={style.label} htmlFor="email">
               Email address

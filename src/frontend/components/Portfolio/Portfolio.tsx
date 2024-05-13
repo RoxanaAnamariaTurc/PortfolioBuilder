@@ -28,7 +28,6 @@ const Portfolio: React.FC = () => {
   const { style } = useThemeContext();
 
   useEffect(() => {
-    console.log("userId:", userId);
     const fetchData = async () => {
       try {
         const [userResponse, projectsResponse, skillsResponse] =
@@ -39,11 +38,8 @@ const Portfolio: React.FC = () => {
             axios.get(`http://localhost:3001/user/${userId}/skills`),
           ]);
 
-        console.log(userResponse.data.user);
         setUser(userResponse.data.user);
-        console.log(projectsResponse.data);
         setProjects(projectsResponse.data);
-        console.log(skillsResponse.data);
 
         setSkills({
           techSkills: [...skillsResponse.data.techSkills],
@@ -58,7 +54,7 @@ const Portfolio: React.FC = () => {
       setLoading(false);
     };
     fetchData();
-  }, [userId]);
+  }, [userId, skills.softSkills, skills.techSkills]);
 
   if (loading) {
     return <div data-testid="loading">Loading...</div>;
@@ -84,15 +80,11 @@ const Portfolio: React.FC = () => {
         )}
         <div css={style.skillDiv}>
           <h4>Technical Skills</h4>
-          {skills?.techSkills?.map((skill) => (
-            <span>{skill}</span>
-          ))}
+          {skills?.techSkills?.map((skill) => <span>{skill}</span>)}
         </div>
         <div css={style.skillDiv}>
           <h4>Soft Skills</h4>
-          {skills?.softSkills?.map((skill) => (
-            <span>{skill}</span>
-          ))}
+          {skills?.softSkills?.map((skill) => <span>{skill}</span>)}
         </div>
       </div>
       <h2 css={style.h1}>Projects</h2>
