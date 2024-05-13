@@ -7,8 +7,7 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 app.use(
   cors({
-    origin:
-      "https://66425745c5b4d40327bb1756--nimble-fairy-0b2928.netlify.app/",
+    origin: "https://66425745c5b4d40327bb1756--nimble-fairy-0b2928.netlify.app",
   })
 );
 app.use("/uploads", express.static("uploads"));
