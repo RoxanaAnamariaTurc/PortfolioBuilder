@@ -61,6 +61,8 @@ const UserDashboard: React.FC = () => {
   }));
   const navigate = useNavigate();
 
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const fetchUserData = async () => {
       const userId = localStorage.getItem("userId");
@@ -172,7 +174,7 @@ const UserDashboard: React.FC = () => {
                 css={styles.img}
                 src={
                   user?.profileImage
-                    ? `http://localhost:3001/${user.profileImage}`
+                    ? `${API_BASE_URL}/${user.profileImage}`
                     : avatar
                 }
                 alt="user avatar"
@@ -321,7 +323,7 @@ const UserDashboard: React.FC = () => {
                         <td>
                           <img
                             css={styles.tableImg}
-                            src={`http://localhost:3001/${project.image}`}
+                            src={`${API_BASE_URL}/${project.image}`}
                             alt={project.name}
                           />
                         </td>
