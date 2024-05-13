@@ -46,7 +46,7 @@ export const theme: MyTheme = {
     heading: "Georgia, sans serif",
   },
   sizes: {
-    xsmall: "0.25rem",
+    xsmall: "0.5rem",
     small: "1rem",
     medium: "2rem",
     large: "5rem",
