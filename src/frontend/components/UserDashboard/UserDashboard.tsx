@@ -309,12 +309,13 @@ const UserDashboard: React.FC = () => {
                             ? project.description
                             : `${project.description.slice(0, 50)}...`}
                           <Button
-                            width={"medium"}
-                            height={"medium"}
+                            width={"large"}
+                            height={"small"}
                             borderRadius={"xsmall"}
                             padding={"xsmall"}
                             backgroundColor={"transparent"}
                             color={"primary"}
+                            fontSize="xsmall"
                             onClick={(e) => {
                               e.preventDefault();
                               toggleDescription(project._id ?? "");
