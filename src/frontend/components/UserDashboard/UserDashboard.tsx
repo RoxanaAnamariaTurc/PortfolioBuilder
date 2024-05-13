@@ -308,8 +308,13 @@ const UserDashboard: React.FC = () => {
                           {showFullDescription[project._id ?? ""]
                             ? project.description
                             : `${project.description.slice(0, 50)}...`}
-                          <button
-                            css={styles.link}
+                          <Button
+                            width={"medium"}
+                            height={"medium"}
+                            borderRadius={"xsmall"}
+                            padding={"xsmall"}
+                            backgroundColor={"transparent"}
+                            color={"primary"}
                             onClick={(e) => {
                               e.preventDefault();
                               toggleDescription(project._id ?? "");
@@ -318,7 +323,7 @@ const UserDashboard: React.FC = () => {
                             {showFullDescription[project._id ?? ""]
                               ? "Read Less"
                               : "Read More"}
-                          </button>
+                          </Button>
                         </td>
                         <td>
                           <img
