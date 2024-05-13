@@ -43,9 +43,11 @@ export const ThemeStateProvider = ({
     if (currentTheme === "light") {
       setCurrentTheme("dark");
       localStorage.setItem("theme", "dark");
+      setStyle(getPortfolioStylesDark(theme));
     } else {
       setCurrentTheme("light");
       localStorage.setItem("theme", "light");
+      setStyle(getPortfolioStylesLight(theme));
     }
   };
 

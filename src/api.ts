@@ -1,30 +1,29 @@
 import axios from "axios";
 import { Project } from "./frontend/components/UserDashboard/UserDashboard";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 const userId = localStorage.getItem("userId");
 
 export const fetchProjects = async (userId: string) => {
   const projectsResponse = await axios.get(
-    `http://localhost:3001/projects/${userId}`
+    `${API_BASE_URL}/projects/${userId}`
   );
   return projectsResponse.data;
 };
 
 export const fetchSkills = async (userId: string) => {
   const skillsResponse = await axios.get(
-    `http://localhost:3001/user/${userId}/skills`
+    `${API_BASE_URL}/user/${userId}/skills`
   );
   return skillsResponse.data;
 };
 
 export const deleteProject = async (userId: string, projectId: string) => {
-  await axios.delete(
-    `http://localhost:3001/users/${userId}/projects/${projectId}`
-  );
+  await axios.delete(`${API_BASE_URL}/users/${userId}/projects/${projectId}`);
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const response = await axios.post("http://localhost:3001/login", {
+  const response = await axios.post(`{API_BASE_URL}/login`, {
     email,
     password,
   });
@@ -32,20 +31,16 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const registerUser = async (formData: FormData) => {
-  const response = await axios.post(
-    "http://localhost:3001/register",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const response = await axios.post(`${API_BASE_URL}/register`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response;
 };
 
 export const createProject = async (formData: FormData) => {
-  const response = await axios.post("http://localhost:3001/projects", formData);
+  const response = await axios.post(`${API_BASE_URL}/projects`, formData);
   console.log(response.data);
   return response.data;
 };
@@ -57,7 +52,7 @@ export const editProject = async (
 ) => {
   console.log(userId, projectId, formData);
   const response = await axios.put(
-    `http://localhost:3001/projects/${userId}/${projectId}`,
+    `${API_BASE_URL}/projects/${userId}/${projectId}`,
     formData
   );
   console.log(response.data);
@@ -72,5 +67,5 @@ export const addSkills = async (
   userId: string,
   skills: { techSkills: string[]; softSkills: string[] }
 ) => {
-  await axios.post(`http://localhost:3001/user/${userId}/skills`, { skills });
+  await axios.post(`${API_BASE_URL}/user/${userId}/skills`, { skills });
 };

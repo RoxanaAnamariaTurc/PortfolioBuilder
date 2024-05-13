@@ -14,19 +14,25 @@ interface TextAreaProps {
 const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
   const [text, setText] = useState(value);
   const [remaining, setRemaining] = useState(limit);
+  const [isWordTooLong, setIsWordTooLong] = useState(false);
   const style = getTextAreaStyles(theme);
 
   useEffect(() => {
     setText(value);
-    setRemaining(limit - value.split(/\s+/).length);
+    const wordCount = value.trim() === "" ? 0 : value.split(/\s+/).length;
+    setRemaining(limit - wordCount);
   }, [value, limit]);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputText = event.target.value;
-    const wordCount = inputText.trim().split(/\s+/).length;
+    const words = inputText.trim().split(/\s+/);
+    const wordCount = words.length;
     const remainingWords = limit - wordCount;
 
-    if (remainingWords >= 0) {
+    const wordTooLong = words.some((word) => word.length > limit);
+    setIsWordTooLong(wordTooLong);
+
+    if (remainingWords >= 0 && !wordTooLong) {
       setText(inputText);
       setRemaining(remainingWords);
       onChange(inputText);
@@ -48,6 +54,7 @@ const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
         {remaining <= 0 && (
           <span css={style.span}>You have exceeded the limit!</span>
         )}
+        {isWordTooLong && <span css={style.span}>Word too long!</span>}
       </div>
     </div>
   );

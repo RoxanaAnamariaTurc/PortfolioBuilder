@@ -7,7 +7,8 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 app.use(cors({ origin: "http://localhost:3000" }));
 app.use("/uploads", express.static("uploads"));
-
+import dotenv from "dotenv";
+dotenv.config();
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -247,13 +248,16 @@ app.delete("/users/:userId/projects/:projectId", async (req, res) => {
   }
 });
 
-const dbURI =
-  "mongodb+srv://roxanaturc25:FdpFiOq9fL2eciTz@portfoliobuilder.rfciaq1.mongodb.net/Users?retryWrites=true&w=majority";
+// const dbURI =
+//   "mongodb+srv://roxanaturc25:FdpFiOq9fL2eciTz@portfoliobuilder.rfciaq1.mongodb.net/Users?retryWrites=true&w=majority";
 
+const dbURI = process.env.MONGODB_URI;
 mongoose
   .connect(dbURI)
   .then((result) => {
     console.log("Connected to the db");
-    app.listen(3001, () => console.log("Server is running on port 3001"));
+    app.listen(process.env.PORT || 3001, () =>
+      console.log("Server is running on port " + (process.env.PORT || 3001))
+    );
   })
   .catch((err) => console.log(err));
