@@ -56,7 +56,7 @@ const Portfolio: React.FC = () => {
       setLoading(false);
     };
     fetchData();
-  }, [userId, skills.softSkills, skills.techSkills]);
+  }, [userId, skills.softSkills, skills.techSkills, API_BASE_URL]);
 
   if (loading) {
     return <div data-testid="loading">Loading...</div>;
