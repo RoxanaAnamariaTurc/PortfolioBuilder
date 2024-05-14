@@ -12,7 +12,7 @@ app.use(express.json());
 
 const allowedOrigins =
   process.env.NODE_ENV === "production"
-    ? ["https://nimble-fairy-0b2928.netlify.app/"]
+    ? ["https://nimble-fairy-0b2928.netlify.app"]
     : ["http://localhost:3002"];
 
 app.use(
