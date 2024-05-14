@@ -245,6 +245,7 @@ const UserDashboard: React.FC = () => {
               padding={"xsmall"}
               backgroundColor={"transparent"}
               color={"primary"}
+              fontSize="small"
             >
               + Add new project
             </Button>
@@ -310,9 +311,9 @@ const UserDashboard: React.FC = () => {
                             : `${project.description.slice(0, 50)}...`}
                           <Button
                             width={"large"}
-                            height={"small"}
+                            height={"xsmall"}
                             borderRadius={"xsmall"}
-                            padding={"xsmall"}
+                            padding={"small"}
                             backgroundColor={"transparent"}
                             color={"primary"}
                             fontSize="xsmall"

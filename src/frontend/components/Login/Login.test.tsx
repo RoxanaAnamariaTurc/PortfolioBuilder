@@ -38,9 +38,7 @@ describe("Login", () => {
         </ThemeProvider>
       </MemoryRouter>
     );
-    const formElement = await waitFor(() => {
-      return screen.findByRole("form");
-    });
+    const formElement = await waitFor(() => screen.getByTestId("login-form"));
     expect(formElement).toBeInTheDocument();
   });
   it("correctly submits the form with correct arguments", async () => {

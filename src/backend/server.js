@@ -5,11 +5,22 @@ import multer from "multer";
 const upload = multer({ dest: "uploads/" });
 import cors from "cors";
 import bcrypt from "bcrypt";
-app.use(cors());
 app.use("/uploads", express.static("uploads"));
 import dotenv from "dotenv";
 dotenv.config();
 app.use(express.json());
+
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://nimble-fairy-0b2928.netlify.app/"]
+    : ["http://localhost:3002"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 app.use((req, res, next) => {
   next();

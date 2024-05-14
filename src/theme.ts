@@ -47,7 +47,7 @@ export const theme: MyTheme = {
   },
   sizes: {
     xsmall: "0.5rem",
-    small: "1rem",
+    small: "0.75rem",
     medium: "2rem",
     large: "5rem",
     xlarge: "10rem",

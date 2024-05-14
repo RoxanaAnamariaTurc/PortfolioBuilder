@@ -27,15 +27,17 @@ const Portfolio: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const { style } = useThemeContext();
 
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [userResponse, projectsResponse, skillsResponse] =
           await Promise.all([
-            axios.get(`http://localhost:3001/user/${userId}`),
-            axios.get(`http://localhost:3001/projects/${userId}`),
+            axios.get(`${API_BASE_URL}/user/${userId}`),
+            axios.get(`${API_BASE_URL}/projects/${userId}`),
 
-            axios.get(`http://localhost:3001/user/${userId}/skills`),
+            axios.get(`${API_BASE_URL}/user/${userId}/skills`),
           ]);
 
         setUser(userResponse.data.user);
@@ -95,7 +97,7 @@ const Portfolio: React.FC = () => {
           <div css={style.container}>
             <img
               css={style.img}
-              src={`http://localhost:3001/${project.image}`}
+              src={`${API_BASE_URL}/${project.image}`}
               alt={project.name}
             />
             <div css={style.description}>
