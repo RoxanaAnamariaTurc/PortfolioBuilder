@@ -24,12 +24,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
+
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     console.log("userID in UserProvider", userId);
     if (userId) {
       axios
-        .get(`http://localhost:3001/user/${userId}`)
+        .get(`${API_BASE_URL}/user/${userId}`)
         .then((response) => {
           setUser(response.data.user);
         })
