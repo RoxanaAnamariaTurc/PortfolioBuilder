@@ -297,9 +297,6 @@ app.delete("/users/:userId/projects/:projectId", async (req, res) => {
   }
 });
 
-// const dbURI =
-//   "mongodb+srv://roxanaturc25:FdpFiOq9fL2eciTz@portfoliobuilder.rfciaq1.mongodb.net/Users?retryWrites=true&w=majority";
-
 const dbURI = process.env.MONGODB_URI;
 mongoose
   .connect(dbURI)

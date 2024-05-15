@@ -66,15 +66,15 @@ const UserDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userId = localStorage.getItem("userId");
-      if (userId) {
+      const token = localStorage.getItem("portfolioToken");
+      if (token) {
         try {
           // Fetch projects
-          const projectsData = await fetchProjects(userId);
+          const projectsData = await fetchProjects(token);
           setProjects(projectsData);
 
           // Fetch skills
-          const skillsData = await fetchSkills(userId);
+          const skillsData = await fetchSkills(token);
           setSkills(skillsData);
         } catch (error) {
           console.error(
@@ -171,6 +171,7 @@ const UserDashboard: React.FC = () => {
         { userId }
       );
       const token = response.data.token;
+      localStorage.setItem("portfolioToken", token);
       navigate(`/portfolio/${token}`);
     } catch (error) {
       console.error("Error generating portfolio", error);
