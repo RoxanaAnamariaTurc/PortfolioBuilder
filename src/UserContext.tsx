@@ -27,10 +27,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
   const fetchUser = useCallback(async () => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
+    const token = localStorage.getItem("portfolioToken");
+    if (token) {
       try {
-        const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
+        const response = await axios.get(`${API_BASE_URL}/user/${token}`);
         setUser(response.data.user);
       } catch (error) {
         console.log(error);
