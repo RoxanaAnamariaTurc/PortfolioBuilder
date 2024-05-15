@@ -40,7 +40,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [API_BASE_URL]);
   if (loading) {
     return <div>Loading...</div>;
   }
