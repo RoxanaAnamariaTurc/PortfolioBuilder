@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 export interface User {
   fullName: string;
@@ -26,21 +26,26 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
+  const fetchUser = useCallback(async () => {
     const userId = localStorage.getItem("userId");
     console.log("userID in UserProvider", userId);
     if (userId) {
-      axios
-        .get(`${API_BASE_URL}/user/${userId}`)
-        .then((response) => {
-          setUser(response.data.user);
-        })
-        .catch((error) => console.log(error))
-        .finally(() => setLoading(false));
+      try {
+        const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
+        setUser(response.data.user);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }
   }, [API_BASE_URL]);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
   if (loading) {
     return <div>Loading...</div>;
   }

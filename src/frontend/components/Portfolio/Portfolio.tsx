@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React from "react";
+import React, { useCallback } from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -29,34 +29,35 @@ const Portfolio: React.FC = () => {
 
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [userResponse, projectsResponse, skillsResponse] =
-          await Promise.all([
-            axios.get(`${API_BASE_URL}/user/${userId}`),
-            axios.get(`${API_BASE_URL}/projects/${userId}`),
+  const fetchData = useCallback(async () => {
+    try {
+      const [userResponse, projectsResponse, skillsResponse] =
+        await Promise.all([
+          axios.get(`${API_BASE_URL}/user/${userId}`),
+          axios.get(`${API_BASE_URL}/projects/${userId}`),
+          axios.get(`${API_BASE_URL}/user/${userId}/skills`),
+        ]);
 
-            axios.get(`${API_BASE_URL}/user/${userId}/skills`),
-          ]);
+      setUser(userResponse.data.user);
+      setProjects(projectsResponse.data);
 
-        setUser(userResponse.data.user);
-        setProjects(projectsResponse.data);
+      setSkills({
+        techSkills: [...skillsResponse.data.techSkills],
+        softSkills: [...skillsResponse.data.softSkills],
+      });
 
-        setSkills({
-          techSkills: [...skillsResponse.data.techSkills],
-          softSkills: [...skillsResponse.data.softSkills],
-        });
-
-        console.log("Tech Skills:", skills.techSkills);
-        console.log("Soft Skills:", skills.softSkills);
-      } catch (error) {
-        console.log(error);
-      }
+      console.log("Tech Skills:", skills.techSkills);
+      console.log("Soft Skills:", skills.softSkills);
+    } catch (error) {
+      console.log(error);
+    } finally {
       setLoading(false);
-    };
+    }
+  }, [API_BASE_URL, userId]);
+
+  useEffect(() => {
     fetchData();
-  }, [userId, skills.softSkills, skills.techSkills, API_BASE_URL]);
+  }, [fetchData]);
 
   if (loading) {
     return <div data-testid="loading">Loading...</div>;
