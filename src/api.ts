@@ -64,8 +64,8 @@ export const editProject = async (
 };
 
 export const addSkills = async (
-  userId: string,
+  portfolioToken: string,
   skills: { techSkills: string[]; softSkills: string[] }
 ) => {
-  await axios.post(`${API_BASE_URL}/user/${userId}/skills`, { skills });
+  await axios.post(`${API_BASE_URL}/user/${portfolioToken}/skills`, { skills });
 };

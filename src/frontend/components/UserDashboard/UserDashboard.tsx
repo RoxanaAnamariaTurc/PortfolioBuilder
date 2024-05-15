@@ -144,10 +144,10 @@ const UserDashboard: React.FC = () => {
       ),
     }));
 
-    const userId = localStorage.getItem("userId");
-    if (userId) {
+    const portfolioToken = localStorage.getItem("portfolioToken");
+    if (portfolioToken) {
       try {
-        const updatedSkills = await fetchSkills(userId);
+        const updatedSkills = await fetchSkills(portfolioToken);
         setSkills(updatedSkills);
       } catch (error) {
         console.error(
