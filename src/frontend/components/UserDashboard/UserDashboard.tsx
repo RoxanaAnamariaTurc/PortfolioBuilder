@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useThemeContext } from "../ThemeContext";
 import { fetchProjects, fetchSkills } from "../../../api";
 import DeleteModal from "../Modal/DeleteModal";
+import axios from "axios";
 
 export interface Project {
   _id?: string;
@@ -162,6 +163,20 @@ const UserDashboard: React.FC = () => {
     setIsDeleteModalOpen(false);
   };
 
+  const generatePortfolio = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await axios.post(
+        `${API_BASE_URL}/generate-portfolio-token`,
+        { userId }
+      );
+      const token = response.data.token;
+      navigate(`/portfolio/${token}`);
+    } catch (error) {
+      console.error("Error generating portfolio", error);
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -271,10 +286,7 @@ const UserDashboard: React.FC = () => {
                 }}
               ></div>
               <Button
-                onClick={() => {
-                  const userId = localStorage.getItem("userId");
-                  userId && navigate(`/portfolio/${userId}`);
-                }}
+                onClick={generatePortfolio}
                 width={"xlarge"}
                 height={"medium"}
                 borderRadius={"xsmall"}

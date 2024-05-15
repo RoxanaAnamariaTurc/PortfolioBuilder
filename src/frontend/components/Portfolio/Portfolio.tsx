@@ -24,33 +24,25 @@ const Portfolio: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  const { userId } = useParams<{ userId: string }>();
+  const { token } = useParams<{ token: string }>();
   const { style } = useThemeContext();
 
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
   const fetchData = useCallback(async () => {
     try {
-      const [userResponse, projectsResponse, skillsResponse] =
-        await Promise.all([
-          axios.get(`${API_BASE_URL}/user/${userId}`),
-          axios.get(`${API_BASE_URL}/projects/${userId}`),
-          axios.get(`${API_BASE_URL}/user/${userId}/skills`),
-        ]);
+      const response = await axios.get(`${API_BASE_URL}/portfolio/${token}`);
+      const { user, projects, skills } = response.data;
 
-      setUser(userResponse.data.user);
-      setProjects(projectsResponse.data);
-
-      setSkills({
-        techSkills: [...skillsResponse.data.techSkills],
-        softSkills: [...skillsResponse.data.softSkills],
-      });
+      setUser(user);
+      setProjects(projects);
+      setSkills(skills);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
-  }, [API_BASE_URL, userId]);
+  }, [API_BASE_URL, token]);
 
   useEffect(() => {
     fetchData();

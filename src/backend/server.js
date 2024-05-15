@@ -26,6 +26,8 @@ app.use((req, res, next) => {
   next();
 });
 
+const { v4: uuidv4 } = require("uuid");
+
 const UserSchema = new mongoose.Schema({
   fullName: String,
   email: String,
@@ -44,9 +46,52 @@ const UserSchema = new mongoose.Schema({
     softSkills: [String],
     techSkills: [String],
   },
+  portfolioToken: { type: String, unique: true },
 });
 
 const User = mongoose.model("User", UserSchema);
+
+// Route to generate a portfolio token
+app.post("/generate-portfolio-token", async (req, res) => {
+  const { userId } = req.body;
+  const token = uuidv4();
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    user.portfolioToken = token;
+    await user.save();
+    res.status(200).send({ token });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// Route to fetch portfolio data using the token
+app.get("/portfolio/:token", async (req, res) => {
+  const token = req.params.token;
+
+  try {
+    const user = await User.findOne({ portfolioToken: token });
+    if (!user) {
+      return res.status(404).send({ message: "Portfolio not found" });
+    }
+    res.status(200).send({
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        jobTitle: user.jobTitle,
+        profileImage: user.profileImage,
+        projects: user.projects,
+        skills: user.skills,
+      },
+    });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
 
 app.post("/register", upload.single("profileImage"), (req, res) => {
   User.findOne({ email: req.body.email }).then((existingUser) => {
