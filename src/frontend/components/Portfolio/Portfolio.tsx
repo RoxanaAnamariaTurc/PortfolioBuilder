@@ -45,9 +45,6 @@ const Portfolio: React.FC = () => {
         techSkills: [...skillsResponse.data.techSkills],
         softSkills: [...skillsResponse.data.softSkills],
       });
-
-      console.log("Tech Skills:", skills.techSkills);
-      console.log("Soft Skills:", skills.softSkills);
     } catch (error) {
       console.log(error);
     } finally {

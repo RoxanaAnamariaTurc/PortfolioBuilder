@@ -28,7 +28,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchUser = useCallback(async () => {
     const userId = localStorage.getItem("userId");
-    console.log("userID in UserProvider", userId);
     if (userId) {
       try {
         const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
