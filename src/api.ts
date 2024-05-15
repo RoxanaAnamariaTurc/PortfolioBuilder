@@ -23,11 +23,22 @@ export const deleteProject = async (userId: string, projectId: string) => {
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const response = await axios.post(`${API_BASE_URL}/login`, {
-    email,
-    password,
-  });
-  return response.data;
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/login`,
+      { email, password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // This is important for sending cookies
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error during login:", error);
+    throw error; // Rethrow the error so the caller can handle it
+  }
 };
 
 export const registerUser = async (formData: FormData) => {
