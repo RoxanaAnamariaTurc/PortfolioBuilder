@@ -4,16 +4,16 @@ import { Project } from "./frontend/components/UserDashboard/UserDashboard";
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 console.log("API Base URL:", API_BASE_URL);
 
-export const fetchProjects = async (userId: string) => {
+export const fetchProjects = async (portfolioToken: string) => {
   const projectsResponse = await axios.get(
-    `${API_BASE_URL}/projects/${userId}`
+    `${API_BASE_URL}/projects/${portfolioToken}`
   );
   return projectsResponse.data;
 };
 
-export const fetchSkills = async (userId: string) => {
+export const fetchSkills = async (portfolioToken: string) => {
   const skillsResponse = await axios.get(
-    `${API_BASE_URL}/user/${userId}/skills`
+    `${API_BASE_URL}/user/${portfolioToken}/skills`
   );
   return skillsResponse.data;
 };

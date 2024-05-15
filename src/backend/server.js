@@ -152,37 +152,37 @@ app.post("/login", (req, res) => {
     });
 });
 
-app.get("/user/:id", (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: "User not found" });
-      }
-      res.status(200).send({
-        user: {
-          fullName: user.fullName,
-          email: user.email,
-          jobTitle: user.jobTitle,
-          profileImage: user.profileImage,
-        },
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
+app.get("/user/:token", async (req, res) => {
+  const { token } = req.params;
+  try {
+    const user = await User.findOne({ portfolioToken: token });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).send({
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        jobTitle: user.jobTitle,
+        profileImage: user.profileImage,
+      },
     });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 });
 
-app.get("/user/:id/skills", (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: "User not found" });
-      }
-      res.status(200).send(user.skills);
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
-    });
+app.get("/user/:token/skills", async (req, res) => {
+  const { token } = req.params;
+  try {
+    const user = await User.findOne({ portfolioToken: token });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).send(user.skills);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 });
 
 app.post("/projects", upload.single("image"), (req, res) => {
@@ -215,41 +215,34 @@ app.post("/projects", upload.single("image"), (req, res) => {
       });
   });
 });
-app.post("/user/:id/skills", (req, res) => {
+app.post("/user/:token/skills", async (req, res) => {
   const { skills } = req.body;
-  const userId = req.params.id;
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User not found" });
-      }
-      user.skills.softSkills = skills.softSkills;
-      user.skills.techSkills = skills.techSkills;
-      user
-        .save()
-        .then((result) => {
-          res.status(201).send(result.skills);
-        })
-        .catch((err) => {
-          res.status(500).send({ message: err.message });
-        });
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
-    });
+  const { token } = req.params;
+  try {
+    const user = await User.findOne({ portfolioToken: token });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    user.skills.softSkills = skills.softSkills;
+    user.skills.techSkills = skills.techSkills;
+    await user.save();
+    res.status(201).send(user.skills);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 });
 
-app.get("/projects/:userId", (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: "User not found" });
-      }
-      res.status(200).send(user.projects);
-    })
-    .catch((err) => {
-      res.status(500).send({ message: err.message });
-    });
+app.get("/projects/:token", async (req, res) => {
+  const { token } = req.params;
+  try {
+    const user = await User.findOne({ portfolioToken: token });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.status(200).send(user.projects);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 });
 
 app.put("/projects/:userId/:projectId", upload.single("image"), (req, res) => {
