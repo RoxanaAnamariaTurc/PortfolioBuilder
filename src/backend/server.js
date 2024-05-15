@@ -7,6 +7,7 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 app.use("/uploads", express.static("uploads"));
 import dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
 dotenv.config();
 app.use(express.json());
 
@@ -32,8 +33,6 @@ app.use((req, res, next) => {
   );
   next();
 });
-
-const { v4: uuidv4 } = require("uuid");
 
 const UserSchema = new mongoose.Schema({
   fullName: String,

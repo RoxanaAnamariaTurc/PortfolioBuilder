@@ -32,11 +32,12 @@ const Portfolio: React.FC = () => {
   const fetchData = useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/portfolio/${token}`);
-      const { user, projects, skills } = response.data;
+
+      const { user } = response.data;
 
       setUser(user);
-      setProjects(projects);
-      setSkills(skills);
+      setProjects(user.projects);
+      setSkills(user.skills);
     } catch (error) {
       console.log(error);
     } finally {
@@ -72,11 +73,15 @@ const Portfolio: React.FC = () => {
         )}
         <div css={style.skillDiv}>
           <h4>Technical Skills</h4>
-          {skills?.techSkills?.map((skill) => <span>{skill}</span>)}
+          {skills?.techSkills?.map((skill, index) => (
+            <span key={index}>{skill}</span>
+          ))}
         </div>
         <div css={style.skillDiv}>
           <h4>Soft Skills</h4>
-          {skills?.softSkills?.map((skill) => <span>{skill}</span>)}
+          {skills?.softSkills?.map((skill, index) => (
+            <span key={index}>{skill}</span>
+          ))}
         </div>
       </div>
       <h2 css={style.h1}>Projects</h2>

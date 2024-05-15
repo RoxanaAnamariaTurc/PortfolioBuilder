@@ -22,7 +22,7 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/userdashboard" element={<UserDashboard />} />
-                <Route path="/portfolio/:userId" element={<Portfolio />} />
+                <Route path="/portfolio/:token" element={<Portfolio />} />
               </Routes>
             </Router>
           </ThemeStateProvider>
