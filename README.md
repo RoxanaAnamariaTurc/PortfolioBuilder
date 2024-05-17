@@ -40,7 +40,7 @@ To ensure the project runs smoothly and no errors are encounter follow the next 
 - Make sure all the dependencies are up to date
   `npm update`
 - To run the server use `npm run start:server`
-- To run the frontend use `npm start`
+- To run the frontend use `npm run start:client`
 - The project will open on your localhost:3000 and the server will open on localhost:3001
 
 ### Testing

@@ -6,13 +6,14 @@ import { useParams } from "react-router-dom";
 import { User } from "../../../UserContext";
 import { Skills } from "../UserDashboard/UserDashboard";
 import { useThemeContext } from "../ThemeContext";
+import LoadingBars from "../LoadingBars/LoadingBars";
 
 interface Project {
   _id?: string;
   name: string;
   description: string;
   image: string;
-  link: string;
+  link?: string;
 }
 
 const Portfolio: React.FC = () => {
@@ -50,7 +51,12 @@ const Portfolio: React.FC = () => {
   }, [fetchData]);
 
   if (loading) {
-    return <div data-testid="loading">Loading...</div>;
+    const bars = [
+      { width: "300px", delay: "0s" },
+      { width: "200px", delay: "0.2s" },
+      { width: "300px", delay: "0.4s" },
+    ];
+    return <LoadingBars bars={bars} />;
   }
 
   return (
@@ -99,10 +105,11 @@ const Portfolio: React.FC = () => {
               <p css={style.p}>{project.description}</p>
             </div>
           </div>
-
-          <a css={style.a} href={project.link}>
-            View project
-          </a>
+          {project.link && (
+            <a css={style.a} href={project.link}>
+              View project
+            </a>
+          )}
         </div>
       ))}
       <footer css={style.footer}>Made with ❤️</footer>

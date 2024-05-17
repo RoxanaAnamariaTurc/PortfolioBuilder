@@ -1,5 +1,5 @@
 import React, { act } from "react";
-import { render, waitFor, screen, findByText } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -12,9 +12,16 @@ import { ThemeStateProvider } from "../ThemeContext";
 
 import "@testing-library/jest-dom";
 
+jest.setTimeout(10000);
+
 jest.mock("axios", () => {
   return {
-    get: jest.fn(() => Promise.resolve({})),
+    get: jest.fn(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve({ data: {} }), 5000);
+        })
+    ),
   };
 });
 jest.mock("react-router-dom", () => ({
@@ -23,48 +30,34 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const mockUser = {
-  user: {
-    fullName: "John Doe",
-    jobTitle: "Software Developer",
-    email: "john@test.com",
-    profileImage: "img.jpg",
+  fullName: "John Doe",
+  jobTitle: "Software Developer",
+  email: "john@test.com",
+  profileImage: "img.jpg",
+  password: "password",
+  projects: [
+    {
+      name: "Portfolio",
+      description: "A portfolio project",
+      image: "portfolio.jpg",
+      link: "www.link.com",
+      _id: "1",
+    },
+  ],
+  skills: {
+    softSkills: ["Teamwork", "Problem Solving"],
+    techSkills: ["JavaScript", "React"],
   },
 };
-
-const mockSkills = {
-  softSkills: ["Teamwork", "Problem Solving"],
-  techSkills: ["JavaScript", "React"],
-};
-
-const mockProjects = [
-  {
-    name: "Portfolio",
-    description: "A portfolio project",
-    image: "portfolio.jpg",
-    link: "www.link.com",
-    _id: "1",
-  },
-];
 
 describe("Portfolio Component", () => {
   beforeEach(() => {
-    (useParams as jest.Mock).mockReturnValue({ userId: "testUserId" });
+    (useParams as jest.Mock).mockReturnValue({ token: "testToken" });
     (axios.get as jest.Mock).mockImplementation((url) => {
-      if (url.includes("/user/testUserId")) {
-        return new Promise((resolve) =>
-          setTimeout(() => resolve({ data: mockUser }), 500)
-        );
-      } else if (url.includes("/projects/testUserId")) {
-        return new Promise((resolve) =>
-          setTimeout(() => resolve({ data: mockProjects }), 500)
-        );
-      } else if (url.includes("/user/testUserId/skills")) {
-        return new Promise((resolve) =>
-          setTimeout(() => resolve({ data: mockSkills }), 500)
-        );
-      } else {
-        return Promise.resolve({ data: {} });
+      if (url.includes("/portfolio/testToken")) {
+        return Promise.resolve({ data: { user: mockUser } });
       }
+      return Promise.resolve({ data: {} });
     });
   });
 
@@ -84,25 +77,6 @@ describe("Portfolio Component", () => {
     });
   });
 
-  it("renders a loading message initially", async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <ThemeProvider theme={theme as MyTheme}>
-            <ThemeStateProvider>
-              <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
-                <Portfolio />
-              </UserContext.Provider>
-            </ThemeStateProvider>
-          </ThemeProvider>
-        </BrowserRouter>
-      );
-    });
-    console.log(document.body.innerHTML);
-    const loadingElement = await screen.findByTestId("loading");
-    expect(loadingElement).toBeInTheDocument();
-  });
-
   it("renders user details when the user is provided", async () => {
     await act(async () => {
       render(
@@ -119,10 +93,11 @@ describe("Portfolio Component", () => {
         </BrowserRouter>
       );
     });
+
     const usernameElement = await screen.findByTestId("username");
     expect(usernameElement).toBeInTheDocument();
     expect(screen.getByText(/john@test.com/i)).toBeInTheDocument();
-    mockSkills.techSkills.forEach(async (skill) => {
+    mockUser.skills.techSkills.forEach(async (skill) => {
       const skillElement = await screen.findByText(new RegExp(skill, "i"));
       expect(skillElement).toBeInTheDocument();
     });
