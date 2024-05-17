@@ -47,7 +47,7 @@ To ensure the project runs smoothly and no errors are encounter follow the next 
 
 The application has unit tests written with Jest. If you wish to run the tests simply run `npm test` from the root directory of the project
 
-### Storybook
+### Storybook
 
 Storybook is used for building UI components and pages in isolation. This project includes stories for the Button component and TextArea component.
 
@@ -73,21 +73,21 @@ The PortfolioBuilder project follows a typical MERN (MongoDB, Express, React, No
 
 #### API Endpoints
 
-User Registration: POST /register
-User Login: POST /login
-Fetch User Data: GET /user/:id
-Fetch User Skills: GET /user/:id/skills
-Add Project: POST /projects
-Edit Project: PUT /projects/:userId/:projectId
-Delete Project: DELETE /users/:userId/projects/:projectId
-Add Skills: POST /user/:id/skills
-Fetch Projects: GET /projects/:userId
+- User Registration: POST /register
+- User Login: POST /login
+- Fetch User Data: GET /user/:id
+- Fetch User Skills: GET /user/:id/skills
+- Add Project: POST /projects
+- Edit Project: PUT /projects/:userId/:projectId
+- Delete Project: DELETE /users/:userId/projects/:projectId
+- Add Skills: POST /user/:id/skills
+- Fetch Projects: GET /projects/:userId
 
 ### Environment Setup
 
 To set up different environments (development and production):
 
-#### Development:
+#### Development:
 
 - Configure your .env file for local development.
 - Use local MongoDB or a development MongoDB Atlas cluster.

@@ -52,6 +52,7 @@ const mockUser = {
   jobTitle: "Software Engineer",
   profileImage: "avatar.png",
   password: "password",
+  portfolioToken: "mockToken",
 };
 
 const mockUserContextValue: UserContextProps = {
@@ -66,7 +67,7 @@ const mockContext = {
 
 describe("UserDashboard", () => {
   beforeEach(() => {
-    localStorage.setItem("userId", mockUser._id);
+    localStorage.setItem("portfolioToken", mockUser.portfolioToken);
     (fetchProjects as jest.Mock).mockResolvedValue(mockProjects);
     (fetchSkills as jest.Mock).mockResolvedValue(mockSkills);
   });
@@ -106,8 +107,8 @@ describe("UserDashboard", () => {
       expect(screen.getByText("Job Title")).toBeInTheDocument();
       expect(screen.getByText(mockUser.jobTitle)).toBeInTheDocument();
 
-      expect(fetchProjects).toHaveBeenCalledWith(mockUser._id);
-      expect(fetchSkills).toHaveBeenCalledWith(mockUser._id);
+      expect(fetchProjects).toHaveBeenCalledWith(mockUser.portfolioToken);
+      expect(fetchSkills).toHaveBeenCalledWith(mockUser.portfolioToken);
       expect(screen.getByText("Project 1")).toBeInTheDocument();
       expect(screen.getByText("Project 2")).toBeInTheDocument();
     });
@@ -125,7 +126,7 @@ describe("UserDashboard", () => {
     );
 
     await waitFor(() => {
-      expect(fetchSkills).toHaveBeenCalledWith(mockUser._id);
+      expect(fetchSkills).toHaveBeenCalledWith(mockUser.portfolioToken);
       expect(screen.getByText("Technical Skills")).toBeInTheDocument();
       expect(screen.getByText("HTML")).toBeInTheDocument();
       expect(screen.getByText("CSS")).toBeInTheDocument();
