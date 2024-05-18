@@ -27,10 +27,10 @@ const closeModal = jest.fn();
 
 describe("AddSkillsModal", () => {
   beforeEach(() => {
-    localStorage.setItem("userId", "1");
+    localStorage.setItem("portfolioToken", "1");
   });
   afterEach(() => {
-    localStorage.removeItem("userId");
+    localStorage.removeItem("portfolioToken");
   });
   it("calls the correct functions with the correct arguments when adding skills", async () => {
     render(
@@ -54,7 +54,7 @@ describe("AddSkillsModal", () => {
     await waitFor(() => expect(addSkillsMock).toHaveBeenCalledTimes(1));
   });
   it("throws an error when no userId is found", async () => {
-    localStorage.removeItem("userId");
+    localStorage.removeItem("portfolioToken");
     render(
       <ThemeProvider theme={theme as MyTheme}>
         <AddSkillsModal

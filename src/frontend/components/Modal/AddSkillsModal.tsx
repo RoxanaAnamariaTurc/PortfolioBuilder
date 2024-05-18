@@ -56,10 +56,10 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
       softSkills: selectedSoftSkills.map((skill) => skill.value),
     };
 
-    const userId = localStorage.getItem("userId");
-    if (userId) {
+    const portfolioToken = localStorage.getItem("portfolioToken");
+    if (portfolioToken) {
       try {
-        await addSkills(userId, skills);
+        await addSkills(portfolioToken, skills);
         onAddSkills(skills);
       } catch (error) {
         console.error("An error occurred while trying to add skills", error);
