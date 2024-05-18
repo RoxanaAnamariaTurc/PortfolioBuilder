@@ -64,6 +64,21 @@ const UserDashboard: React.FC = () => {
 
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
+  const generatePortfolio = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await axios.post(
+        `${API_BASE_URL}/generate-portfolio-token`,
+        { userId }
+      );
+      const token = response.data.token;
+      localStorage.setItem("portfolioToken", token);
+      navigate(`/portfolio/${token}`);
+    } catch (error) {
+      console.error("Error generating portfolio", error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("portfolioToken");
@@ -161,21 +176,6 @@ const UserDashboard: React.FC = () => {
   const handleCloseDeleteModal = () => {
     setProjectIdToDelete(null);
     setIsDeleteModalOpen(false);
-  };
-
-  const generatePortfolio = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      const response = await axios.post(
-        `${API_BASE_URL}/generate-portfolio-token`,
-        { userId }
-      );
-      const token = response.data.token;
-      localStorage.setItem("portfolioToken", token);
-      navigate(`/portfolio/${token}`);
-    } catch (error) {
-      console.error("Error generating portfolio", error);
-    }
   };
 
   return (
