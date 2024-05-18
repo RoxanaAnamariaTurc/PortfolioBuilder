@@ -240,6 +240,7 @@ app.post("/user/:token/skills", async (req, res) => {
 
 app.get("/projects/:token", async (req, res) => {
   const { token } = req.params;
+  console.log("Token:", token);
   try {
     const user = await User.findOne({ portfolioToken: token });
     if (!user) {
