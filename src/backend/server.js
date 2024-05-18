@@ -57,25 +57,6 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-// Route to generate a portfolio token
-app.post("/generate-portfolio-token", async (req, res) => {
-  const { userId } = req.body;
-  const token = uuidv4();
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).send({ message: "User not found" });
-    }
-    user.portfolioToken = token;
-    await user.save();
-    res.status(200).send({ token });
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
-});
-
-// Route to fetch portfolio data using the token
 app.get("/portfolio/:token", async (req, res) => {
   const token = req.params.token;
 
@@ -99,63 +80,70 @@ app.get("/portfolio/:token", async (req, res) => {
   }
 });
 
-app.post("/register", upload.single("profileImage"), (req, res) => {
-  User.findOne({ email: req.body.email }).then((existingUser) => {
+app.post("/register", upload.single("profileImage"), async (req, res) => {
+  try {
+    const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser) {
       return res.status(400).send({ message: "User already registered." });
     }
-    bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
-      if (err) {
-        return res.status(500).send({ message: err.message });
-      }
-      const user = new User({
-        ...req.body,
-        password: hashedPassword,
-        profileImage: req.file ? req.file.path : null,
-      });
-      user
-        .save()
-        .then((result) => {
-          res.status(201).send(result);
-        })
-        .catch((err) => {
-          res.status(500).send({ message: err.message });
-        });
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const token = uuidv4();
+    const user = new User({
+      ...req.body,
+      password: hashedPassword,
+      profileImage: req.file ? req.file.path : null,
+      portfolioToken: token,
     });
-  });
+
+    const result = await user.save();
+    res.status(201).send({
+      user: {
+        id: result._id,
+        fullName: result.fullName,
+        email: result.email,
+        jobTitle: result.jobTitle,
+        profileImage: result.profileImage,
+      },
+      token,
+    });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 });
-app.post("/login", (req, res) => {
-  const { email, password } = req.body;
-  User.findOne({ email })
-    .then((user) => {
-      console.log("User found:", user);
-      if (!user) {
-        return res.status(404).send({ message: "Invalid email or password" });
-      }
-      bcrypt.compare(password, user.password, (err, isMatch) => {
-        console.log("Password is correct");
-        if (err) {
-          return res.status(500).send({ message: err.message });
-        }
-        if (!isMatch) {
-          console.log("Password is incorrect");
-          return res.status(404).send({ message: "Invalid email or password" });
-        }
-        res.status(200).send({
-          user: {
-            id: user.id,
-            fullName: user.fullName,
-            email: user.email,
-            jobTitle: user.jobTitle,
-            profileImage: user.profileImage,
-          },
-        });
-      });
-    })
-    .catch((err) => {
-      console.log("Error finding user:", err);
-      res.status(500).send({ message: err.message });
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(404).send({ message: "Invalid email or password" });
+    }
+
+    // Generate a token if it doesn't exist
+    if (!user.portfolioToken) {
+      user.portfolioToken = uuidv4();
+      await user.save();
+    }
+
+    res.status(200).send({
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        jobTitle: user.jobTitle,
+        profileImage: user.profileImage,
+      },
+      token: user.portfolioToken,
     });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 });
 
 app.get("/user/:token", async (req, res) => {
@@ -240,7 +228,6 @@ app.post("/user/:token/skills", async (req, res) => {
 
 app.get("/projects/:token", async (req, res) => {
   const { token } = req.params;
-  console.log("Token:", token);
   try {
     const user = await User.findOne({ portfolioToken: token });
     if (!user) {

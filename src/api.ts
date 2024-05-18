@@ -30,9 +30,10 @@ export const loginUser = async (email: string, password: string) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true, // This is important for sending cookies
+        withCredentials: true,
       }
     );
+    localStorage.setItem("portfolioToken", response.data.token);
     return response.data;
   } catch (error) {
     console.error("Error during login:", error);
@@ -46,6 +47,7 @@ export const registerUser = async (formData: FormData) => {
       "Content-Type": "multipart/form-data",
     },
   });
+  localStorage.setItem("portfolioToken", response.data.token);
   return response;
 };
 

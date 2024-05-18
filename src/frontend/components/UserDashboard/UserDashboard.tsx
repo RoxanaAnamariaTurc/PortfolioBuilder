@@ -3,7 +3,7 @@ import { useTheme } from "../../../hooks/useTheme";
 import { getUserdashboardStyles } from "./UserDashboard.style";
 import avatar from "../../../images/avatar.png";
 import { UserContext, UserContextProps } from "../../../UserContext";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import Footer from "../Footer/Footer";
 import AddProjectsModal from "../Modal/AddProjectsModal";
 import AddSkillsModal from "../Modal/AddSkillsModal";
@@ -49,7 +49,7 @@ const UserDashboard: React.FC = () => {
   const theme = useTheme();
   const styles = getUserdashboardStyles(theme, isModalOpen, isModalSkillOpen);
 
-  const { user } = useContext(UserContext) as UserContextProps;
+  const { user, setUser } = useContext(UserContext) as UserContextProps;
 
   const techSkillsOption = skills.techSkills.map((skill) => ({
     value: skill,
@@ -64,44 +64,36 @@ const UserDashboard: React.FC = () => {
 
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-  const generatePortfolio = async () => {
-    try {
-      const userId = localStorage.getItem("userId");
-      const response = await axios.post(
-        `${API_BASE_URL}/generate-portfolio-token`,
-        { userId }
-      );
-      const token = response.data.token;
-      localStorage.setItem("portfolioToken", token);
-      navigate(`/portfolio/${token}`);
-    } catch (error) {
-      console.error("Error generating portfolio", error);
-    }
-  };
+  const fetchUserData = useCallback(
+    async (token: string) => {
+      try {
+        const userResponse = await axios.get(`${API_BASE_URL}/user/${token}`);
+        console.log(userResponse);
+        setUser(userResponse.data.user);
+
+        // Fetch projects
+        const projectsData = await fetchProjects(token);
+        setProjects(projectsData);
+
+        // Fetch skills
+        const skillsData = await fetchSkills(token);
+        setSkills(skillsData);
+      } catch (error) {
+        console.error(
+          "An error occurred while trying to fetch the user data",
+          error
+        );
+      }
+    },
+    [API_BASE_URL, setUser]
+  );
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem("portfolioToken");
-      if (token) {
-        try {
-          // Fetch projects
-          const projectsData = await fetchProjects(token);
-          setProjects(projectsData);
-
-          // Fetch skills
-          const skillsData = await fetchSkills(token);
-          setSkills(skillsData);
-        } catch (error) {
-          console.error(
-            "An error occurred while trying to fetch the user data",
-            error
-          );
-        }
-      }
-    };
-
-    fetchUserData();
-  }, []);
+    const token = localStorage.getItem("portfolioToken");
+    if (token) {
+      fetchUserData(token);
+    }
+  }, [fetchUserData]);
 
   const handleOpenDeleteModal = (projectId: string) => {
     setProjectIdToDelete(projectId);
@@ -287,7 +279,11 @@ const UserDashboard: React.FC = () => {
                 }}
               ></div>
               <Button
-                onClick={generatePortfolio}
+                onClick={() =>
+                  navigate(
+                    `/portfolio/${localStorage.getItem("portfolioToken")}`
+                  )
+                }
                 width={"xlarge"}
                 height={"medium"}
                 borderRadius={"xsmall"}

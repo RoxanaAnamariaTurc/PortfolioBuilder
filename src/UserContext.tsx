@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
+import LoadingBars from "./frontend/components/LoadingBars/LoadingBars";
 
 export interface User {
   fullName: string;
@@ -46,7 +47,12 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchUser();
   }, [fetchUser]);
   if (loading) {
-    return <div>Loading...</div>;
+    const bars = [
+      { width: "300px", delay: "0s" },
+      { width: "200px", delay: "0.2s" },
+      { width: "300px", delay: "0.4s" },
+    ];
+    return <LoadingBars bars={bars} />;
   }
 
   return (

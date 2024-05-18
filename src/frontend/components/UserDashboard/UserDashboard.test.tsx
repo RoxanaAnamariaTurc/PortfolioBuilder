@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { User, UserContext, UserContextProps } from "../../../UserContext";
 import UserDashboard from "./UserDashboard";
@@ -8,6 +8,7 @@ import { fetchProjects, fetchSkills } from "../../../api";
 import { ThemeProvider } from "@emotion/react";
 import { MyTheme, theme } from "../../../theme";
 import { ThemeContext } from "@emotion/react";
+import axios from "axios";
 
 jest.mock("axios", () => ({
   get: jest.fn(),
@@ -70,24 +71,30 @@ describe("UserDashboard", () => {
     localStorage.setItem("portfolioToken", mockUser.portfolioToken);
     (fetchProjects as jest.Mock).mockResolvedValue(mockProjects);
     (fetchSkills as jest.Mock).mockResolvedValue(mockSkills);
+    (axios.get as jest.Mock).mockResolvedValue({
+      data: { user: mockUser },
+    });
   });
 
   afterEach(() => {
     localStorage.clear();
+    jest.resetAllMocks();
   });
 
   it("renders user profile information", async () => {
-    render(
-      <MemoryRouter>
-        <ThemeContext.Provider value={mockContext}>
-          <ThemeProvider theme={theme as MyTheme}>
-            <UserContext.Provider value={mockUserContextValue}>
-              <UserDashboard />
-            </UserContext.Provider>
-          </ThemeProvider>
-        </ThemeContext.Provider>
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ThemeContext.Provider value={mockContext}>
+            <ThemeProvider theme={theme as MyTheme}>
+              <UserContext.Provider value={mockUserContextValue}>
+                <UserDashboard />
+              </UserContext.Provider>
+            </ThemeProvider>
+          </ThemeContext.Provider>
+        </MemoryRouter>
+      );
+    });
 
     await waitFor(() => {
       expect(
@@ -115,15 +122,19 @@ describe("UserDashboard", () => {
   });
 
   it("renders skills information", async () => {
-    render(
-      <MemoryRouter>
-        <ThemeProvider theme={theme as MyTheme}>
-          <UserContext.Provider value={mockUserContextValue}>
-            <UserDashboard />
-          </UserContext.Provider>
-        </ThemeProvider>
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ThemeContext.Provider value={mockContext}>
+            <ThemeProvider theme={theme as MyTheme}>
+              <UserContext.Provider value={mockUserContextValue}>
+                <UserDashboard />
+              </UserContext.Provider>
+            </ThemeProvider>
+          </ThemeContext.Provider>
+        </MemoryRouter>
+      );
+    });
 
     await waitFor(() => {
       expect(fetchSkills).toHaveBeenCalledWith(mockUser.portfolioToken);
@@ -136,21 +147,26 @@ describe("UserDashboard", () => {
       expect(screen.getByText("Problem Solving")).toBeInTheDocument();
     });
   });
+
   it("displays an error message if the API call fails", async () => {
     (fetchProjects as jest.Mock).mockRejectedValue(new Error("API error"));
     (fetchSkills as jest.Mock).mockRejectedValue(new Error("API error"));
 
     const consoleSpy = jest.spyOn(console, "error");
 
-    render(
-      <MemoryRouter>
-        <ThemeProvider theme={theme as MyTheme}>
-          <UserContext.Provider value={mockUserContextValue}>
-            <UserDashboard />
-          </UserContext.Provider>
-        </ThemeProvider>
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ThemeContext.Provider value={mockContext}>
+            <ThemeProvider theme={theme as MyTheme}>
+              <UserContext.Provider value={mockUserContextValue}>
+                <UserDashboard />
+              </UserContext.Provider>
+            </ThemeProvider>
+          </ThemeContext.Provider>
+        </MemoryRouter>
+      );
+    });
 
     await waitFor(() => {
       expect(consoleSpy).toHaveBeenCalledWith(
