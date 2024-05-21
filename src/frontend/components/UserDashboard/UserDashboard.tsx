@@ -68,7 +68,6 @@ const UserDashboard: React.FC = () => {
     async (token: string) => {
       try {
         const userResponse = await axios.get(`${API_BASE_URL}/user/${token}`);
-        console.log(userResponse);
         setUser(userResponse.data.user);
 
         // Fetch projects

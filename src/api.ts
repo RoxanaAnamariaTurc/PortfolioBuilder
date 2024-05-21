@@ -53,7 +53,6 @@ export const registerUser = async (formData: FormData) => {
 
 export const createProject = async (formData: FormData) => {
   const response = await axios.post(`${API_BASE_URL}/projects`, formData);
-  console.log(response.data);
   return response.data;
 };
 

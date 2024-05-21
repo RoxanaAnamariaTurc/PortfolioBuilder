@@ -38,13 +38,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     link: string;
     image: File | null;
   };
-  // const [formState, setFormState] = useState<FormState>({
-  //   userId: localStorage.getItem("userId"),
-  //   name: "",
-  //   description: "",
-  //   link: "",
-  //   image: null,
-  // });
   const [formState, setFormState] = useState<FormState>(initialFormState);
 
   useEffect(() => {
@@ -83,7 +76,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
       const response = await (isEdit
         ? editProject(userId, projectToEdit?._id, formData)
         : createProject(formData));
-      console.log(response);
       onProjectSubmission(response, isEdit);
       closeModal();
 
