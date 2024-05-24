@@ -6,6 +6,7 @@ import { Project } from "../UserDashboard/UserDashboard";
 import TextArea from "../TextArea/TextArea";
 import Button from "../Button/Button";
 import { createProject, editProject } from "../../../api";
+import LoadingBars from "../LoadingBars/LoadingBars";
 
 interface AddProjectsModalProps {
   closeModal: () => void;
@@ -39,6 +40,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     image: File | null;
   };
   const [formState, setFormState] = useState<FormState>(initialFormState);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (projectToEdit) {
@@ -70,7 +72,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
       const value = formState[formKey] || "";
       formData.append(formKey, value);
     });
-
+    setIsLoading(true);
     try {
       const isEdit = !!projectToEdit?._id;
       const response = await (isEdit
@@ -96,6 +98,8 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
           error
         );
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,101 +117,114 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   const handleClose = () => {
     closeModal();
   };
+  const bars = [
+    { width: "300px", delay: "0s" },
+    { width: "200px", delay: "0.2s" },
+    { width: "300px", delay: "0.4s" },
+  ];
   return (
     <div css={style.div}>
-      <h2 css={style.h2}>Project Details</h2>
-      <div css={style.modal}>
-        <span css={style.closeButton} onClick={closeModal}>
-          &times;
-        </span>
-        <div className="modal-content">
-          <form css={style.form}>
-            <div css={style.inputGroup}>
-              <label css={style.label} htmlFor="projectName">
-                Project Name
-              </label>
-              <input
-                css={style.input}
-                type="text"
-                id="projectName"
-                name="name"
-                value={formState.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                required
-              />
-            </div>
-            <div css={style.inputGroup}>
-              <label css={style.label} htmlFor="projectDescription">
-                Description
-              </label>
-              <TextArea
-                limit={250}
-                value={formState.description}
-                name="projectDescription"
-                onChange={(value) => handleInputChange("description", value)}
-                id="projectDescription"
-              />
-            </div>
-            <div css={style.inputGroup}>
-              <label css={style.label} htmlFor="projectLink">
-                Link
-              </label>
-              <input
-                css={style.input}
-                type="text"
-                id="projectLink"
-                name="projectLink"
-                value={formState.link}
-                onChange={(e) => handleInputChange("link", e.target.value)}
-                required
-              />
-            </div>
+      {isLoading ? (
+        <LoadingBars bars={bars} />
+      ) : (
+        <>
+          <h2 css={style.h2}>Project Details</h2>
+          <div css={style.modal}>
+            <span css={style.closeButton} onClick={closeModal}>
+              &times;
+            </span>
+            <div className="modal-content">
+              <form css={style.form}>
+                <div css={style.inputGroup}>
+                  <label css={style.label} htmlFor="projectName">
+                    Project Name
+                  </label>
+                  <input
+                    css={style.input}
+                    type="text"
+                    id="projectName"
+                    name="name"
+                    value={formState.name}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
+                    required
+                  />
+                </div>
+                <div css={style.inputGroup}>
+                  <label css={style.label} htmlFor="projectDescription">
+                    Description
+                  </label>
+                  <TextArea
+                    limit={250}
+                    value={formState.description}
+                    name="projectDescription"
+                    onChange={(value) =>
+                      handleInputChange("description", value)
+                    }
+                    id="projectDescription"
+                  />
+                </div>
+                <div css={style.inputGroup}>
+                  <label css={style.label} htmlFor="projectLink">
+                    Link
+                  </label>
+                  <input
+                    css={style.input}
+                    type="text"
+                    id="projectLink"
+                    name="projectLink"
+                    value={formState.link}
+                    onChange={(e) => handleInputChange("link", e.target.value)}
+                    required
+                  />
+                </div>
 
-            <div css={style.customFile}>
-              <label css={style.label} htmlFor="projectImage">
-                Choose File
-              </label>
-              <input
-                ref={fileInputRef}
-                type="file"
-                id="projectImage"
-                name="projectImage"
-                accept=".jpg,.jpeg,.png"
-                style={{ display: "none" }}
-                onChange={(e) =>
-                  handleInputChange("image", e.target.files as FileList)
-                }
-              />
-            </div>
+                <div css={style.customFile}>
+                  <label css={style.label} htmlFor="projectImage">
+                    Choose File
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    id="projectImage"
+                    name="projectImage"
+                    accept=".jpg,.jpeg,.png"
+                    style={{ display: "none" }}
+                    onChange={(e) =>
+                      handleInputChange("image", e.target.files as FileList)
+                    }
+                  />
+                </div>
 
-            <div css={style.buttonContainer}>
-              <Button
-                color="primary"
-                backgroundColor={"transparent"}
-                borderRadius={"xsmall"}
-                width={"large"}
-                height={"medium"}
-                onClick={handleSubmit}
-                padding={"xsmall"}
-              >
-                Save
-              </Button>
-              <Button
-                type="button"
-                color="primary"
-                backgroundColor={"transparent"}
-                borderRadius={"xsmall"}
-                width={"large"}
-                height={"medium"}
-                padding={"xsmall"}
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
+                <div css={style.buttonContainer}>
+                  <Button
+                    color="primary"
+                    backgroundColor={"transparent"}
+                    borderRadius={"xsmall"}
+                    width={"large"}
+                    height={"medium"}
+                    onClick={handleSubmit}
+                    padding={"xsmall"}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    type="button"
+                    color="primary"
+                    backgroundColor={"transparent"}
+                    borderRadius={"xsmall"}
+                    width={"large"}
+                    height={"medium"}
+                    padding={"xsmall"}
+                    onClick={handleClose}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
