@@ -22,20 +22,41 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   const theme = useTheme();
   const style = getModalStyles(theme);
 
+  // const handleDeleteProject = async () => {
+  //   const userId = localStorage.getItem("userId");
+  //   if (userId && projectId) {
+  //     console.log(`Deleting project with ID: ${projectId}`);
+  //     try {
+  //       await deleteProject(userId, projectId);
+  //       setProjects(projects.filter((project) => project._id !== projectId));
+  //       closeModal();
+  //     } catch (error) {
+  //       console.error(
+  //         "An error occurred while trying to delete the project",
+  //         error
+  //       );
+  //     }
+  //   }
+  // };
+
   const handleDeleteProject = async () => {
     const userId = localStorage.getItem("userId");
-    if (userId && projectId) {
-      console.log(`Deleting project with ID: ${projectId}`);
-      try {
-        await deleteProject(userId, projectId);
-        setProjects(projects.filter((project) => project._id !== projectId));
-        closeModal();
-      } catch (error) {
-        console.error(
-          "An error occurred while trying to delete the project",
-          error
-        );
-      }
+    if (!userId || !projectId) {
+      alert("Please login to delete a project");
+      return;
+    }
+
+    try {
+      await deleteProject(userId, projectId);
+      setProjects((prevProjects) =>
+        prevProjects.filter((project) => project._id !== projectId)
+      );
+      closeModal();
+    } catch (error) {
+      console.error(
+        "An error occurred while trying to delete the project",
+        error
+      );
     }
   };
 

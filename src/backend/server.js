@@ -291,6 +291,33 @@ app.delete("/users/:userId/projects/:projectId", async (req, res) => {
   }
 });
 
+app.put("/user/:userId", async (req, res) => {
+  const { fullName, email, jobTitle } = req.body;
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) {
+    return res.status(403).send({ message: "No token provided" });
+  }
+  const token = authHeader.slice(7);
+
+  try {
+    const user = await User.findOne({ portfolioToken: token });
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    user.fullName = fullName;
+    user.email = email;
+    user.jobTitle = jobTitle;
+    const updatedUser = await user.save();
+    res.status(200).send({
+      fullName: updatedUser.fullName,
+      email: updatedUser.email,
+      jobTitle: updatedUser.jobTitle,
+    });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
 const dbURI = process.env.MONGODB_URI;
 mongoose
   .connect(dbURI)

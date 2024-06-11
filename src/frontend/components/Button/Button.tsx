@@ -33,6 +33,7 @@ export interface ButtonProps {
   textAlign?: "left" | "center" | "right";
   css?: any;
   type?: "button" | "submit" | "reset";
+  disabled?: boolean;
 }
 
 // Button component definition

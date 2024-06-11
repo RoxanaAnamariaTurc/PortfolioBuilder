@@ -7,18 +7,24 @@ const barAnimation = keyframes`
 100% { transform: scaleX(1); }
 `;
 
+const circleAnimation = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
 export const getLoadingStyles = (
   theme: MyTheme,
   barColor = theme.colors.danger,
   barHeight = "2px",
-  direction = "column"
+  direction = "column",
+  type = "bar"
 ) => ({
   container: css({
     display: "flex",
-    flexDirection: "column",
+    flexDirection: direction === "column" ? "column" : "row",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
+    height: "100%",
   }),
   bar: (width: string, delay: string) =>
     css({
@@ -30,4 +36,12 @@ export const getLoadingStyles = (
       animation: `${barAnimation} 1s infinite`,
       animationDelay: delay,
     }),
+  circle: css({
+    border: `4px solid ${theme.colors.primary}`,
+    borderRadius: "50%",
+    borderTop: `4px solid ${barColor}`,
+    width: "30px",
+    height: "30px",
+    animation: `${circleAnimation} 1s linear infinite`,
+  }),
 });

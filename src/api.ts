@@ -61,16 +61,15 @@ export const editProject = async (
   projectId: string | undefined,
   formData: FormData
 ) => {
-  console.log(userId, projectId, formData);
   const response = await axios.put(
     `${API_BASE_URL}/projects/${userId}/${projectId}`,
     formData
   );
-  console.log(response.data);
 
   const updatedProject = response.data.find(
     (project: Project) => project._id === projectId
   );
+
   return updatedProject;
 };
 
@@ -79,4 +78,25 @@ export const addSkills = async (
   skills: { techSkills: string[]; softSkills: string[] }
 ) => {
   await axios.post(`${API_BASE_URL}/user/${portfolioToken}/skills`, { skills });
+};
+
+export const editUserDetails = async (
+  portfolioToken: string,
+  formData: { fullName: string; email: string; jobTitle: string },
+  userId: string
+) => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${portfolioToken}`,
+    },
+  };
+
+  const response = await axios.put(
+    `${API_BASE_URL}/user/${userId}`,
+    JSON.stringify(formData),
+    config
+  );
+
+  return response.data;
 };

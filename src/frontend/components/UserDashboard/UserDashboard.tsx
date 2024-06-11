@@ -2,6 +2,7 @@
 import { useTheme } from "../../../hooks/useTheme";
 import { getUserdashboardStyles } from "./UserDashboard.style";
 import avatar from "../../../images/avatar.png";
+import projectImage from "../../../images/projectImage.jpg";
 import { UserContext, UserContextProps } from "../../../UserContext";
 import { useCallback, useContext, useEffect, useState } from "react";
 import Footer from "../Footer/Footer";
@@ -14,6 +15,8 @@ import { useThemeContext } from "../ThemeContext";
 import { fetchProjects, fetchSkills } from "../../../api";
 import DeleteModal from "../Modal/DeleteModal";
 import axios from "axios";
+import LoadingBars from "../LoadingBars/LoadingBars";
+import EditUserDetails from "../Modal/EditUserDetails";
 
 export interface Project {
   _id?: string;
@@ -46,6 +49,8 @@ const UserDashboard: React.FC = () => {
   const [projectIdToDelete, setProjectIdToDelete] = useState<string | null>(
     null
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const theme = useTheme();
   const styles = getUserdashboardStyles(theme, isModalOpen, isModalSkillOpen);
 
@@ -71,12 +76,16 @@ const UserDashboard: React.FC = () => {
         setUser(userResponse.data.user);
 
         // Fetch projects
+        setIsLoading(true);
         const projectsData = await fetchProjects(token);
         setProjects(projectsData);
+        setIsLoading(false);
 
         // Fetch skills
+        setIsLoading(true);
         const skillsData = await fetchSkills(token);
         setSkills(skillsData);
+        setIsLoading(false);
       } catch (error) {
         console.error(
           "An error occurred while trying to fetch the user data",
@@ -96,6 +105,7 @@ const UserDashboard: React.FC = () => {
 
   const handleOpenDeleteModal = (projectId: string) => {
     setProjectIdToDelete(projectId);
+    console.log(projectId);
     setIsDeleteModalOpen(true);
   };
 
@@ -117,7 +127,12 @@ const UserDashboard: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
+  const handleCloseEditModal = () => {
+    setIsEditUserModalOpen(false);
+  };
+  const handleEditUserModal = () => {
+    setIsEditUserModalOpen(true);
+  };
   const handleOpenSkillsModal = () => {
     setIsModalSkillOpen(true);
   };
@@ -125,20 +140,39 @@ const UserDashboard: React.FC = () => {
     setIsModalSkillOpen(false);
   };
   const handleProjectSubmission = (
-    project: Project | Project[],
+    newProject: {
+      id: string;
+      name: string;
+      description: string;
+      image: string;
+      link: string;
+    },
     isEdit: boolean
   ) => {
     if (isEdit) {
       setProjects((prevProjects) =>
-        prevProjects.map((p) =>
-          p._id === (project as Project)._id ? (project as Project) : p
+        prevProjects.map((project) =>
+          project._id === newProject.id
+            ? { ...project, ...newProject }
+            : project
         )
       );
     } else {
-      setProjects((prevProjects) => [...prevProjects, project as Project]);
+      setProjects((prevProjects) => [
+        ...prevProjects,
+        {
+          _id: newProject.id,
+          name: newProject.name,
+          description: newProject.description,
+          image: newProject.image,
+          link: newProject.link,
+        },
+      ]);
     }
-    setIsModalOpen(false);
   };
+  useEffect(() => {
+    setIsModalOpen(false);
+  }, [projects]);
 
   const handleAddSkills = async (newSkills: Skills) => {
     setSkills((prevSkills) => ({
@@ -171,7 +205,7 @@ const UserDashboard: React.FC = () => {
 
   return (
     <div>
-      <Header />
+      <Header isBlurred={isModalOpen || isModalSkillOpen} />
       <div css={styles.userDashboard}>
         <div css={styles.userProfile}>
           <section css={styles.userInfo}>
@@ -186,6 +220,7 @@ const UserDashboard: React.FC = () => {
                 }
                 alt="user avatar"
               />
+
               <table css={styles.userInfoTable}>
                 <tbody>
                   <tr>
@@ -202,8 +237,20 @@ const UserDashboard: React.FC = () => {
                   </tr>
                 </tbody>
               </table>
+              <Button
+                onClick={handleEditUserModal}
+                width={"large"}
+                height={"medium"}
+                borderRadius={"xsmall"}
+                padding={"xsmall"}
+                backgroundColor={"transparent"}
+                color={"primary"}
+              >
+                Edit
+              </Button>
             </div>
           </section>
+
           <section css={styles.userSkills}>
             <h4 css={styles.h4}>Skills</h4>
             <Button
@@ -217,28 +264,32 @@ const UserDashboard: React.FC = () => {
             >
               + Add skills
             </Button>
-            <div css={styles.skills}>
-              <div>
-                <h5 css={styles.h5}>Technical Skills</h5>
-                <ul css={styles.ul}>
-                  {skills.techSkills.map((skill, index) => (
-                    <li css={styles.li} key={index}>
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
+            {isLoading ? (
+              <LoadingBars type="circle" />
+            ) : (
+              <div css={styles.skills}>
+                <div>
+                  <h5 css={styles.h5}>Technical Skills</h5>
+                  <ul css={styles.ul}>
+                    {skills.techSkills.map((skill, index) => (
+                      <li css={styles.li} key={index}>
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h5 css={styles.h5}>Soft Skills</h5>
+                  <ul css={styles.ul}>
+                    {skills.softSkills.map((skill, index) => (
+                      <li css={styles.li} key={index}>
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <div>
-                <h5 css={styles.h5}>Soft Skills</h5>
-                <ul css={styles.ul}>
-                  {skills.softSkills.map((skill, index) => (
-                    <li css={styles.li} key={index}>
-                      {skill}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            )}
           </section>
         </div>
         <section css={styles.userProjects}>
@@ -256,6 +307,7 @@ const UserDashboard: React.FC = () => {
             >
               + Add new project
             </Button>
+
             <div css={styles.userBtns}>
               <Button
                 onClick={toggleThemeState}
@@ -294,90 +346,100 @@ const UserDashboard: React.FC = () => {
               </Button>
             </div>
           </div>
-          <div css={styles.tableContainer}>
-            <table css={styles.table}>
-              <thead css={styles.thead}>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Image</th>
-                  <th>Link</th>
-                  <th>Edit/Delete</th>
-                </tr>
-              </thead>
+          {isLoading ? (
+            <LoadingBars type="circle" />
+          ) : (
+            <div css={styles.tableContainer}>
+              <table css={styles.table}>
+                <thead css={styles.thead}>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Link</th>
+                    <th>Edit/Delete</th>
+                  </tr>
+                </thead>
 
-              <tbody>
-                {projects &&
-                  projects
-                    .filter((project) => project)
-                    .map((project) => (
-                      <tr key={project._id}>
-                        <td>{project.name}</td>
-                        <td>
-                          {showFullDescription[project._id ?? ""]
-                            ? project.description
-                            : `${project.description.slice(0, 50)}...`}
-                          <Button
-                            width={"large"}
-                            height={"xsmall"}
-                            borderRadius={"xsmall"}
-                            padding={"small"}
-                            backgroundColor={"transparent"}
-                            color={"primary"}
-                            fontSize="xsmall"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              toggleDescription(project._id ?? "");
-                            }}
-                          >
+                <tbody>
+                  {projects &&
+                    projects
+                      .filter((project) => project)
+                      .map((project) => (
+                        <tr key={project._id}>
+                          <td>{project.name}</td>
+                          <td>
                             {showFullDescription[project._id ?? ""]
-                              ? "Read Less"
-                              : "Read More"}
-                          </Button>
-                        </td>
-                        <td>
-                          <img
-                            css={styles.tableImg}
-                            src={`${API_BASE_URL}/${project.image}`}
-                            alt={project.name}
-                          />
-                        </td>
-                        <td>
-                          <a css={styles.a} href={project.link}>
-                            {project.link}
-                          </a>
-                        </td>
-                        <td>
-                          <Button
-                            onClick={() => handleOpenModal(project)}
-                            width={"large"}
-                            height={"medium"}
-                            borderRadius={"xsmall"}
-                            padding={"xsmall"}
-                            backgroundColor={"transparent"}
-                            color={"primary"}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            onClick={() =>
-                              handleOpenDeleteModal(project._id ?? "")
-                            }
-                            width={"large"}
-                            height={"medium"}
-                            borderRadius={"xsmall"}
-                            padding={"xsmall"}
-                            backgroundColor={"transparent"}
-                            color={"danger"}
-                          >
-                            DELETE
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-              </tbody>
-            </table>
-          </div>
+                              ? project.description
+                              : `${project.description.slice(0, 50)}${project.description.length > 50 ? "..." : ""}`}
+                            {project.description.length > 50 && (
+                              <Button
+                                width={"large"}
+                                height={"xsmall"}
+                                borderRadius={"xsmall"}
+                                padding={"small"}
+                                backgroundColor={"transparent"}
+                                color={"primary"}
+                                fontSize="xsmall"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  toggleDescription(project._id ?? "");
+                                }}
+                              >
+                                {showFullDescription[project._id ?? ""]
+                                  ? "Read Less"
+                                  : "Read More"}
+                              </Button>
+                            )}
+                          </td>
+                          <td>
+                            <img
+                              css={styles.tableImg}
+                              src={
+                                project?.image
+                                  ? `${API_BASE_URL}/${project.image}`
+                                  : projectImage
+                              }
+                              alt="project"
+                            />
+                          </td>
+                          <td css={styles.td}>
+                            <a css={styles.a} href={project.link}>
+                              {project.link}
+                            </a>
+                          </td>
+                          <td>
+                            <Button
+                              onClick={() => handleOpenModal(project)}
+                              width={"large"}
+                              height={"medium"}
+                              borderRadius={"xsmall"}
+                              padding={"xsmall"}
+                              backgroundColor={"transparent"}
+                              color={"primary"}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              onClick={() =>
+                                handleOpenDeleteModal(project._id ?? "")
+                              }
+                              width={"large"}
+                              height={"medium"}
+                              borderRadius={"xsmall"}
+                              padding={"xsmall"}
+                              backgroundColor={"transparent"}
+                              color={"danger"}
+                            >
+                              DELETE
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
 
         <Footer />
@@ -405,6 +467,13 @@ const UserDashboard: React.FC = () => {
           closeModal={handleCloseDeleteModal}
           projects={projects}
           setProjects={setProjects}
+        />
+      )}
+      {isEditUserModalOpen && (
+        <EditUserDetails
+          closeModal={handleCloseEditModal}
+          // user={user}
+          // setUser={setUser}
         />
       )}
     </div>

@@ -1,7 +1,10 @@
 import { css } from "@emotion/react";
 import { MyTheme } from "../../../theme";
 
-export const getHeaderStyle = (theme: MyTheme) => ({
+export const getHeaderStyle = (
+  theme: MyTheme,
+  isBlurred: boolean | undefined
+) => ({
   div: css({
     display: "flex",
     justifyContent: "space-between",
@@ -9,6 +12,7 @@ export const getHeaderStyle = (theme: MyTheme) => ({
     padding: "1em",
     color: theme.colors.primary,
     zIndex: "1000",
+    filter: isBlurred ? "blur(15px)" : "none",
   }),
   header: css({
     display: "flex",

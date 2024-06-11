@@ -75,3 +75,11 @@ export const ColorfulLoadingBars: Story = {
     barHeight: "2px",
   },
 };
+
+export const CircleLoading: Story = {
+  ...DefaultLoading,
+  args: {
+    bars: [],
+    type: "circle",
+  },
+};

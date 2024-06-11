@@ -13,6 +13,13 @@ const Register = () => {
   const { setUser } = useContext(UserContext) as UserContextProps;
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({
+    fullName: false,
+    email: false,
+    password: false,
+    passwordConfirmation: false,
+    jobTitle: false,
+  });
 
   const isAxiosError = (error: any): error is axios.AxiosError => {
     return error.isAxiosError;
@@ -42,11 +49,6 @@ const Register = () => {
     ).elements.namedItem("passwordConfirmation") as HTMLInputElement | null;
     const passwordConfirmationValue = passwordConfirmation?.value;
 
-    if (passwordValue !== passwordConfirmationValue) {
-      setError("Passwords do not match!");
-      return;
-    }
-
     const jobTitle = (e.target as HTMLFormElement).elements.namedItem(
       "jobTitle"
     ) as HTMLInputElement | null;
@@ -55,6 +57,25 @@ const Register = () => {
     const profileImage = (e.target as HTMLFormElement).elements.namedItem(
       "profileImage"
     ) as HTMLInputElement | null;
+
+    const newFieldErrors = {
+      fullName: !fullNameValue,
+      email: !emailValue,
+      password: !passwordValue,
+      passwordConfirmation: !passwordConfirmationValue,
+      jobTitle: !jobTitleValue,
+    };
+    setFieldErrors(newFieldErrors);
+
+    if (passwordValue !== passwordConfirmationValue) {
+      setError("Passwords do not match!");
+      setFieldErrors({
+        ...newFieldErrors,
+        password: true,
+        passwordConfirmation: true,
+      });
+      return;
+    }
 
     if (
       fullNameValue &&
@@ -72,7 +93,6 @@ const Register = () => {
       }
       try {
         const response = await registerUser(formData);
-        console.log(response);
 
         if (response.status === 201 || response.status === 200) {
           setUser(response.data);
@@ -115,42 +135,92 @@ const Register = () => {
               Full Name
             </label>
             <input
-              style={{ borderColor: error ? theme.colors.danger : "initial" }}
+              style={{
+                borderColor: fieldErrors.fullName
+                  ? theme.colors.danger
+                  : "initial",
+              }}
               type="text"
               id="fullName"
-              required
+              name="fullName"
             />
+            {fieldErrors.fullName && (
+              <p
+                style={{
+                  color: theme.colors.danger,
+                  textAlign: "center",
+                  margin: "0",
+                }}
+              >
+                Full Name is required
+              </p>
+            )}
           </div>
           <div css={style.inputGroup}>
             <label className="required" htmlFor="email">
               Email
             </label>
             <input
-              style={{ borderColor: error ? theme.colors.danger : "initial" }}
+              style={{
+                borderColor: fieldErrors.email
+                  ? theme.colors.danger
+                  : "initial",
+              }}
               type="email"
               id="email"
-              required
+              name="email"
             />
+            {fieldErrors.email && (
+              <p
+                style={{
+                  color: theme.colors.danger,
+                  textAlign: "center",
+                  margin: "0",
+                }}
+              >
+                Email is required
+              </p>
+            )}
           </div>
           <div css={style.inputGroup}>
             <label className="required" htmlFor="jobTitle">
               Job Title
             </label>
             <input
-              style={{ borderColor: error ? theme.colors.danger : "initial" }}
+              style={{
+                borderColor: fieldErrors.jobTitle
+                  ? theme.colors.danger
+                  : "initial",
+              }}
               type="text"
               id="jobTitle"
-              required
+              name="jobTitle"
             />
+            {fieldErrors.jobTitle && (
+              <p
+                style={{
+                  color: theme.colors.danger,
+                  textAlign: "center",
+                  margin: "0",
+                }}
+              >
+                Job Title is required
+              </p>
+            )}
           </div>
           <div css={style.inputGroup}>
             <label className="required" htmlFor="password">
               Password
             </label>
             <input
-              style={{ borderColor: error ? theme.colors.danger : "initial" }}
+              style={{
+                borderColor: fieldErrors.password
+                  ? theme.colors.danger
+                  : "initial",
+              }}
               type="password"
               id="password"
+              name="password"
               required
             />
           </div>
@@ -164,9 +234,14 @@ const Register = () => {
               Confirm Password
             </label>
             <input
-              style={{ borderColor: error ? theme.colors.danger : "initial" }}
+              style={{
+                borderColor: fieldErrors.passwordConfirmation
+                  ? theme.colors.danger
+                  : "initial",
+              }}
               type="password"
               id="passwordConfirmation"
+              name="passwordConfirmation"
               required
             />
           </div>

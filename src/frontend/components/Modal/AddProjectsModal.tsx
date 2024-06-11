@@ -11,7 +11,16 @@ import LoadingBars from "../LoadingBars/LoadingBars";
 interface AddProjectsModalProps {
   closeModal: () => void;
   projectToEdit?: Project;
-  onProjectSubmission: (project: Project[], isEdit: boolean) => void;
+  onProjectSubmission: (
+    project: {
+      id: string;
+      name: string;
+      description: string;
+      image: string;
+      link: string;
+    },
+    isEdit: boolean
+  ) => void;
 }
 
 const initialFormState = {
@@ -24,9 +33,7 @@ const initialFormState = {
 
 const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   closeModal,
-
   projectToEdit,
-
   onProjectSubmission,
 }) => {
   const theme = useTheme();
@@ -41,6 +48,8 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   };
   const [formState, setFormState] = useState<FormState>(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
+  const [fileName, setFileName] = useState("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (projectToEdit) {
@@ -56,10 +65,21 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formState.name) newErrors.name = "Project Name is required";
+    if (!formState.description)
+      newErrors.description = "Description is required";
+    if (!formState.link) newErrors.link = "Link is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+    if (!validateForm()) return;
     const userId = localStorage.getItem("userId");
     if (!userId) {
       alert("Please login to add a project");
@@ -109,6 +129,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
         ...prevState,
         [field]: value[0] as File | null,
       }));
+      setFileName(value[0].name);
     } else {
       setFormState((prevState) => ({ ...prevState, [field]: value }));
     }
@@ -136,7 +157,11 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
             <div className="modal-content">
               <form css={style.form}>
                 <div css={style.inputGroup}>
-                  <label css={style.label} htmlFor="projectName">
+                  <label
+                    className="required"
+                    css={style.label}
+                    htmlFor="projectName"
+                  >
                     Project Name
                   </label>
                   <input
@@ -148,9 +173,14 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                     onChange={(e) => handleInputChange("name", e.target.value)}
                     required
                   />
+                  {errors.name && <p css={style.error}>{errors.name}</p>}
                 </div>
                 <div css={style.inputGroup}>
-                  <label css={style.label} htmlFor="projectDescription">
+                  <label
+                    className="required"
+                    css={style.label}
+                    htmlFor="projectDescription"
+                  >
                     Description
                   </label>
                   <TextArea
@@ -162,9 +192,16 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                     }
                     id="projectDescription"
                   />
+                  {errors.description && (
+                    <p css={style.error}>{errors.description}</p>
+                  )}
                 </div>
                 <div css={style.inputGroup}>
-                  <label css={style.label} htmlFor="projectLink">
+                  <label
+                    className="required"
+                    css={style.label}
+                    htmlFor="projectLink"
+                  >
                     Link
                   </label>
                   <input
@@ -176,11 +213,12 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                     onChange={(e) => handleInputChange("link", e.target.value)}
                     required
                   />
+                  {errors.link && <p css={style.error}>{errors.link}</p>}
                 </div>
 
                 <div css={style.customFile}>
                   <label css={style.label} htmlFor="projectImage">
-                    Choose File
+                    {fileName ? `${fileName} uploaded` : "Choose Project Image"}
                   </label>
                   <input
                     ref={fileInputRef}

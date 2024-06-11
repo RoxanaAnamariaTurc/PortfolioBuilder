@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import LoadingBars from "./frontend/components/LoadingBars/LoadingBars";
 
 export interface User {
+  _id: string;
   fullName: string;
   email: string;
   password: string;

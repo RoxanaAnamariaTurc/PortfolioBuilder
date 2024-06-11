@@ -57,6 +57,7 @@ export const getUserdashboardStyles = (
     td: css({
       border: "none",
       borderCollapse: "collapse",
+      padding: "10px",
     }),
     userImage: css({
       display: "flex",
@@ -165,6 +166,7 @@ export const getUserdashboardStyles = (
       height: "7em",
       borderRadius: "5px",
       objectFit: "cover",
+
       "@media(max-width: 768px)": {
         width: "50px",
         height: "50px",

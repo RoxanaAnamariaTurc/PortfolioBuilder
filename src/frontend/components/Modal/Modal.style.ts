@@ -44,6 +44,10 @@ export const getModalStyles = (theme: MyTheme) => {
     label: css({
       textAlign: "left",
       color: theme.colors.primary,
+      "&.required::after": {
+        content: "' *'",
+        color: theme.colors.danger,
+      },
     }),
     input: css({
       padding: "0.5rem",
@@ -106,6 +110,10 @@ export const getModalStyles = (theme: MyTheme) => {
       "@media(max-width: 768px)": {
         fontSize: theme.sizes.small,
       },
+    }),
+    error: css({
+      color: theme.colors.danger,
+      fontSize: theme.sizes.small,
     }),
   };
 };

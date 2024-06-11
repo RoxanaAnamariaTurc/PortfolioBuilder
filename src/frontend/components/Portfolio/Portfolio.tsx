@@ -7,6 +7,7 @@ import { User } from "../../../UserContext";
 import { Skills } from "../UserDashboard/UserDashboard";
 import { useThemeContext } from "../ThemeContext";
 import LoadingBars from "../LoadingBars/LoadingBars";
+import projectImage from "../../../images/projectImage.jpg";
 
 interface Project {
   _id?: string;
@@ -98,8 +99,12 @@ const Portfolio: React.FC = () => {
           <div css={style.container}>
             <img
               css={style.img}
-              src={`${API_BASE_URL}/${project.image}`}
-              alt={project.name}
+              src={
+                project.image
+                  ? `${API_BASE_URL}/${project.image}`
+                  : projectImage
+              }
+              alt="project"
             />
             <div css={style.description}>
               <p css={style.p}>{project.description}</p>

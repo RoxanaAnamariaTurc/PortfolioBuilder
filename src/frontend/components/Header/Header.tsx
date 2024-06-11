@@ -6,9 +6,9 @@ import { getHeaderStyle } from "./Header.styles";
 import { useTheme } from "../../../hooks/useTheme";
 import { Link } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ isBlurred }: { isBlurred?: boolean }) => {
   const theme = useTheme();
-  const style = getHeaderStyle(theme);
+  const style = getHeaderStyle(theme, isBlurred);
   return (
     <div css={style.div}>
       <header css={style.header}>
