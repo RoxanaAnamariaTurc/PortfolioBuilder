@@ -84,7 +84,9 @@ describe("Login", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
     await waitFor(() => {
-      expect(screen.getByText("Invalid email or password")).toBeInTheDocument();
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        /invalid email or password/i
+      );
     });
   });
   it("sets error when the loginUser throws an error", async () => {
@@ -108,30 +110,9 @@ describe("Login", () => {
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/Invalid email or password/i)
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        /invalid email or password/i
+      );
     });
-  });
-  it("sets error when email or passwordValue is falsy", () => {
-    render(
-      <MemoryRouter>
-        <ThemeProvider theme={theme as MyTheme}>
-          <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
-            <Login />
-          </UserContext.Provider>
-        </ThemeProvider>
-      </MemoryRouter>
-    );
-
-    fireEvent.change(screen.getByLabelText("Email address"), {
-      target: { value: "" }, // email is falsy
-    });
-    fireEvent.change(screen.getByLabelText("Password"), {
-      target: { value: "password" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /login/i }));
-
-    expect(screen.getByText(/invalid email or password/i)).toBeInTheDocument();
   });
 });

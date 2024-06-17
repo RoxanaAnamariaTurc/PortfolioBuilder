@@ -9,7 +9,11 @@ import * as axios from "axios";
 import Button from "../Button/Button";
 import { registerUser } from "../../../api";
 
-const Register = () => {
+type RegisterProps = {
+  onSubmit?: () => void;
+};
+
+const Register: React.FC<RegisterProps> = () => {
   const { setUser } = useContext(UserContext) as UserContextProps;
   const navigate = useNavigate();
   const [error, setError] = useState("");

@@ -13,5 +13,8 @@ module.exports = {
   ],
   plugins: [
     "@babel/plugin-transform-runtime", // Reduces the size of the output by deduplicating helper functions
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-private-methods",
+    "@babel/plugin-proposal-private-property-in-object",
   ],
 };

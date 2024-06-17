@@ -50,6 +50,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (projectToEdit) {
@@ -82,7 +83,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     if (!validateForm()) return;
     const userId = localStorage.getItem("userId");
     if (!userId) {
-      alert("Please login to add a project");
+      setErrorMessage("Please login to add a project");
       return;
     }
 
@@ -215,7 +216,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                   />
                   {errors.link && <p css={style.error}>{errors.link}</p>}
                 </div>
-
                 <div css={style.customFile}>
                   <label css={style.label} htmlFor="projectImage">
                     {fileName ? `${fileName} uploaded` : "Choose Project Image"}
@@ -232,7 +232,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                     }
                   />
                 </div>
-
                 <div css={style.buttonContainer}>
                   <Button
                     color="primary"
@@ -258,6 +257,9 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                     Cancel
                   </Button>
                 </div>
+                {errorMessage && (
+                  <p data-testid="error-message">{errorMessage}</p>
+                )}
               </form>
             </div>
           </div>

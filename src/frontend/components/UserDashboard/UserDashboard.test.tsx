@@ -68,6 +68,7 @@ const mockContext = {
 
 describe("UserDashboard", () => {
   beforeEach(() => {
+    process.env.REACT_APP_API_URL = "http://localhost:3001";
     localStorage.setItem("portfolioToken", mockUser.portfolioToken);
     (fetchProjects as jest.Mock).mockResolvedValue(mockProjects);
     (fetchSkills as jest.Mock).mockResolvedValue(mockSkills);
@@ -100,9 +101,10 @@ describe("UserDashboard", () => {
       expect(
         screen.getByText(`${mockUser.fullName}'s profile`)
       ).toBeInTheDocument();
-      expect(screen.getByAltText("user avatar")).toHaveAttribute(
+      const avatarImg = screen.getByAltText("user avatar");
+      expect(avatarImg).toHaveAttribute(
         "src",
-        "http://localhost:3001/avatar.png"
+        `http://localhost:3001/${mockUser.profileImage}`
       );
       const nameElements = screen.getAllByText("Name");
       nameElements.forEach((element) => {
@@ -152,7 +154,9 @@ describe("UserDashboard", () => {
     (fetchProjects as jest.Mock).mockRejectedValue(new Error("API error"));
     (fetchSkills as jest.Mock).mockRejectedValue(new Error("API error"));
 
-    const consoleSpy = jest.spyOn(console, "error");
+    const consoleSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
 
     await act(async () => {
       render(

@@ -11,6 +11,8 @@ import {
   within,
   waitFor,
   act,
+  findByText,
+  findByTestId,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
@@ -135,9 +137,14 @@ describe("Add Projects Modal", () => {
     expect(linkInput.value).toBe("www.link.com");
   });
 
-  it("shows an alert when trying to submit without a userId", () => {
+  it("shows an error message when trying to submit without a userId", async () => {
     localStorage.removeItem("userId");
-    const { getByText } = render(
+    const mockLocalStorage = jest.spyOn(
+      window.localStorage.__proto__,
+      "getItem"
+    );
+    mockLocalStorage.mockImplementation(() => null);
+    const { getByText, findByTestId, getByLabelText } = render(
       <ThemeProvider theme={theme as MyTheme}>
         <AddProjectsModal
           closeModal={() => {}}
@@ -145,8 +152,25 @@ describe("Add Projects Modal", () => {
         />
       </ThemeProvider>
     );
+
+    fireEvent.change(getByLabelText("Project Name"), {
+      target: { value: "Test Project" },
+    });
+    fireEvent.change(getByLabelText("Description"), {
+      target: { value: "Test Description" },
+    });
+    fireEvent.change(getByLabelText("Link"), {
+      target: { value: "https://test.com" },
+    });
     const submitButton = getByText("Save");
-    fireEvent.click(submitButton);
-    expect(window.alert).toHaveBeenCalledWith("Please login to add a project");
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+
+    await waitFor(async () => {
+      const errorMessage = await findByTestId("error-message");
+      expect(errorMessage).toHaveTextContent("Please login to add a project");
+    });
+    mockLocalStorage.mockRestore();
   });
 });

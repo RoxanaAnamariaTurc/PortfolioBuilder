@@ -22,7 +22,7 @@ const Loading: React.FC<LoadingBarsProps> = ({
   const style = getLoadingStyles(theme, barColor, barHeight, direction);
 
   return (
-    <div css={style.container}>
+    <div role="progressbar" css={style.container}>
       {type === "bar" ? (
         bars.map((bar, index) => (
           <div key={index} css={style.bar(bar.width, bar.delay)}></div>

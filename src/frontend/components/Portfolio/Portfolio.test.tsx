@@ -30,6 +30,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const mockUser = {
+  _id: "1",
   fullName: "John Doe",
   jobTitle: "Software Developer",
   email: "john@test.com",

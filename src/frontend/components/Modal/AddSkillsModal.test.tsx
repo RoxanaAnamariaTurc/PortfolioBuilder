@@ -21,7 +21,15 @@ jest.mock("axios", () => ({
   get: jest.fn(),
   post: jest.fn(),
 }));
-const addSkillsMock = jest.spyOn(api, "addSkills");
+const addSkillsMock = jest
+  .spyOn(api, "addSkills")
+  .mockImplementation((skills) => {
+    const token = localStorage.getItem("portfolioToken");
+    if (!token) {
+      throw new Error("No userId found");
+    }
+    return Promise.resolve();
+  });
 const onAddSkills = jest.fn();
 const closeModal = jest.fn();
 
@@ -31,6 +39,7 @@ describe("AddSkillsModal", () => {
   });
   afterEach(() => {
     localStorage.removeItem("portfolioToken");
+    jest.clearAllMocks();
   });
   it("calls the correct functions with the correct arguments when adding skills", async () => {
     render(

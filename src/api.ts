@@ -33,9 +33,12 @@ export const loginUser = async (email: string, password: string) => {
         withCredentials: true,
       }
     );
-    localStorage.setItem("portfolioToken", response.data.token);
+    if (response.status === 200) {
+      localStorage.setItem("portfolioToken", response.data.token);
+    }
     return response.data;
   } catch (error) {
+    localStorage.removeItem("portfolioToken");
     console.error("Error during login:", error);
     throw error; // Rethrow the error so the caller can handle it
   }
@@ -77,7 +80,11 @@ export const addSkills = async (
   portfolioToken: string,
   skills: { techSkills: string[]; softSkills: string[] }
 ) => {
-  await axios.post(`${API_BASE_URL}/user/${portfolioToken}/skills`, { skills });
+  const response = await axios.post(
+    `${API_BASE_URL}/user/${portfolioToken}/skills`,
+    { skills }
+  );
+  return response.data;
 };
 
 export const editUserDetails = async (

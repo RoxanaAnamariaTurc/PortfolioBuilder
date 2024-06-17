@@ -40,6 +40,7 @@ const Login = () => {
         setError(true);
       }
     } else {
+      console.log("Email or password is missing");
       setError(true);
     }
   };

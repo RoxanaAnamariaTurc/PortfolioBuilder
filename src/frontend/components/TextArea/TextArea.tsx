@@ -11,7 +11,7 @@ interface TextAreaProps {
   id?: string;
 }
 
-const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
+const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange, id }) => {
   const [text, setText] = useState(value);
   const [remaining, setRemaining] = useState(limit);
   const [isWordTooLong, setIsWordTooLong] = useState(false);
@@ -42,6 +42,7 @@ const TextArea: React.FC<TextAreaProps> = ({ limit, value, onChange }) => {
   return (
     <div>
       <textarea
+        id={id}
         css={style.textarea}
         value={text}
         onChange={handleChange}

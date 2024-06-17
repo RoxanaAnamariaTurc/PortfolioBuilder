@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import Welcome from "./Welcome";
 import { ThemeProvider } from "@emotion/react";
+import "@testing-library/jest-dom";
 
 describe("Welcome Component", () => {
   it("renders a header with the welcome text", () => {

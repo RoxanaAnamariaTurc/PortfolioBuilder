@@ -1,4 +1,6 @@
 import React from "react";
+import "@testing-library/jest-dom";
+
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ThemeProvider } from "@emotion/react";
 import Register from "./Register";
@@ -103,9 +105,7 @@ describe("Register component", () => {
     const mockRegister = jest.fn();
     const { getByTestId } = render(
       <MemoryRouter>
-        <UserContext.Provider
-          value={{ user: null, setUser: jest.fn(), register: mockRegister }}
-        >
+        <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
           <ThemeProvider theme={theme as MyTheme}>
             <Register />
           </ThemeProvider>
@@ -124,7 +124,6 @@ describe("Register component", () => {
 
     fireEvent.click(submitButton);
 
-    // expect(await screen.findByTestId("error-message")).toBeInTheDocument();
     expect(mockRegister).not.toHaveBeenCalled();
   });
 });

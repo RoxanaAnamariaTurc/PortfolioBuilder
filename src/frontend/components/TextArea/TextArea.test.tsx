@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { ThemeProvider } from "@emotion/react";
 import TextArea from "./TextArea";
+import "@testing-library/jest-dom";
 
 describe("TextArea component", () => {
   it("renders a textarea element", () => {

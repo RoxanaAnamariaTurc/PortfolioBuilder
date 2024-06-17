@@ -42,15 +42,13 @@ const EditUserDetails: React.FC<{ closeModal: () => void }> = ({
         const portfolioToken = localStorage.getItem("portfolioToken") || "";
         const userId = localStorage.getItem("userId") || "";
         await editUserDetails(portfolioToken, formData, userId);
-        setUser((prevUser) => ({
-          ...prevUser,
-          _id: prevUser?._id || "",
-          password: prevUser?.password || "",
-          profileImage: prevUser?.profileImage || "",
+
+        setUser({
+          ...user,
           fullName,
           email,
           jobTitle,
-        }));
+        });
         setLoading(false);
       }
     } catch (error) {
@@ -85,18 +83,26 @@ const EditUserDetails: React.FC<{ closeModal: () => void }> = ({
           <h2 css={style.h2}>Edit User Details</h2>
           <form onSubmit={handleSave} css={style.form}>
             <div css={style.inputGroup}>
-              <label css={style.label}>Name</label>
+              <label css={style.label} htmlFor="name">
+                Name
+              </label>
               <input
                 css={style.input}
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 disabled={loading}
+                id="name"
+                name="name"
               />
             </div>
             <div css={style.inputGroup}>
-              <label css={style.label}>Email</label>
+              <label css={style.label} htmlFor="email">
+                Email
+              </label>
               <input
+                id="email"
+                name="email"
                 css={style.input}
                 type="email"
                 value={email}
@@ -105,8 +111,12 @@ const EditUserDetails: React.FC<{ closeModal: () => void }> = ({
               />
             </div>
             <div css={style.inputGroup}>
-              <label css={style.label}>Job Title</label>
+              <label htmlFor="jobTitle" css={style.label}>
+                Job Title
+              </label>
               <input
+                id="jobTitle"
+                name="jobTitle"
                 css={style.input}
                 type="text"
                 value={jobTitle}

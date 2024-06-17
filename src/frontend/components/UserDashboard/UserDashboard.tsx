@@ -470,11 +470,7 @@ const UserDashboard: React.FC = () => {
         />
       )}
       {isEditUserModalOpen && (
-        <EditUserDetails
-          closeModal={handleCloseEditModal}
-          // user={user}
-          // setUser={setUser}
-        />
+        <EditUserDetails closeModal={handleCloseEditModal} />
       )}
     </div>
   );

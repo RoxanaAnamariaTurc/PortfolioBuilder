@@ -28,7 +28,7 @@ describe("Header", () => {
     expect(document.querySelector("button")?.textContent).toBe("Logout");
   });
 
-  it("render the logo0", () => {
+  it("render the logo", () => {
     render(
       <MemoryRouter>
         <ThemeProvider theme={theme as MyTheme}>
@@ -38,7 +38,7 @@ describe("Header", () => {
     );
 
     expect(document.querySelector("img")?.getAttribute("src")).toEqual(
-      "logo.jpg"
+      "test-file-stub"
     );
   });
 
