@@ -52,7 +52,13 @@ const UserDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const theme = useTheme();
-  const styles = getUserdashboardStyles(theme, isModalOpen, isModalSkillOpen);
+  const styles = getUserdashboardStyles(
+    theme,
+    isModalOpen,
+    isModalSkillOpen,
+    isDeleteModalOpen,
+    isEditUserModalOpen
+  );
 
   const { user, setUser } = useContext(UserContext) as UserContextProps;
 
@@ -105,7 +111,6 @@ const UserDashboard: React.FC = () => {
 
   const handleOpenDeleteModal = (projectId: string) => {
     setProjectIdToDelete(projectId);
-    console.log(projectId);
     setIsDeleteModalOpen(true);
   };
 
@@ -146,22 +151,24 @@ const UserDashboard: React.FC = () => {
       description: string;
       image: string;
       link: string;
+      _id?: string;
     },
     isEdit: boolean
   ) => {
     if (isEdit) {
-      setProjects((prevProjects) =>
-        prevProjects.map((project) =>
-          project._id === newProject.id
+      setProjects((prevProjects) => {
+        const updatedProjects = prevProjects.map((project) =>
+          project._id === newProject._id
             ? { ...project, ...newProject }
             : project
-        )
-      );
+        );
+        return updatedProjects;
+      });
     } else {
       setProjects((prevProjects) => [
         ...prevProjects,
         {
-          _id: newProject.id,
+          _id: newProject._id,
           name: newProject.name,
           description: newProject.description,
           image: newProject.image,
@@ -170,6 +177,7 @@ const UserDashboard: React.FC = () => {
       ]);
     }
   };
+
   useEffect(() => {
     setIsModalOpen(false);
   }, [projects]);
@@ -205,7 +213,14 @@ const UserDashboard: React.FC = () => {
 
   return (
     <div>
-      <Header isBlurred={isModalOpen || isModalSkillOpen} />
+      <Header
+        isBlurred={
+          isModalOpen ||
+          isModalSkillOpen ||
+          isDeleteModalOpen ||
+          isEditUserModalOpen
+        }
+      />
       <div css={styles.userDashboard}>
         <div css={styles.userProfile}>
           <section css={styles.userInfo}>
@@ -408,7 +423,7 @@ const UserDashboard: React.FC = () => {
                               {project.link}
                             </a>
                           </td>
-                          <td>
+                          <td css={styles.tdButtons}>
                             <Button
                               onClick={() => handleOpenModal(project)}
                               width={"large"}

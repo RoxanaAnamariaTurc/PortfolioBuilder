@@ -115,5 +115,13 @@ export const getModalStyles = (theme: MyTheme) => {
       color: theme.colors.danger,
       fontSize: theme.sizes.small,
     }),
+    p: css({
+      color: theme.colors.primary,
+      fontSize: theme.sizes.medium,
+      marginTop: "3em",
+      "@media(max-width: 768px)": {
+        fontSize: theme.sizes.small,
+      },
+    }),
   };
 };

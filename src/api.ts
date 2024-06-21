@@ -37,10 +37,10 @@ export const loginUser = async (email: string, password: string) => {
       localStorage.setItem("portfolioToken", response.data.token);
     }
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     localStorage.removeItem("portfolioToken");
     console.error("Error during login:", error);
-    throw error; // Rethrow the error so the caller can handle it
+    throw error;
   }
 };
 
@@ -55,8 +55,22 @@ export const registerUser = async (formData: FormData) => {
 };
 
 export const createProject = async (formData: FormData) => {
-  const response = await axios.post(`${API_BASE_URL}/projects`, formData);
-  return response.data;
+  const apiUrl = `${API_BASE_URL}/projects`;
+
+  try {
+    const response = await axios.post(apiUrl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Error creating project:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
 };
 
 export const editProject = async (
@@ -68,7 +82,6 @@ export const editProject = async (
     `${API_BASE_URL}/projects/${userId}/${projectId}`,
     formData
   );
-
   const updatedProject = response.data.find(
     (project: Project) => project._id === projectId
   );

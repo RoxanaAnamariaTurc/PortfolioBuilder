@@ -71,7 +71,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     if (!formState.name) newErrors.name = "Project Name is required";
     if (!formState.description)
       newErrors.description = "Description is required";
-    if (!formState.link) newErrors.link = "Link is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -82,6 +81,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
     e.preventDefault();
     if (!validateForm()) return;
     const userId = localStorage.getItem("userId");
+
     if (!userId) {
       setErrorMessage("Please login to add a project");
       return;
@@ -99,26 +99,32 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
       const response = await (isEdit
         ? editProject(userId, projectToEdit?._id, formData)
         : createProject(formData));
-      onProjectSubmission(response, isEdit);
+      onProjectSubmission(
+        { ...response, _id: response._id || response.id },
+        isEdit
+      );
       closeModal();
-
       setFormState(initialFormState);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(
-          "An error occurred while trying to add the project",
-          error.message
+    } catch (error: any) {
+      if (error.response) {
+        // Server responded with a status other than 2xx
+        setErrorMessage(`Server error: ${error.response.data.message}`);
+      } else if (error.request) {
+        // Request was made but no response received
+        setErrorMessage(
+          "Network error: Please check your internet connection."
         );
-        console.error(error.stack);
       } else {
-        console.error(
-          "An error occurred while trying to add the project",
-          error
-        );
+        // Something else happened
+        setErrorMessage(`Error: ${error.message}`);
       }
+      console.error(
+        "An error occurred while trying to add the project:",
+        error
+      );
     } finally {
       setIsLoading(false);
     }
@@ -198,11 +204,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                   )}
                 </div>
                 <div css={style.inputGroup}>
-                  <label
-                    className="required"
-                    css={style.label}
-                    htmlFor="projectLink"
-                  >
+                  <label css={style.label} htmlFor="projectLink">
                     Link
                   </label>
                   <input
@@ -212,9 +214,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                     name="projectLink"
                     value={formState.link}
                     onChange={(e) => handleInputChange("link", e.target.value)}
-                    required
                   />
-                  {errors.link && <p css={style.error}>{errors.link}</p>}
                 </div>
                 <div css={style.customFile}>
                   <label css={style.label} htmlFor="projectImage">
@@ -258,7 +258,9 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
                   </Button>
                 </div>
                 {errorMessage && (
-                  <p data-testid="error-message">{errorMessage}</p>
+                  <p data-testid="error-message" css={style.error}>
+                    {errorMessage}
+                  </p>
                 )}
               </form>
             </div>

@@ -20,11 +20,15 @@ export const getLoadingStyles = (
   type = "bar"
 ) => ({
   container: css({
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     display: "flex",
     flexDirection: direction === "column" ? "column" : "row",
     justifyContent: "center",
     alignItems: "center",
-    height: "100%",
+    // height: "100rem",
   }),
   bar: (width: string, delay: string) =>
     css({

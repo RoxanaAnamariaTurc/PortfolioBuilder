@@ -4,14 +4,22 @@ import { MyTheme } from "../../../theme";
 export const getUserdashboardStyles = (
   theme: MyTheme,
   isModalOpen: boolean,
-  inSkillsModalOpen: boolean
+  inSkillsModalOpen: boolean,
+  isDeleteModalOpen: boolean,
+  isEditUserModalOpen: boolean
 ) => {
   return {
     userDashboard: css({
       height: "100%",
       width: "100vw",
       flexGrow: 1,
-      filter: isModalOpen || inSkillsModalOpen ? "blur(15px)" : "none",
+      filter:
+        isModalOpen ||
+        inSkillsModalOpen ||
+        isDeleteModalOpen ||
+        isEditUserModalOpen
+          ? "blur(15px)"
+          : "none",
       transition: ".3s ease-out",
       "@media(max-width: 768px)": {
         padding: "10px",
@@ -222,6 +230,12 @@ export const getUserdashboardStyles = (
         boxShadow: "none",
         transform: "translateY(4px)",
       },
+    }),
+    tdButtons: css({
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: "2.5em",
     }),
   };
 };
