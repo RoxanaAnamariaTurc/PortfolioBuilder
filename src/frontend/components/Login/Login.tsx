@@ -59,6 +59,9 @@ const Login = () => {
           <div
             data-testid="error-message"
             style={{ color: theme.colors.danger, textAlign: "center" }}
+            id="email-error"
+            role="alert"
+            aria-live="assertive"
           >
             Invalid email or password
           </div>
@@ -74,6 +77,7 @@ const Login = () => {
               type="email"
               id="email"
               required
+              aria-describedby="email-error"
             />
           </div>
           <div css={style.inputGroup}>

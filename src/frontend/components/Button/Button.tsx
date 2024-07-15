@@ -34,6 +34,7 @@ export interface ButtonProps {
   css?: any;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
+  ref?: React.RefObject<HTMLButtonElement>;
 }
 
 // Button component definition

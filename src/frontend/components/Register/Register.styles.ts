@@ -58,13 +58,16 @@ export const getRegisterStyle = (theme: MyTheme) => {
         fontSize: theme.sizes.small,
         alignSelf: "flex-start",
         margin: "1rem",
-        "&.required::after": {
-          content: "' *'",
-          color: theme.colors.danger,
-        },
+        // "&.required::after": {
+        //   content: "' *'",
+        //   color: theme.colors.danger,
+        // },
         "@media(max-width: 768px)": {
           fontSize: "0.9rem",
         },
+        span: css({
+          color: theme.colors.danger,
+        }),
       }),
       p: css({
         color: theme.colors.primary,

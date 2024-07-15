@@ -28,7 +28,6 @@ export const getLoadingStyles = (
     flexDirection: direction === "column" ? "column" : "row",
     justifyContent: "center",
     alignItems: "center",
-    // height: "100rem",
   }),
   bar: (width: string, delay: string) =>
     css({

@@ -4,7 +4,7 @@ import { getUserdashboardStyles } from "./UserDashboard.style";
 import avatar from "../../../images/avatar.png";
 import projectImage from "../../../images/projectImage.jpg";
 import { UserContext, UserContextProps } from "../../../UserContext";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Footer from "../Footer/Footer";
 import AddProjectsModal from "../Modal/AddProjectsModal";
 import AddSkillsModal from "../Modal/AddSkillsModal";
@@ -17,6 +17,8 @@ import DeleteModal from "../Modal/DeleteModal";
 import axios from "axios";
 import LoadingBars from "../LoadingBars/LoadingBars";
 import EditUserDetails from "../Modal/EditUserDetails";
+import Modal from "../Modal/Modal";
+import { deleteProject } from "../../../api";
 
 export interface Project {
   _id?: string;
@@ -34,8 +36,8 @@ export interface Skills {
 const UserDashboard: React.FC = () => {
   const { toggleTheme, currentTheme } = useThemeContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<string | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [isModalSkillOpen, setIsModalSkillOpen] = useState(false);
   const [skills, setSkills] = useState<Skills>({
     techSkills: [],
     softSkills: [],
@@ -45,7 +47,6 @@ const UserDashboard: React.FC = () => {
     [key: string]: boolean;
   }>({});
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [projectIdToDelete, setProjectIdToDelete] = useState<string | null>(
     null
   );
@@ -55,10 +56,9 @@ const UserDashboard: React.FC = () => {
   const styles = getUserdashboardStyles(
     theme,
     isModalOpen,
-    isModalSkillOpen,
-    isDeleteModalOpen,
     isEditUserModalOpen
   );
+  const openButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const { user, setUser } = useContext(UserContext) as UserContextProps;
 
@@ -109,9 +109,14 @@ const UserDashboard: React.FC = () => {
     }
   }, [fetchUserData]);
 
-  const handleOpenDeleteModal = (projectId: string) => {
-    setProjectIdToDelete(projectId);
-    setIsDeleteModalOpen(true);
+  const handleOpenModal = (
+    type: string,
+    project?: Project,
+    projectId?: string
+  ) => {
+    setModalType(type);
+    if (project) setProjectToEdit(project);
+    if (projectId) setProjectIdToDelete(projectId);
   };
 
   const toggleDescription = (projectId: string) => {
@@ -125,24 +130,45 @@ const UserDashboard: React.FC = () => {
     toggleTheme();
   };
 
-  const handleOpenModal = (project?: Project) => {
-    setProjectToEdit(project || null);
-    setIsModalOpen(true);
-  };
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setModalType(null);
+    setProjectToEdit(null);
+    setProjectIdToDelete(null);
+    if (openButtonRef.current) {
+      openButtonRef.current.focus();
+    }
   };
+
   const handleCloseEditModal = () => {
     setIsEditUserModalOpen(false);
   };
   const handleEditUserModal = () => {
     setIsEditUserModalOpen(true);
   };
-  const handleOpenSkillsModal = () => {
-    setIsModalSkillOpen(true);
-  };
-  const handleCloseSkillsModal = () => {
-    setIsModalSkillOpen(false);
+  const handleDeleteProject = async () => {
+    const userId = localStorage.getItem("userId");
+    if (!userId || !projectIdToDelete) {
+      alert("Please login to delete a project");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await deleteProject(userId, projectIdToDelete);
+      setProjects((prevProjects) =>
+        prevProjects.filter((project) => project._id !== projectIdToDelete)
+      );
+      handleCloseModal();
+    } catch (error) {
+      console.error(
+        "An error occurred while trying to delete the project",
+        error
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
   const handleProjectSubmission = (
     newProject: {
@@ -206,24 +232,17 @@ const UserDashboard: React.FC = () => {
     }
   };
 
-  const handleCloseDeleteModal = () => {
-    setProjectIdToDelete(null);
-    setIsDeleteModalOpen(false);
-  };
-
   return (
     <div>
-      <Header
-        isBlurred={
-          isModalOpen ||
-          isModalSkillOpen ||
-          isDeleteModalOpen ||
-          isEditUserModalOpen
-        }
-      />
+      <Header isBlurred={isModalOpen || isEditUserModalOpen} />
       <div css={styles.userDashboard}>
         <div css={styles.userProfile}>
-          <section css={styles.userInfo}>
+          <section
+            css={styles.userInfo}
+            aria-label="user-information-section"
+            tabIndex={0}
+            aria-live="polite"
+          >
             <h3 css={styles.h3}>{`${user?.fullName}'s profile`}</h3>
             <div css={styles.userImage}>
               <img
@@ -266,10 +285,15 @@ const UserDashboard: React.FC = () => {
             </div>
           </section>
 
-          <section css={styles.userSkills}>
+          <section
+            css={styles.userSkills}
+            tabIndex={0}
+            aria-live="polite"
+            aria-label="user-skills-section"
+          >
             <h4 css={styles.h4}>Skills</h4>
             <Button
-              onClick={handleOpenSkillsModal}
+              onClick={() => handleOpenModal("addSkills")}
               width={"xlarge"}
               height={"medium"}
               borderRadius={"xsmall"}
@@ -282,7 +306,7 @@ const UserDashboard: React.FC = () => {
             {isLoading ? (
               <LoadingBars type="circle" />
             ) : (
-              <div css={styles.skills}>
+              <div css={styles.skills} aria-label="users-skills-section">
                 <div>
                   <h5 css={styles.h5}>Technical Skills</h5>
                   <ul css={styles.ul}>
@@ -307,11 +331,16 @@ const UserDashboard: React.FC = () => {
             )}
           </section>
         </div>
-        <section css={styles.userProjects}>
+        <section
+          css={styles.userProjects}
+          aria-label="user-projects-section"
+          tabIndex={0}
+          aria-live="polite"
+        >
           <div css={styles.userProjectsDiv}>
             <h2 css={styles.h2}>Projects</h2>
             <Button
-              onClick={() => handleOpenModal()}
+              onClick={() => handleOpenModal("addProject")}
               width={"xlarge"}
               height={"medium"}
               borderRadius={"xsmall"}
@@ -319,6 +348,7 @@ const UserDashboard: React.FC = () => {
               backgroundColor={"transparent"}
               color={"primary"}
               fontSize="small"
+              ref={openButtonRef}
             >
               + Add new project
             </Button>
@@ -425,7 +455,9 @@ const UserDashboard: React.FC = () => {
                           </td>
                           <td css={styles.tdButtons}>
                             <Button
-                              onClick={() => handleOpenModal(project)}
+                              onClick={() =>
+                                handleOpenModal("addProject", project)
+                              }
                               width={"large"}
                               height={"medium"}
                               borderRadius={"xsmall"}
@@ -437,7 +469,11 @@ const UserDashboard: React.FC = () => {
                             </Button>
                             <Button
                               onClick={() =>
-                                handleOpenDeleteModal(project._id ?? "")
+                                handleOpenModal(
+                                  "deleteProject",
+                                  undefined,
+                                  project._id
+                                )
                               }
                               width={"large"}
                               height={"medium"}
@@ -459,30 +495,32 @@ const UserDashboard: React.FC = () => {
 
         <Footer />
       </div>
-      {isModalOpen && (
-        <div>
-          <AddProjectsModal
-            closeModal={handleCloseModal}
-            onProjectSubmission={handleProjectSubmission}
-            projectToEdit={projectToEdit || undefined}
-          />
-        </div>
-      )}
-      {isModalSkillOpen && (
-        <AddSkillsModal
-          closeModal={handleCloseSkillsModal}
-          onAddSkills={handleAddSkills}
-          currentSoftSkills={softSkillsOption}
-          currentTechSkills={techSkillsOption}
-        />
-      )}
-      {isDeleteModalOpen && (
-        <DeleteModal
-          projectId={projectIdToDelete}
-          closeModal={handleCloseDeleteModal}
-          projects={projects}
-          setProjects={setProjects}
-        />
+      {modalType && (
+        <Modal isOpen={true} closeModal={handleCloseModal}>
+          {modalType === "addProject" && (
+            <AddProjectsModal
+              closeModal={handleCloseModal}
+              onProjectSubmission={handleProjectSubmission}
+              projectToEdit={projectToEdit}
+              isOpen={true}
+            />
+          )}
+          {modalType === "addSkills" && (
+            <AddSkillsModal
+              closeModal={handleCloseModal}
+              onAddSkills={handleAddSkills}
+              currentSoftSkills={softSkillsOption}
+              currentTechSkills={techSkillsOption}
+            />
+          )}
+          {modalType === "deleteProject" && (
+            <DeleteModal
+              closeModal={handleCloseModal}
+              isLoading={isLoading}
+              onDelete={handleDeleteProject}
+            />
+          )}
+        </Modal>
       )}
       {isEditUserModalOpen && (
         <EditUserDetails closeModal={handleCloseEditModal} />

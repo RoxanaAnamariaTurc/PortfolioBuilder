@@ -61,8 +61,14 @@ const Portfolio: React.FC = () => {
   }
 
   return (
-    <div css={style.portfolio}>
-      <h1 data-testid="username" css={style.h1}>
+    <main css={style.portfolio}>
+      <h1
+        data-testid="username"
+        css={style.h1}
+        tabIndex={0}
+        aria-label="Welcome message for the user"
+        aria-describedby="Welcome message"
+      >
         {user && (
           <>
             👋, I am {user.fullName}, <br /> The {user.jobTitle}, you are
@@ -71,7 +77,11 @@ const Portfolio: React.FC = () => {
         )}
       </h1>
 
-      <div css={style.skillsContainer}>
+      <section
+        css={style.skillsContainer}
+        tabIndex={0}
+        aria-labelledby="skills-section-title"
+      >
         {user && (
           <div>
             <h4>Email: {user.email}</h4>
@@ -81,19 +91,28 @@ const Portfolio: React.FC = () => {
         <div css={style.skillDiv}>
           <h4>Technical Skills</h4>
           {skills?.techSkills?.map((skill, index) => (
-            <span key={index}>{skill}</span>
+            <span key={index} tabIndex={0}>
+              {skill}
+            </span>
           ))}
         </div>
         <div css={style.skillDiv}>
           <h4>Soft Skills</h4>
           {skills?.softSkills?.map((skill, index) => (
-            <span key={index}>{skill}</span>
+            <span key={index} tabIndex={0}>
+              {skill}
+            </span>
           ))}
         </div>
-      </div>
+      </section>
       <h2 css={style.h1}>Projects</h2>
       {projects.map((project) => (
-        <div key={project._id} css={style.div}>
+        <section
+          key={project._id}
+          css={style.div}
+          tabIndex={0}
+          aria-labelledby={`project-title-${project._id}`}
+        >
           <h3 css={style.title}>{project.name}</h3>
 
           <div css={style.container}>
@@ -104,7 +123,7 @@ const Portfolio: React.FC = () => {
                   ? `${API_BASE_URL}/${project.image}`
                   : projectImage
               }
-              alt="project"
+              alt={`Screenshot of ${project.name} project`}
             />
             <div css={style.description}>
               <p css={style.p}>{project.description}</p>
@@ -115,10 +134,15 @@ const Portfolio: React.FC = () => {
               View project
             </a>
           )}
-        </div>
+        </section>
       ))}
-      <footer css={style.footer}>Made with ❤️</footer>
-    </div>
+      <footer css={style.footer} tabIndex={0}>
+        Made with{" "}
+        <span role="img" aria-label="love">
+          ❤️
+        </span>
+      </footer>
+    </main>
   );
 };
 

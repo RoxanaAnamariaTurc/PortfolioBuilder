@@ -8,7 +8,7 @@ const Footer = () => {
 
   return (
     <footer css={style.footer}>
-      © Roxana Turc | Portfolio Generator Project | 2023
+      © Roxana Turc | Portfolio Generator Project | {new Date().getFullYear()}
     </footer>
   );
 };

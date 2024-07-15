@@ -4,8 +4,6 @@ import { MyTheme } from "../../../theme";
 export const getUserdashboardStyles = (
   theme: MyTheme,
   isModalOpen: boolean,
-  inSkillsModalOpen: boolean,
-  isDeleteModalOpen: boolean,
   isEditUserModalOpen: boolean
 ) => {
   return {
@@ -13,13 +11,7 @@ export const getUserdashboardStyles = (
       height: "100%",
       width: "100vw",
       flexGrow: 1,
-      filter:
-        isModalOpen ||
-        inSkillsModalOpen ||
-        isDeleteModalOpen ||
-        isEditUserModalOpen
-          ? "blur(15px)"
-          : "none",
+      filter: isModalOpen || isEditUserModalOpen ? "blur(15px)" : "none",
       transition: ".3s ease-out",
       "@media(max-width: 768px)": {
         padding: "10px",

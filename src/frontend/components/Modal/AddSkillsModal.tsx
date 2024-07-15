@@ -69,57 +69,54 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
   };
 
   return (
-    <div css={style.modal}>
-      <div css={style.div}>
-        <span css={style.closeButton} onClick={closeModal}>
-          &times;
-        </span>
-        <h2 css={style.h2}>Skills</h2>
-        <div css={style.inputGroup}>
-          <label css={style.label} id="tech-skills">
-            Technical Skills
-          </label>
-          <Select
-            aria-labelledby="tech-skills"
-            css={style.skills}
-            isMulti
-            name="technicalSkills"
-            options={techSkills}
-            className="basic-multi-select"
-            classNamePrefix="select"
-            onChange={handleSkills.bind(null, "tech")}
-            value={selectedTechSkills}
-          />
-        </div>
-        <div css={style.inputGroup}>
-          <label css={style.label} id="soft-skills">
-            Soft Skills
-          </label>
-          <Select
-            aria-labelledby="soft-skills"
-            css={style.skills}
-            isMulti
-            name="softSkills"
-            options={softSkills}
-            className="basic-multi-select"
-            classNamePrefix="select"
-            onChange={handleSkills.bind(null, "soft")}
-            value={selectedSoftSkills}
-          />
-        </div>
-        <div css={style.buttonContainer}>
-          <Button
-            color="primary"
-            backgroundColor={"transparent"}
-            borderRadius={"xsmall"}
-            width={"large"}
-            height={"medium"}
-            padding={"xsmall"}
-            onClick={handleAddSkills}
-          >
-            Save
-          </Button>
-        </div>
+    <div>
+      <h2 css={style.h2}>Skills</h2>
+      <div css={style.inputGroup}>
+        <label css={style.label} id="tech-skills" htmlFor="tech-skills">
+          Technical Skills
+        </label>
+        <Select
+          inputId="tech-skills"
+          aria-labelledby="tech-skills"
+          css={style.skills}
+          isMulti
+          name="technicalSkills"
+          options={techSkills}
+          className="basic-multi-select"
+          classNamePrefix="select"
+          onChange={handleSkills.bind(null, "tech")}
+          value={selectedTechSkills}
+        />
+      </div>
+      <div css={style.inputGroup}>
+        <label css={style.label} id="soft-skills" htmlFor="soft-skills">
+          Soft Skills
+        </label>
+        <Select
+          inputId="soft-skills"
+          aria-labelledby="soft-skills"
+          css={style.skills}
+          isMulti
+          name="softSkills"
+          options={softSkills}
+          className="basic-multi-select"
+          classNamePrefix="select"
+          onChange={handleSkills.bind(null, "soft")}
+          value={selectedSoftSkills}
+        />
+      </div>
+      <div css={style.buttonContainer}>
+        <Button
+          color="primary"
+          backgroundColor={"transparent"}
+          borderRadius={"xsmall"}
+          width={"large"}
+          height={"medium"}
+          padding={"xsmall"}
+          onClick={handleAddSkills}
+        >
+          Save
+        </Button>
       </div>
     </div>
   );

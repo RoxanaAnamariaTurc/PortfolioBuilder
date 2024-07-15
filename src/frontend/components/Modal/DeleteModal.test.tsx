@@ -1,11 +1,9 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import DeleteModal from "./DeleteModal";
-import { MyTheme, theme } from "../../../theme";
+import { theme } from "../../../theme";
 import { ThemeProvider } from "@emotion/react";
 import { render, waitFor, fireEvent, screen } from "@testing-library/react";
-import axios from "axios";
-import { deleteProject } from "../../../api";
 
 jest.mock("../../../api", () => ({
   deleteProject: jest.fn(),
@@ -23,10 +21,9 @@ describe("DeleteModal", () => {
   });
   it("renders correctly", () => {
     const props = {
-      projectId: "1",
       closeModal: jest.fn(),
-      projects: [],
-      setProjects: jest.fn(),
+      onDelete: jest.fn(),
+      isLoading: false,
     };
 
     const { getByText } = render(
@@ -43,14 +40,12 @@ describe("DeleteModal", () => {
   });
 
   it("deletes the project and closes the modal when the Delete button is clicked", async () => {
-    const mockUserId = "mockUserId";
     const mockCloseModal = jest.fn();
-    const mockSetProjects = jest.fn();
+    const mockOnDelete = jest.fn(() => Promise.resolve());
     const props = {
-      projectId: "1",
       closeModal: mockCloseModal,
-      projects: [],
-      setProjects: mockSetProjects,
+      onDelete: mockOnDelete,
+      isLoading: false,
     };
 
     render(
@@ -63,20 +58,17 @@ describe("DeleteModal", () => {
     fireEvent.click(deleteButton);
 
     await waitFor(() => {
-      expect(deleteProject).toHaveBeenCalledWith(mockUserId, props.projectId);
-      expect(mockSetProjects).toHaveBeenCalled();
-      expect(mockCloseModal).toHaveBeenCalled();
+      expect(mockOnDelete).toHaveBeenCalled();
     });
   });
 
   it("closes the modal without deleting the project when the Cancel button is clicked", () => {
     const mockCloseModal = jest.fn();
-    const mockSetProjects = jest.fn();
+    const mockOnDelete = jest.fn();
     const props = {
-      projectId: "1",
       closeModal: mockCloseModal,
-      projects: [],
-      setProjects: mockSetProjects,
+      onDelete: mockOnDelete,
+      isLoading: false,
     };
 
     render(
@@ -89,45 +81,6 @@ describe("DeleteModal", () => {
     fireEvent.click(cancelButton);
 
     expect(mockCloseModal).toHaveBeenCalled();
-    expect(axios.delete).not.toHaveBeenCalled();
-    expect(mockSetProjects).not.toHaveBeenCalled();
-  });
-
-  it("logs an error if deleting the project fails", async () => {
-    const mockUserId = "UserId";
-    const mockCloseModal = jest.fn();
-    const mockSetProjects = jest.fn();
-    const props = {
-      projectId: "1",
-      closeModal: mockCloseModal,
-      projects: [],
-      setProjects: mockSetProjects,
-    };
-
-    // Mock deleteProject to reject with an error
-    (deleteProject as jest.Mock).mockRejectedValue(new Error("Mock error"));
-
-    // Spy on console.error
-    const consoleSpy = jest.spyOn(console, "error");
-
-    render(
-      <ThemeProvider theme={theme}>
-        <DeleteModal {...props} />
-      </ThemeProvider>
-    );
-
-    const deleteButton = screen.getByRole("button", { name: /delete/i });
-    fireEvent.click(deleteButton);
-
-    await waitFor(() => {
-      // Check that console.error was called with the correct arguments
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "An error occurred while trying to delete the project",
-        new Error("Mock error")
-      );
-    });
-
-    // Clean up the console spy
-    consoleSpy.mockRestore();
+    expect(mockOnDelete).not.toHaveBeenCalled();
   });
 });

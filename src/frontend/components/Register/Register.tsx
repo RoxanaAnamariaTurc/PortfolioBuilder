@@ -125,6 +125,9 @@ const Register: React.FC<RegisterProps> = () => {
           <p
             data-testid="error-message"
             style={{ color: theme.colors.danger, textAlign: "center" }}
+            role="alert"
+            aria-live="polite"
+            id="passwordError"
           >
             {error}
           </p>
@@ -133,10 +136,11 @@ const Register: React.FC<RegisterProps> = () => {
           css={style.form}
           onSubmit={handleSubmit}
           data-testid="register-form"
+          noValidate
         >
           <div css={style.inputGroup}>
-            <label className="required" htmlFor="fullName">
-              Full Name
+            <label htmlFor="fullName">
+              Full Name <span aria-hidden="true">*</span>
             </label>
             <input
               style={{
@@ -147,6 +151,10 @@ const Register: React.FC<RegisterProps> = () => {
               type="text"
               id="fullName"
               name="fullName"
+              aria-required="true"
+              aria-describedby={
+                fieldErrors.fullName ? "fullNameError" : undefined
+              }
             />
             {fieldErrors.fullName && (
               <p
@@ -155,14 +163,17 @@ const Register: React.FC<RegisterProps> = () => {
                   textAlign: "center",
                   margin: "0",
                 }}
+                role="alert"
+                aria-live="polite"
+                id="fullNameError"
               >
                 Full Name is required
               </p>
             )}
           </div>
           <div css={style.inputGroup}>
-            <label className="required" htmlFor="email">
-              Email
+            <label htmlFor="email">
+              Email <span aria-hidden="true">*</span>
             </label>
             <input
               style={{
@@ -173,6 +184,8 @@ const Register: React.FC<RegisterProps> = () => {
               type="email"
               id="email"
               name="email"
+              aria-required="true"
+              aria-describedby={fieldErrors.email ? "emailError" : undefined}
             />
             {fieldErrors.email && (
               <p
@@ -181,14 +194,17 @@ const Register: React.FC<RegisterProps> = () => {
                   textAlign: "center",
                   margin: "0",
                 }}
+                id="emailError"
+                role="alert"
+                aria-live="polite"
               >
                 Email is required
               </p>
             )}
           </div>
           <div css={style.inputGroup}>
-            <label className="required" htmlFor="jobTitle">
-              Job Title
+            <label htmlFor="jobTitle">
+              Job Title <span aria-hidden="true">*</span>
             </label>
             <input
               style={{
@@ -199,6 +215,10 @@ const Register: React.FC<RegisterProps> = () => {
               type="text"
               id="jobTitle"
               name="jobTitle"
+              aria-required="true"
+              aria-describedby={
+                fieldErrors.jobTitle ? "jobTitleError" : undefined
+              }
             />
             {fieldErrors.jobTitle && (
               <p
@@ -207,14 +227,17 @@ const Register: React.FC<RegisterProps> = () => {
                   textAlign: "center",
                   margin: "0",
                 }}
+                id="jobTitleError"
+                role="alert"
+                aria-live="polite"
               >
                 Job Title is required
               </p>
             )}
           </div>
           <div css={style.inputGroup}>
-            <label className="required" htmlFor="password">
-              Password
+            <label htmlFor="password">
+              Password <span aria-hidden="true">*</span>
             </label>
             <input
               style={{
@@ -225,17 +248,19 @@ const Register: React.FC<RegisterProps> = () => {
               type="password"
               id="password"
               name="password"
-              required
+              aria-required="true"
+              aria-describedby={
+                fieldErrors.password ? "passwordError" : undefined
+              }
             />
           </div>
-
           <div css={style.inputGroup}>
             <p>Profile image</p>
             <input type="file" id="profileImage" accept=".jpg,.jpeg,.png" />
           </div>
           <div css={style.inputGroup}>
-            <label className="required" htmlFor="passwordConfirmation">
-              Confirm Password
+            <label htmlFor="passwordConfirmation">
+              Confirm Password <span aria-hidden="true">*</span>
             </label>
             <input
               style={{
@@ -246,7 +271,10 @@ const Register: React.FC<RegisterProps> = () => {
               type="password"
               id="passwordConfirmation"
               name="passwordConfirmation"
-              required
+              aria-required="true"
+              aria-describedby={
+                fieldErrors.passwordConfirmation ? "passwordError" : undefined
+              }
             />
           </div>
           <div css={style.buttonWrapper}>

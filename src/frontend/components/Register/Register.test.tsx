@@ -44,11 +44,11 @@ describe("Register component", () => {
     );
 
     const form = getByTestId("register-form");
-    const fullNameInput = getByLabelText("Full Name");
-    const emailInput = getByLabelText("Email");
-    const jobTitleInput = getByLabelText("Job Title");
-    const passwordInput = getByLabelText("Password");
-    const confirmPasswordInput = getByLabelText("Confirm Password");
+    const fullNameInput = getByLabelText("Full Name *");
+    const emailInput = getByLabelText("Email *");
+    const jobTitleInput = getByLabelText("Job Title *");
+    const passwordInput = getByLabelText("Password *");
+    const confirmPasswordInput = getByLabelText("Confirm Password *");
 
     fireEvent.change(fullNameInput, { target: { value: "Test User" } });
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
@@ -79,11 +79,11 @@ describe("Register component", () => {
     );
 
     const form = getByTestId("register-form");
-    const fullNameInput = getByLabelText("Full Name");
-    const emailInput = getByLabelText("Email");
-    const jobTitleInput = getByLabelText("Job Title");
-    const passwordInput = getByLabelText("Password");
-    const confirmPasswordInput = getByLabelText("Confirm Password");
+    const fullNameInput = getByLabelText("Full Name *");
+    const emailInput = getByLabelText("Email *");
+    const jobTitleInput = getByLabelText("Job Title *");
+    const passwordInput = getByLabelText("Password *");
+    const confirmPasswordInput = getByLabelText("Confirm Password *");
 
     fireEvent.change(fullNameInput, { target: { value: "Test User" } });
     fireEvent.change(emailInput, { target: { value: "user@example.com" } });

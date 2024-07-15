@@ -7,16 +7,12 @@ import {
   render,
   fireEvent,
   cleanup,
-  getByLabelText,
   within,
   waitFor,
   act,
-  findByText,
-  findByTestId,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import { editProject } from "../../../api";
 
 jest.mock("axios", () => ({
   get: jest.fn(),
@@ -71,6 +67,7 @@ describe("Add Projects Modal", () => {
         <AddProjectsModal
           closeModal={() => {}}
           onProjectSubmission={() => {}}
+          isOpen
         />
       </ThemeProvider>
     );
@@ -81,6 +78,7 @@ describe("Add Projects Modal", () => {
         <AddProjectsModal
           closeModal={() => {}}
           onProjectSubmission={() => {}}
+          isOpen
         />
       </ThemeProvider>
     );
@@ -97,6 +95,7 @@ describe("Add Projects Modal", () => {
         <AddProjectsModal
           closeModal={mockCloseModal}
           onProjectSubmission={() => {}}
+          isOpen
         />
       </ThemeProvider>
     );
@@ -124,6 +123,7 @@ describe("Add Projects Modal", () => {
         <AddProjectsModal
           closeModal={() => {}}
           onProjectSubmission={() => {}}
+          isOpen
         />
       </ThemeProvider>
     );
@@ -149,6 +149,7 @@ describe("Add Projects Modal", () => {
         <AddProjectsModal
           closeModal={() => {}}
           onProjectSubmission={() => {}}
+          isOpen
         />
       </ThemeProvider>
     );
