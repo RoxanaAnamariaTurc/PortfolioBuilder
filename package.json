@@ -24,7 +24,6 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.4.1",
-    "react-scripts": "^5.0.1",
     "serve": "^14.2.4",
     "typeface-roboto": "^1.1.13",
     "uuid": "^11.1.0",
@@ -76,7 +75,6 @@
     "@storybook/addon-links": "^8.6.11",
     "@storybook/addon-onboarding": "^8.6.11",
     "@storybook/blocks": "^8.6.11",
-    "@storybook/preset-create-react-app": "^8.6.11",
     "@storybook/react": "^8.6.11",
     "@storybook/react-webpack5": "^8.6.11",
     "@storybook/test": "^8.6.11",
@@ -101,6 +99,9 @@
     "ts-jest": "^29.3.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
+    "vite": "^5.4.10",
+    "@vitejs/plugin-react-swc": "^3.6.0",
+    "@swc/plugin-emotion": "^2.7.4",
     "webpack": "^5.98.0"
   }
 }
