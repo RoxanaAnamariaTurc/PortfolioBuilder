@@ -1,6 +1,6 @@
 {
-  "watch": ["src"],
-  "ext": ".ts,.js",
+  "watch": ["src/backend"],
+  "ext": "ts",
   "ignore": [],
-  "exec": "ts-node ./src/server.ts"
+  "exec": "ts-node --esm --project tsconfig.backend.json src/backend/server.ts"
 }

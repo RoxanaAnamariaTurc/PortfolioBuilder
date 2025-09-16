@@ -30,13 +30,16 @@
     "web-vitals": "^4.2.4"
   },
   "scripts": {
-    "start": "node src/backend/server.js",
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "start": "npm run start:backend",
+    "dev": "npm run dev:backend",
+    "build": "react-scripts build",
     "test": "jest",
-    "start:server": "nodemon src/backend/server.js",
-    "start:client": "vite --host",
+    "eject": "react-scripts eject",
+    "start:backend": "npm run build:backend && node dist/backend/server.js",
+    "dev:backend": "nodemon --config src/nodemon.json",
+    "build:backend": "tsc -p tsconfig.backend.json",
+    "start:server": "npm run dev:backend",
+    "start:client": "react-scripts start",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
