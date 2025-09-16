@@ -21,6 +21,9 @@ jest.mock("../../../api", () => ({
   fetchSkills: jest.fn(),
 }));
 
+const env = import.meta.env as unknown as Record<string, string | undefined>;
+const originalApiUrl = env.VITE_API_URL;
+
 const mockSetUser = jest.fn((user: User | null) => {}) as React.Dispatch<
   React.SetStateAction<User | null>
 >;
@@ -68,7 +71,7 @@ const mockContext = {
 
 describe("UserDashboard", () => {
   beforeEach(() => {
-    process.env.REACT_APP_API_URL = "http://localhost:3001";
+    env.VITE_API_URL = "http://localhost:3001";
     localStorage.setItem("portfolioToken", mockUser.portfolioToken);
     (fetchProjects as jest.Mock).mockResolvedValue(mockProjects);
     (fetchSkills as jest.Mock).mockResolvedValue(mockSkills);
@@ -80,6 +83,10 @@ describe("UserDashboard", () => {
   afterEach(() => {
     localStorage.clear();
     jest.resetAllMocks();
+  });
+
+  afterAll(() => {
+    env.VITE_API_URL = originalApiUrl;
   });
 
   it("renders user profile information", async () => {

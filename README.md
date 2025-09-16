@@ -20,6 +20,7 @@
 - Cors
 - Mongoose
 - Emotion Styling
+- Vite
 
 #### Prerequisites
 
@@ -40,8 +41,10 @@ To ensure the project runs smoothly and no errors are encounter follow the next 
 - Make sure all the dependencies are up to date
   `npm update`
 - To run the server use `npm run start:server`
-- To run the frontend use `npm run start:client`
-- The project will open on your localhost:3000 and the server will open on localhost:3001
+- To run the frontend development server use `npm run dev`
+- To create a production build locally use `npm run build`
+- To preview the production build use `npm run preview`
+- The frontend opens on `http://localhost:3000` (configured via Vite) and the server runs on `http://localhost:3001`
 
 ### Testing
 
@@ -60,7 +63,7 @@ Storybook is used for building UI components and pages in isolation. This projec
 
 The PortfolioBuilder project follows a typical MERN (MongoDB, Express, React, Node.js) architecture:
 
-- Frontend: Built with React and TypeScript, styled with Emotion, and bundled using Webpack.
+- Frontend: Built with React and TypeScript, styled with Emotion, and bundled using Vite.
 - Backend: Implemented with Node.js and Express.js, using Mongoose for MongoDB interactions.
 - Database: MongoDB is used for data storage.
 
@@ -106,8 +109,8 @@ To set up different environments (development and production):
 
 - Frontend (Netlify):
   Connect your GitHub repository to Netlify.
-  Set up continuous deployment for the main branch.
-  Ensure environment variables are configured in Netlify settings.
+  Configure the build command as `npm run build` and the publish directory as `dist`.
+  Ensure environment variables (for example `VITE_API_URL`) are configured in Netlify settings.
 
 - Backend (Heroku):
 

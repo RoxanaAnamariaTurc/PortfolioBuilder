@@ -16,6 +16,16 @@ import { mock } from "node:test";
 jest.mock("axios");
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const env = import.meta.env as unknown as Record<string, string | undefined>;
+const originalApiUrl = env.VITE_API_URL;
+
+beforeEach(() => {
+  env.VITE_API_URL = "http://localhost:3001";
+});
+
+afterAll(() => {
+  env.VITE_API_URL = originalApiUrl;
+});
 
 describe("Testing the api functions", () => {
   afterEach(() => {
@@ -73,7 +83,7 @@ describe("Testing the api functions", () => {
     mockedAxios.delete.mockResolvedValue({});
     await deleteProject("1", "1");
     expect(mockedAxios.delete).toHaveBeenCalledWith(
-      `${process.env.REACT_APP_API_URL}/users/1/projects/1`
+      `${import.meta.env.VITE_API_URL}/users/1/projects/1`
     );
   });
   it("register a user", async () => {
@@ -113,7 +123,7 @@ describe("Testing the api functions", () => {
     const response = { data: [{ _id: "1", name: "Project 1" }] };
     const userId = "1";
     const projectId = "1";
-    const API_BASE_URL = process.env.REACT_APP_API_URL;
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
     mockedAxios.put.mockResolvedValue(response);
     const result = await editProject(userId, projectId, mockData);
     expect(result).toEqual(
