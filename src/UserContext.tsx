@@ -1,15 +1,11 @@
 import axios from "axios";
-import React, { useCallback, useEffect, useState } from "react";
-import LoadingBars from "./frontend/components/LoadingBars/LoadingBars";
-
-export interface User {
-  _id: string;
-  fullName: string;
-  email: string;
-  password: string;
-  jobTitle: string;
-  profileImage: string;
-}
+import React, { useCallback, useMemo } from "react";
+import {
+  QueryKey,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { User } from "./types";
 
 export interface UserContextProps {
   user: User | null;
@@ -20,44 +16,68 @@ export const UserContext = React.createContext<UserContextProps | undefined>(
   undefined
 );
 
+const API_BASE_URL = process.env.REACT_APP_API_URL;
+
+const getPortfolioToken = () =>
+  (typeof window !== "undefined"
+    ? localStorage.getItem("portfolioToken")
+    : null);
+
+export const getUserQueryKey = (token: string | null): QueryKey => [
+  "user",
+  token ?? "guest",
+];
+
+export const useUserQuery = () => {
+  const token = getPortfolioToken();
+  const hasToken = Boolean(token);
+
+  return useQuery<User | null, Error>({
+    queryKey: getUserQueryKey(token),
+    queryFn: async () => {
+      if (!hasToken || !token) {
+        return null;
+      }
+
+      const response = await axios.get(`${API_BASE_URL}/user/${token}`);
+      return response.data.user as User;
+    },
+    enabled: hasToken,
+    suspense: hasToken,
+    placeholderData: () => null,
+  });
+};
+
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: user } = useUserQuery();
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL;
+  const setUser = useCallback(
+    (value: React.SetStateAction<User | null>) => {
+      const token = getPortfolioToken();
+      queryClient.setQueryData<User | null>(
+        getUserQueryKey(token),
+        (previous) =>
+          typeof value === "function"
+            ? (value as (prev: User | null) => User | null)(previous ?? null)
+            : value
+      );
+    },
+    [queryClient]
+  );
 
-  const fetchUser = useCallback(async () => {
-    const token = localStorage.getItem("portfolioToken");
-    if (token) {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/user/${token}`);
-        setUser(response.data.user);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setLoading(false);
-    }
-  }, [API_BASE_URL]);
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
-  if (loading) {
-    const bars = [
-      { width: "300px", delay: "0s" },
-      { width: "200px", delay: "0.2s" },
-      { width: "300px", delay: "0.4s" },
-    ];
-    return <LoadingBars bars={bars} />;
-  }
+  const contextValue = useMemo(
+    () => ({
+      user: user ?? null,
+      setUser,
+    }),
+    [setUser, user]
+  );
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={contextValue}>
       {children}
     </UserContext.Provider>
   );

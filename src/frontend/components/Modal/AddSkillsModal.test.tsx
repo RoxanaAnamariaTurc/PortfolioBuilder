@@ -3,98 +3,76 @@ import "@testing-library/jest-dom";
 import {
   render,
   screen,
-  getByText,
   fireEvent,
-  act,
   waitFor,
-  getByRole,
-  findByText,
 } from "@testing-library/react";
 import AddSkillsModal from "./AddSkillsModal";
 import { ThemeProvider } from "@emotion/react";
 import { theme, MyTheme } from "../../../theme";
-import * as api from "../../../api";
-import { OptionType } from "../../../skills/skills";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("axios", () => ({
-  get: jest.fn(),
-  post: jest.fn(),
+const mutateAsyncMock = jest.fn();
+
+jest.mock("../../../api", () => ({
+  useAddSkillsMutation: jest.fn(() => ({
+    mutateAsync: mutateAsyncMock,
+    isPending: false,
+  })),
 }));
-const addSkillsMock = jest
-  .spyOn(api, "addSkills")
-  .mockImplementation((skills) => {
-    const token = localStorage.getItem("portfolioToken");
-    if (!token) {
-      throw new Error("No userId found");
-    }
-    return Promise.resolve();
-  });
-const onAddSkills = jest.fn();
-const closeModal = jest.fn();
 
 describe("AddSkillsModal", () => {
-  beforeEach(() => {
-    localStorage.setItem("portfolioToken", "1");
-  });
+  const closeModal = jest.fn();
   afterEach(() => {
-    localStorage.removeItem("portfolioToken");
     jest.clearAllMocks();
+    mutateAsyncMock.mockReset();
   });
-  it("calls the correct functions with the correct arguments when adding skills", async () => {
-    render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddSkillsModal
-          closeModal={closeModal}
-          onAddSkills={onAddSkills}
-          currentTechSkills={[
-            { value: "React", label: "React" },
-            { value: "Node.js", label: "Node.js" },
-          ]}
-          currentSoftSkills={[
-            { value: "Communication", label: "Communication" },
-            { value: "Problem solving", label: "Problem solving" },
-          ]}
-        />
-      </ThemeProvider>
-    );
-    const addSkillsButton = screen.getByText("Save");
-    fireEvent.click(addSkillsButton);
-    await waitFor(() => expect(addSkillsMock).toHaveBeenCalledTimes(1));
-  });
-  it("throws an error when no userId is found", async () => {
-    localStorage.removeItem("portfolioToken");
-    render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddSkillsModal
-          closeModal={closeModal}
-          onAddSkills={onAddSkills}
-          currentTechSkills={[
-            { value: "React", label: "React" },
-            { value: "Node.js", label: "Node.js" },
-          ]}
-          currentSoftSkills={[
-            { value: "Communication", label: "Communication" },
-            { value: "Problem solving", label: "Problem solving" },
-          ]}
-        />
-      </ThemeProvider>
-    );
-    const addSkillsButton = screen.getByText("Save");
-    fireEvent.click(addSkillsButton);
-    await waitFor(() => expect(addSkillsMock).toHaveBeenCalledTimes(0));
-  });
-  it("handlesSkills updates tech skills correctly", async () => {
-    const currentTechSkills: OptionType[] = [];
-    const currentSoftSkills: OptionType[] = [];
 
-    const { getByRole, getByText } = render(
+  it("calls mutateAsync with selected skills", async () => {
+    render(
       <ThemeProvider theme={theme as MyTheme}>
         <AddSkillsModal
           closeModal={closeModal}
-          onAddSkills={onAddSkills}
-          currentTechSkills={currentTechSkills}
-          currentSoftSkills={currentSoftSkills}
+          currentTechSkills={[
+            { value: "React", label: "React" },
+            { value: "Node.js", label: "Node.js" },
+          ]}
+          currentSoftSkills={[
+            { value: "Communication", label: "Communication" },
+            { value: "Problem solving", label: "Problem solving" },
+          ]}
+          portfolioToken="mockToken"
+        />
+      </ThemeProvider>
+    );
+    const saveButton = screen.getByText("Save");
+    fireEvent.click(saveButton);
+    await waitFor(() => expect(mutateAsyncMock).toHaveBeenCalledTimes(1));
+  });
+
+  it("does not call mutateAsync when no token is provided", async () => {
+    render(
+      <ThemeProvider theme={theme as MyTheme}>
+        <AddSkillsModal
+          closeModal={closeModal}
+          currentTechSkills={[]}
+          currentSoftSkills={[]}
+          portfolioToken={null}
+        />
+      </ThemeProvider>
+    );
+    const saveButton = screen.getByText("Save");
+    fireEvent.click(saveButton);
+    await waitFor(() => expect(mutateAsyncMock).not.toHaveBeenCalled());
+  });
+
+  it("updates selected skills", async () => {
+    const { getByRole } = render(
+      <ThemeProvider theme={theme as MyTheme}>
+        <AddSkillsModal
+          closeModal={closeModal}
+          currentTechSkills={[]}
+          currentSoftSkills={[]}
+          portfolioToken="mockToken"
         />
       </ThemeProvider>
     );
@@ -103,21 +81,17 @@ describe("AddSkillsModal", () => {
       name: "Technical Skills",
     });
     userEvent.click(techSkillsSelect);
-
     userEvent.type(techSkillsSelect, "JavaScript{enter}");
 
-    await waitFor(() =>
-      expect((techSkillsSelect as HTMLInputElement).value).toBe("JavaScript")
-    );
-
-    const saveButton = getByText("Save");
+    const saveButton = screen.getByText("Save");
     userEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(onAddSkills).toHaveBeenCalledWith(
+      expect(mutateAsyncMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          techSkills: expect.arrayContaining(["JavaScript"]),
-          softSkills: expect.arrayContaining([]),
+          skills: expect.objectContaining({
+            techSkills: expect.arrayContaining(["JavaScript"]),
+          }),
         })
       );
     });

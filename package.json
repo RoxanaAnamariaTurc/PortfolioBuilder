@@ -7,6 +7,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@tanstack/react-query": "^5.64.2",
     "@storybook/addon-themes": "^8.6.11",
     "@types/node": "^22.13.14",
     "@types/react": "^19.0.12",

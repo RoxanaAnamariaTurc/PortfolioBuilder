@@ -7,22 +7,22 @@ import { OptionType } from "../../../skills/skills";
 import Select from "react-select";
 import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../../hooks/useTheme";
-import { Skills } from "../UserDashboard/UserDashboard";
+import { Skills } from "../../../types";
 import Button from "../Button/Button";
-import { addSkills } from "../../../api";
+import { useAddSkillsMutation } from "../../../api";
 
 interface AddSkillsModalProps {
   closeModal: () => void;
-  onAddSkills: (skills: Skills) => void;
   currentTechSkills: OptionType[];
   currentSoftSkills: OptionType[];
+  portfolioToken: string | null;
 }
 
 const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
   closeModal,
-  onAddSkills,
   currentSoftSkills,
   currentTechSkills,
+  portfolioToken,
 }) => {
   const [selectedTechSkills, setSelectedTechSkills] =
     useState<OptionType[]>(currentTechSkills);
@@ -31,6 +31,7 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
 
   const theme = useTheme();
   const style = getModalStyles(theme);
+  const addSkillsMutation = useAddSkillsMutation(portfolioToken);
   useEffect(() => {
     setSelectedTechSkills(currentTechSkills);
     setSelectedSoftSkills(currentSoftSkills);
@@ -56,16 +57,17 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
       softSkills: selectedSoftSkills.map((skill) => skill.value),
     };
 
-    const portfolioToken = localStorage.getItem("portfolioToken");
-    if (portfolioToken) {
-      try {
-        await addSkills(portfolioToken, skills);
-        onAddSkills(skills);
-      } catch (error) {
-        console.error("An error occurred while trying to add skills", error);
-      }
+    if (!portfolioToken) {
+      closeModal();
+      return;
     }
-    closeModal();
+
+    try {
+      await addSkillsMutation.mutateAsync({ skills });
+      closeModal();
+    } catch (error) {
+      console.error("An error occurred while trying to add skills", error);
+    }
   };
 
   return (
@@ -113,6 +115,7 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
           width={"large"}
           height={"medium"}
           padding={"xsmall"}
+          disabled={addSkillsMutation.isPending}
           onClick={handleAddSkills}
         >
           Save

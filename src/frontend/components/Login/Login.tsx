@@ -31,7 +31,9 @@ const Login = () => {
           const user = data.user;
           setUser(user);
           setError(false);
-          localStorage.setItem("userId", user.id);
+          if (user.id || user._id) {
+            localStorage.setItem("userId", user.id ?? user._id ?? "");
+          }
           navigate("/userdashboard");
         } else {
           setError(true);

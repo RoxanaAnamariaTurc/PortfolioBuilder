@@ -2,69 +2,73 @@
 import React, { useEffect, useRef, useState } from "react";
 import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../../hooks/useTheme";
-import { Project } from "../UserDashboard/UserDashboard";
+import { Project } from "../../../types";
 import TextArea from "../TextArea/TextArea";
 import Button from "../Button/Button";
-import { createProject, editProject } from "../../../api";
+import {
+  useCreateProjectMutation,
+  useEditProjectMutation,
+} from "../../../api";
 import LoadingBars from "../LoadingBars/LoadingBars";
 
 interface AddProjectsModalProps {
   closeModal: () => void;
   projectToEdit?: Project | null;
-  onProjectSubmission: (
-    project: {
-      id: string;
-      name: string;
-      description: string;
-      image: string;
-      link: string;
-    },
-    isEdit: boolean
-  ) => void;
   isOpen: boolean;
+  userId: string;
+  portfolioToken: string | null;
 }
-
-const initialFormState = {
-  userId: localStorage.getItem("userId"),
-  name: "",
-  description: "",
-  link: "",
-  image: null,
-};
 
 const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   closeModal,
   projectToEdit,
-  onProjectSubmission,
   isOpen,
+  userId,
+  portfolioToken,
 }) => {
   const theme = useTheme();
   const style = getModalStyles(theme);
 
   type FormState = {
-    userId: string | null;
+    userId: string;
     name: string;
     description: string;
     link: string;
     image: File | null;
   };
-  const [formState, setFormState] = useState<FormState>(initialFormState);
-  const [isLoading, setIsLoading] = useState(false);
+  const buildInitialState = (id: string): FormState => ({
+    userId: id,
+    name: "",
+    description: "",
+    link: "",
+    image: null,
+  });
+
+  const [formState, setFormState] = useState<FormState>(() =>
+    buildInitialState(userId)
+  );
   const [fileName, setFileName] = useState("");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const createProjectMutation = useCreateProjectMutation(portfolioToken);
+  const editProjectMutation = useEditProjectMutation(portfolioToken);
+
   useEffect(() => {
     if (projectToEdit) {
       setFormState({
-        userId: localStorage.getItem("userId"),
+        userId,
         name: projectToEdit.name,
         description: projectToEdit.description,
         link: projectToEdit.link,
         image: null,
       });
+      setFileName("");
+    } else {
+      setFormState(buildInitialState(userId));
+      setFileName("");
     }
-  }, [projectToEdit]);
+  }, [projectToEdit, userId]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -82,8 +86,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   ) => {
     e.preventDefault();
     if (!validateForm()) return;
-    const userId = localStorage.getItem("userId");
-
     if (!userId) {
       setErrorMessage("Please login to add a project");
       return;
@@ -95,40 +97,27 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
       const value = formState[formKey] || "";
       formData.append(formKey, value);
     });
-    setIsLoading(true);
     try {
       const isEdit = !!projectToEdit?._id;
-      const response = await (isEdit
-        ? editProject(userId, projectToEdit?._id, formData)
-        : createProject(formData));
-      onProjectSubmission(
-        { ...response, _id: response._id || response.id },
-        isEdit
-      );
+      if (isEdit && projectToEdit?._id) {
+        await editProjectMutation.mutateAsync({
+          userId,
+          projectId: projectToEdit._id,
+          formData,
+        });
+      } else {
+        await createProjectMutation.mutateAsync(formData);
+      }
       closeModal();
-      setFormState(initialFormState);
+      setFormState(buildInitialState(userId));
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+      setErrorMessage(null);
     } catch (error: any) {
-      if (error.response) {
-        // Server responded with a status other than 2xx
-        setErrorMessage(`Server error: ${error.response.data.message}`);
-      } else if (error.request) {
-        // Request was made but no response received
-        setErrorMessage(
-          "Network error: Please check your internet connection."
-        );
-      } else {
-        // Something else happened
-        setErrorMessage(`Error: ${error.message}`);
-      }
-      console.error(
-        "An error occurred while trying to add the project:",
-        error
-      );
-    } finally {
-      setIsLoading(false);
+      const message = error?.message || "An unexpected error occurred.";
+      setErrorMessage(message);
+      console.error("An error occurred while trying to add the project:", error);
     }
   };
 
@@ -140,7 +129,10 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
       }));
       setFileName(value[0].name);
     } else {
-      setFormState((prevState) => ({ ...prevState, [field]: value }));
+      setFormState((prevState) => ({
+        ...prevState,
+        [field]: value as string,
+      }));
     }
   };
 
@@ -159,7 +151,7 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
 
   return (
     <div>
-      {isLoading ? (
+      {createProjectMutation.isPending || editProjectMutation.isPending ? (
         <LoadingBars bars={bars} />
       ) : (
         <>
