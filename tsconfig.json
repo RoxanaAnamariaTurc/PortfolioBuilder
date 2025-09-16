@@ -19,5 +19,5 @@
     "types": ["jest"]
   },
   "include": ["src/**/*", "../setupTests.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/backend"]
 }
