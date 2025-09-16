@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ActionMeta, OnChangeValue } from "react-select";
 import { softSkills } from "../../../skills/skills";
 import { techSkills } from "../../../skills/skills";
@@ -9,7 +9,10 @@ import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../../hooks/useTheme";
 import { Skills } from "../UserDashboard/UserDashboard";
 import Button from "../Button/Button";
-import { addSkills } from "../../../api";
+import { updateSkills } from "../../../api";
+import { UserContext, UserContextProps } from "../../../UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface AddSkillsModalProps {
   closeModal: () => void;
@@ -31,6 +34,8 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
 
   const theme = useTheme();
   const style = getModalStyles(theme);
+  const { clearSession } = useContext(UserContext) as UserContextProps;
+  const navigate = useNavigate();
   useEffect(() => {
     setSelectedTechSkills(currentTechSkills);
     setSelectedSoftSkills(currentSoftSkills);
@@ -56,16 +61,18 @@ const AddSkillsModal: React.FC<AddSkillsModalProps> = ({
       softSkills: selectedSoftSkills.map((skill) => skill.value),
     };
 
-    const portfolioToken = localStorage.getItem("portfolioToken");
-    if (portfolioToken) {
-      try {
-        await addSkills(portfolioToken, skills);
-        onAddSkills(skills);
-      } catch (error) {
+    try {
+      const updatedSkills = await updateSkills(skills);
+      onAddSkills(updatedSkills);
+      closeModal();
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        clearSession();
+        navigate("/login");
+      } else {
         console.error("An error occurred while trying to add skills", error);
       }
     }
-    closeModal();
   };
 
   return (

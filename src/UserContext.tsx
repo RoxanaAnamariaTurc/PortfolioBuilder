@@ -1,12 +1,11 @@
-import axios from "axios";
 import React, { useCallback, useEffect, useState } from "react";
 import LoadingBars from "./frontend/components/LoadingBars/LoadingBars";
+import { getCurrentUser } from "./api";
 
 export interface User {
-  _id: string;
+  id: string;
   fullName: string;
   email: string;
-  password: string;
   jobTitle: string;
   profileImage: string;
 }
@@ -14,6 +13,11 @@ export interface User {
 export interface UserContextProps {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  portfolioToken: string | null;
+  setPortfolioToken: React.Dispatch<React.SetStateAction<string | null>>;
+  refreshUser: () => Promise<void>;
+  clearSession: () => void;
+  loading: boolean;
 }
 
 export const UserContext = React.createContext<UserContextProps | undefined>(
@@ -24,29 +28,43 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [portfolioToken, setPortfolioToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = process.env.REACT_APP_API_URL;
+  const clearSession = useCallback(() => {
+    setUser(null);
+    setPortfolioToken(null);
+  }, []);
 
   const fetchUser = useCallback(async () => {
-    const token = localStorage.getItem("portfolioToken");
-    if (token) {
+    try {
+      const response = await getCurrentUser();
+      setUser(response.user);
+      setPortfolioToken(response.portfolioToken ?? null);
+    } catch (error) {
+      clearSession();
+      throw error;
+    }
+  }, [clearSession]);
+
+  const refreshUser = useCallback(async () => {
+    await fetchUser();
+  }, [fetchUser]);
+
+  useEffect(() => {
+    const loadUser = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/user/${token}`);
-        setUser(response.data.user);
+        await fetchUser();
       } catch (error) {
-        console.log(error);
+        // Ignore errors during initial load; user will remain signed out
       } finally {
         setLoading(false);
       }
-    } else {
-      setLoading(false);
-    }
-  }, [API_BASE_URL]);
+    };
 
-  useEffect(() => {
-    fetchUser();
+    loadUser();
   }, [fetchUser]);
+
   if (loading) {
     const bars = [
       { width: "300px", delay: "0s" },
@@ -57,7 +75,17 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider
+      value={{
+        user,
+        setUser,
+        portfolioToken,
+        setPortfolioToken,
+        refreshUser,
+        clearSession,
+        loading,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

@@ -36,7 +36,7 @@ To ensure the project runs smoothly and no errors are encounter follow the next 
 - Navigate to the project directory
   `cd portfolio-generator`
 - Install all the dependencies
-  `npm install `
+  `npm install`
 - Make sure all the dependencies are up to date
   `npm update`
 - To run the server use `npm run start:server`
@@ -71,17 +71,26 @@ The PortfolioBuilder project follows a typical MERN (MongoDB, Express, React, No
 - Backend Processing: The backend processes the requests, interacts with MongoDB to perform CRUD operations, and sends - responses back to the frontend.
 - State Management: The frontend updates its state based on the responses from the backend.
 
-#### API Endpoints
+#### Authentication & API Endpoints
 
-- User Registration: POST /register
-- User Login: POST /login
-- Fetch User Data: GET /user/:id
-- Fetch User Skills: GET /user/:id/skills
-- Add Project: POST /projects
-- Edit Project: PUT /projects/:userId/:projectId
-- Delete Project: DELETE /users/:userId/projects/:projectId
-- Add Skills: POST /user/:id/skills
-- Fetch Projects: GET /projects/:userId
+The application issues short-lived, cookie-backed sessions. The frontend must send authenticated requests with
+`withCredentials: true` so the browser includes the httpOnly `accessToken` and `refreshToken` cookies.
+
+- `POST /register` — creates a user, stores an encrypted session, and returns the shareable portfolio token.
+- `POST /login` — rotates the portfolio token, refreshes the session cookies, and returns the authenticated user.
+- `POST /refresh` — swaps an expired access token for a new pair of session cookies.
+- `POST /logout` — clears the session cookies and revokes the stored session identifiers.
+- `GET /me` — returns the authenticated user (used to guard dashboard and project routes).
+- `POST /portfolio/token/rotate` — issues a new shareable portfolio token without altering the active session.
+- `GET /portfolio/:token` — publicly renders a portfolio for the supplied share token.
+- `GET /projects` — retrieves the signed-in user’s projects.
+- `POST /projects` — creates a project for the signed-in user.
+- `PUT /projects/:projectId` — updates one of the signed-in user’s projects.
+- `DELETE /projects/:projectId` — removes one of the signed-in user’s projects.
+- `GET /skills` — fetches the signed-in user’s skill lists.
+- `PUT /skills` — replaces the signed-in user’s skill lists.
+- `GET /user/:token` — publicly fetches a user profile by portfolio token.
+- `GET /user/:token/skills` — publicly fetches skill lists by portfolio token.
 
 ### Environment Setup
 
@@ -89,11 +98,18 @@ To set up different environments (development and production):
 
 #### Development:
 
-- Configure your .env file for local development.
+- Configure your `.env` file for local development.
+- Required variable:
+  - `MONGODB_URI` — connection string for your MongoDB instance.
+- Optional variables:
+  - `PORT` — overrides the default API port (3001).
+  - `ACCESS_TOKEN_EXPIRATION_MINUTES` — minutes before an access token expires (default 15).
+  - `REFRESH_TOKEN_EXPIRATION_DAYS` — days before a refresh token expires (default 7).
 - Use local MongoDB or a development MongoDB Atlas cluster.
-  Production:
 
-- Configure your environment variables on Heroku and Netlify.
+#### Production:
+
+- Configure the same environment variables on Heroku (backend) and Netlify (frontend).
 - Use MongoDB Atlas for a production database.
 
 ### Deployment Details
@@ -146,3 +162,9 @@ This project is set to be open source in future development steps. Here are some
 - Documentation: Comprehensive documentation for developers and end-users.
 
 Due to time constraints allocated for my dissertation, these features are not possible to be completed before the deadline. However, once the open source license is established, we welcome contributions and look forward to collaborative development to make this project robust and widely useful.
+
+### Client-side session handling
+
+- The React client configures Axios with `withCredentials: true` for authenticated requests so the browser automatically forwards the httpOnly session cookies.
+- Sensitive identifiers are kept out of `localStorage`; the `UserProvider` bootstraps user state by calling `GET /me` and exposes helpers to clear the session on `401` responses.
+- Dashboard and project routes should gate access by awaiting `/me` and redirecting unauthenticated users to `/login`.

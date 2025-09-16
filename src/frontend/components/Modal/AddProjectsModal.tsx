@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../../hooks/useTheme";
 import { Project } from "../UserDashboard/UserDashboard";
@@ -7,6 +7,9 @@ import TextArea from "../TextArea/TextArea";
 import Button from "../Button/Button";
 import { createProject, editProject } from "../../../api";
 import LoadingBars from "../LoadingBars/LoadingBars";
+import { UserContext, UserContextProps } from "../../../UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface AddProjectsModalProps {
   closeModal: () => void;
@@ -25,7 +28,6 @@ interface AddProjectsModalProps {
 }
 
 const initialFormState = {
-  userId: localStorage.getItem("userId"),
   name: "",
   description: "",
   link: "",
@@ -40,9 +42,10 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
 }) => {
   const theme = useTheme();
   const style = getModalStyles(theme);
+  const { clearSession } = useContext(UserContext) as UserContextProps;
+  const navigate = useNavigate();
 
   type FormState = {
-    userId: string | null;
     name: string;
     description: string;
     link: string;
@@ -57,7 +60,6 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   useEffect(() => {
     if (projectToEdit) {
       setFormState({
-        userId: localStorage.getItem("userId"),
         name: projectToEdit.name,
         description: projectToEdit.description,
         link: projectToEdit.link,
@@ -82,36 +84,40 @@ const AddProjectsModal: React.FC<AddProjectsModalProps> = ({
   ) => {
     e.preventDefault();
     if (!validateForm()) return;
-    const userId = localStorage.getItem("userId");
-
-    if (!userId) {
-      setErrorMessage("Please login to add a project");
-      return;
-    }
-
     const formData = new FormData();
-    Object.keys(formState).forEach((key) => {
-      const formKey = key as keyof typeof formState;
-      const value = formState[formKey] || "";
-      formData.append(formKey, value);
-    });
+    formData.append("name", formState.name);
+    formData.append("description", formState.description);
+    formData.append("link", formState.link);
+    if (formState.image) {
+      formData.append("image", formState.image);
+    }
     setIsLoading(true);
     try {
       const isEdit = !!projectToEdit?._id;
       const response = await (isEdit
-        ? editProject(userId, projectToEdit?._id, formData)
+        ? editProject(projectToEdit?._id, formData)
         : createProject(formData));
-      onProjectSubmission(
-        { ...response, _id: response._id || response.id },
-        isEdit
-      );
+      const projectId = response.id || response._id || projectToEdit?._id;
+      const normalizedProject = {
+        id: projectId,
+        _id: projectId,
+        name: response.name,
+        description: response.description,
+        image: response.image,
+        link: response.link,
+      };
+      onProjectSubmission(normalizedProject, isEdit);
       closeModal();
       setFormState(initialFormState);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     } catch (error: any) {
-      if (error.response) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        setErrorMessage("Session expired. Please log in again.");
+        clearSession();
+        navigate("/login");
+      } else if (error.response) {
         // Server responded with a status other than 2xx
         setErrorMessage(`Server error: ${error.response.data.message}`);
       } else if (error.request) {

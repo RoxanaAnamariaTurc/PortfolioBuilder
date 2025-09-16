@@ -10,38 +10,39 @@ import { loginUser } from "../../../api";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setUser } = useContext(UserContext) as UserContextProps;
-  const [error, setError] = useState(false);
+  const { setUser, setPortfolioToken } =
+    useContext(UserContext) as UserContextProps;
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const emailInput = (e.target as HTMLFormElement).elements.namedItem(
       "email"
     ) as HTMLInputElement;
-    const email = emailInput ? emailInput.value : "";
-    const password = (e.target as HTMLFormElement).elements.namedItem(
+    const passwordInput = (e.target as HTMLFormElement).elements.namedItem(
       "password"
     ) as HTMLInputElement;
-    const passwordValue = password ? password.value : "";
+
+    const email = emailInput?.value ?? "";
+    const passwordValue = passwordInput?.value ?? "";
 
     if (email && passwordValue) {
       try {
         const data = await loginUser(email, passwordValue);
         if (data.user) {
-          const user = data.user;
-          setUser(user);
-          setError(false);
-          localStorage.setItem("userId", user.id);
+          setUser(data.user);
+          setPortfolioToken(data.portfolioToken ?? null);
+          setError(null);
           navigate("/userdashboard");
         } else {
-          setError(true);
+          setError("Invalid email or password");
         }
-      } catch (error) {
-        setError(true);
+      } catch (err: any) {
+        const message = err?.response?.data?.message || "Invalid email or password";
+        setError(message);
       }
     } else {
-      console.log("Email or password is missing");
-      setError(true);
+      setError("Email or password is missing");
     }
   };
   const theme = useTheme();
@@ -63,7 +64,7 @@ const Login = () => {
             role="alert"
             aria-live="assertive"
           >
-            Invalid email or password
+            {error}
           </div>
         )}
         <form css={style.form} onSubmit={handleSubmit} data-testid="login-form">

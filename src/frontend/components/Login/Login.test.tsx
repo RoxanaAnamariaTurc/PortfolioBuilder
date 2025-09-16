@@ -29,10 +29,21 @@ jest.mock("../../../api", () => ({
 describe("Login", () => {
   it("renders", async () => {
     const mockSetUser = jest.fn();
+    const mockSetPortfolioToken = jest.fn();
     render(
       <MemoryRouter>
         <ThemeProvider theme={theme as MyTheme}>
-          <UserContext.Provider value={{ user: null, setUser: mockSetUser }}>
+          <UserContext.Provider
+            value={{
+              user: null,
+              setUser: mockSetUser,
+              portfolioToken: null,
+              setPortfolioToken: mockSetPortfolioToken,
+              refreshUser: jest.fn(),
+              clearSession: jest.fn(),
+              loading: false,
+            }}
+          >
             <Login />
           </UserContext.Provider>
         </ThemeProvider>
@@ -42,12 +53,25 @@ describe("Login", () => {
     expect(formElement).toBeInTheDocument();
   });
   it("correctly submits the form with correct arguments", async () => {
-    (loginUser as jest.Mock).mockResolvedValue({ data: { user: { id: "1" } } });
+    (loginUser as jest.Mock).mockResolvedValue({
+      user: { id: "1" },
+      portfolioToken: "token",
+    });
 
     render(
       <MemoryRouter>
         <ThemeProvider theme={theme as MyTheme}>
-          <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
+          <UserContext.Provider
+            value={{
+              user: null,
+              setUser: jest.fn(),
+              portfolioToken: null,
+              setPortfolioToken: jest.fn(),
+              refreshUser: jest.fn(),
+              clearSession: jest.fn(),
+              loading: false,
+            }}
+          >
             <Login />
           </UserContext.Provider>
         </ThemeProvider>
@@ -70,7 +94,17 @@ describe("Login", () => {
     render(
       <MemoryRouter>
         <ThemeProvider theme={theme as MyTheme}>
-          <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
+          <UserContext.Provider
+            value={{
+              user: null,
+              setUser: jest.fn(),
+              portfolioToken: null,
+              setPortfolioToken: jest.fn(),
+              refreshUser: jest.fn(),
+              clearSession: jest.fn(),
+              loading: false,
+            }}
+          >
             <Login />
           </UserContext.Provider>
         </ThemeProvider>
@@ -94,7 +128,17 @@ describe("Login", () => {
     render(
       <MemoryRouter>
         <ThemeProvider theme={theme as MyTheme}>
-          <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
+          <UserContext.Provider
+            value={{
+              user: null,
+              setUser: jest.fn(),
+              portfolioToken: null,
+              setPortfolioToken: jest.fn(),
+              refreshUser: jest.fn(),
+              clearSession: jest.fn(),
+              loading: false,
+            }}
+          >
             <Login />
           </UserContext.Provider>
         </ThemeProvider>

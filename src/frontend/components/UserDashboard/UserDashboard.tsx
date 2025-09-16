@@ -12,13 +12,17 @@ import Header from "../Header/Header";
 import Button from "../Button/Button";
 import { useNavigate } from "react-router-dom";
 import { useThemeContext } from "../ThemeContext";
-import { fetchProjects, fetchSkills } from "../../../api";
+import {
+  fetchProjects,
+  fetchSkills,
+  deleteProject,
+  updateSkills,
+} from "../../../api";
 import DeleteModal from "../Modal/DeleteModal";
 import axios from "axios";
 import LoadingBars from "../LoadingBars/LoadingBars";
 import EditUserDetails from "../Modal/EditUserDetails";
 import Modal from "../Modal/Modal";
-import { deleteProject } from "../../../api";
 
 export interface Project {
   _id?: string;
@@ -60,7 +64,8 @@ const UserDashboard: React.FC = () => {
   );
   const openButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const { user, setUser } = useContext(UserContext) as UserContextProps;
+  const { user, portfolioToken, clearSession } =
+    useContext(UserContext) as UserContextProps;
 
   const techSkillsOption = skills.techSkills.map((skill) => ({
     value: skill,
@@ -75,39 +80,41 @@ const UserDashboard: React.FC = () => {
 
   const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-  const fetchUserData = useCallback(
-    async (token: string) => {
-      try {
-        const userResponse = await axios.get(`${API_BASE_URL}/user/${token}`);
-        setUser(userResponse.data.user);
-
-        // Fetch projects
-        setIsLoading(true);
-        const projectsData = await fetchProjects(token);
-        setProjects(projectsData);
-        setIsLoading(false);
-
-        // Fetch skills
-        setIsLoading(true);
-        const skillsData = await fetchSkills(token);
-        setSkills(skillsData);
-        setIsLoading(false);
-      } catch (error) {
+  const loadDashboard = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [projectsData, skillsData] = await Promise.all([
+        fetchProjects(),
+        fetchSkills(),
+      ]);
+      setProjects(projectsData);
+      setSkills(skillsData);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        clearSession();
+        navigate("/login");
+      } else {
         console.error(
           "An error occurred while trying to fetch the user data",
           error
         );
       }
-    },
-    [API_BASE_URL, setUser]
-  );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [clearSession, navigate]);
 
   useEffect(() => {
-    const token = localStorage.getItem("portfolioToken");
-    if (token) {
-      fetchUserData(token);
+    if (user) {
+      loadDashboard();
     }
-  }, [fetchUserData]);
+  }, [user, loadDashboard]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   const handleOpenModal = (
     type: string,
@@ -147,25 +154,29 @@ const UserDashboard: React.FC = () => {
     setIsEditUserModalOpen(true);
   };
   const handleDeleteProject = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId || !projectIdToDelete) {
-      alert("Please login to delete a project");
+    if (!projectIdToDelete) {
+      alert("Please select a project to delete");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      await deleteProject(userId, projectIdToDelete);
+      await deleteProject(projectIdToDelete);
       setProjects((prevProjects) =>
         prevProjects.filter((project) => project._id !== projectIdToDelete)
       );
       handleCloseModal();
     } catch (error) {
-      console.error(
-        "An error occurred while trying to delete the project",
-        error
-      );
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        clearSession();
+        navigate("/login");
+      } else {
+        console.error(
+          "An error occurred while trying to delete the project",
+          error
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -209,21 +220,14 @@ const UserDashboard: React.FC = () => {
   }, [projects]);
 
   const handleAddSkills = async (newSkills: Skills) => {
-    setSkills((prevSkills) => ({
-      techSkills: Array.from(
-        new Set([...prevSkills.techSkills, ...newSkills.techSkills])
-      ),
-      softSkills: Array.from(
-        new Set([...prevSkills.softSkills, ...newSkills.softSkills])
-      ),
-    }));
-
-    const portfolioToken = localStorage.getItem("portfolioToken");
-    if (portfolioToken) {
-      try {
-        const updatedSkills = await fetchSkills(portfolioToken);
-        setSkills(updatedSkills);
-      } catch (error) {
+    try {
+      const updatedSkills = await updateSkills(newSkills);
+      setSkills(updatedSkills);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        clearSession();
+        navigate("/login");
+      } else {
         console.error(
           "An error occurred while trying to get updated skills",
           error
@@ -231,6 +235,10 @@ const UserDashboard: React.FC = () => {
       }
     }
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div>
@@ -375,11 +383,11 @@ const UserDashboard: React.FC = () => {
                 }}
               ></div>
               <Button
-                onClick={() =>
-                  navigate(
-                    `/portfolio/${localStorage.getItem("portfolioToken")}`
-                  )
-                }
+                onClick={() => {
+                  if (portfolioToken) {
+                    navigate(`/portfolio/${portfolioToken}`);
+                  }
+                }}
                 width={"xlarge"}
                 height={"medium"}
                 borderRadius={"xsmall"}

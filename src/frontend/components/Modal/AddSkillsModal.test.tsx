@@ -3,123 +3,114 @@ import "@testing-library/jest-dom";
 import {
   render,
   screen,
-  getByText,
   fireEvent,
-  act,
   waitFor,
-  getByRole,
-  findByText,
 } from "@testing-library/react";
 import AddSkillsModal from "./AddSkillsModal";
 import { ThemeProvider } from "@emotion/react";
 import { theme, MyTheme } from "../../../theme";
-import * as api from "../../../api";
-import { OptionType } from "../../../skills/skills";
 import userEvent from "@testing-library/user-event";
+import { UserContext, UserContextProps } from "../../../UserContext";
+import { updateSkills } from "../../../api";
+import { MemoryRouter } from "react-router-dom";
 
-jest.mock("axios", () => ({
-  get: jest.fn(),
-  post: jest.fn(),
+jest.mock("../../../api", () => ({
+  updateSkills: jest.fn(),
 }));
-const addSkillsMock = jest
-  .spyOn(api, "addSkills")
-  .mockImplementation((skills) => {
-    const token = localStorage.getItem("portfolioToken");
-    if (!token) {
-      throw new Error("No userId found");
-    }
-    return Promise.resolve();
-  });
-const onAddSkills = jest.fn();
+
 const closeModal = jest.fn();
+const onAddSkills = jest.fn();
+
+const renderModal = (contextOverrides: Partial<UserContextProps> = {}) => {
+  const contextValue = {
+    user: null,
+    setUser: jest.fn(),
+    portfolioToken: null,
+    setPortfolioToken: jest.fn(),
+    refreshUser: jest.fn(),
+    clearSession: jest.fn(),
+    loading: false,
+    ...contextOverrides,
+  } as UserContextProps;
+
+  return render(
+    <MemoryRouter>
+      <ThemeProvider theme={theme as MyTheme}>
+        <UserContext.Provider value={contextValue}>
+          <AddSkillsModal
+            closeModal={closeModal}
+            onAddSkills={onAddSkills}
+            currentTechSkills={[]}
+            currentSoftSkills={[]}
+          />
+        </UserContext.Provider>
+      </ThemeProvider>
+    </MemoryRouter>
+  );
+};
 
 describe("AddSkillsModal", () => {
   beforeEach(() => {
-    localStorage.setItem("portfolioToken", "1");
-  });
-  afterEach(() => {
-    localStorage.removeItem("portfolioToken");
     jest.clearAllMocks();
   });
-  it("calls the correct functions with the correct arguments when adding skills", async () => {
-    render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddSkillsModal
-          closeModal={closeModal}
-          onAddSkills={onAddSkills}
-          currentTechSkills={[
-            { value: "React", label: "React" },
-            { value: "Node.js", label: "Node.js" },
-          ]}
-          currentSoftSkills={[
-            { value: "Communication", label: "Communication" },
-            { value: "Problem solving", label: "Problem solving" },
-          ]}
-        />
-      </ThemeProvider>
-    );
-    const addSkillsButton = screen.getByText("Save");
-    fireEvent.click(addSkillsButton);
-    await waitFor(() => expect(addSkillsMock).toHaveBeenCalledTimes(1));
-  });
-  it("throws an error when no userId is found", async () => {
-    localStorage.removeItem("portfolioToken");
-    render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddSkillsModal
-          closeModal={closeModal}
-          onAddSkills={onAddSkills}
-          currentTechSkills={[
-            { value: "React", label: "React" },
-            { value: "Node.js", label: "Node.js" },
-          ]}
-          currentSoftSkills={[
-            { value: "Communication", label: "Communication" },
-            { value: "Problem solving", label: "Problem solving" },
-          ]}
-        />
-      </ThemeProvider>
-    );
-    const addSkillsButton = screen.getByText("Save");
-    fireEvent.click(addSkillsButton);
-    await waitFor(() => expect(addSkillsMock).toHaveBeenCalledTimes(0));
-  });
-  it("handlesSkills updates tech skills correctly", async () => {
-    const currentTechSkills: OptionType[] = [];
-    const currentSoftSkills: OptionType[] = [];
 
-    const { getByRole, getByText } = render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddSkillsModal
-          closeModal={closeModal}
-          onAddSkills={onAddSkills}
-          currentTechSkills={currentTechSkills}
-          currentSoftSkills={currentSoftSkills}
-        />
-      </ThemeProvider>
-    );
-
-    const techSkillsSelect = getByRole("combobox", {
-      name: "Technical Skills",
+  it("calls updateSkills and onAddSkills with API response", async () => {
+    (updateSkills as jest.Mock).mockResolvedValue({
+      techSkills: ["React"],
+      softSkills: ["Teamwork"],
     });
-    userEvent.click(techSkillsSelect);
+    renderModal();
 
-    userEvent.type(techSkillsSelect, "JavaScript{enter}");
-
-    await waitFor(() =>
-      expect((techSkillsSelect as HTMLInputElement).value).toBe("JavaScript")
-    );
-
-    const saveButton = getByText("Save");
-    userEvent.click(saveButton);
+    fireEvent.click(screen.getByText("Save"));
 
     await waitFor(() => {
-      expect(onAddSkills).toHaveBeenCalledWith(
-        expect.objectContaining({
-          techSkills: expect.arrayContaining(["JavaScript"]),
-          softSkills: expect.arrayContaining([]),
-        })
-      );
+      expect(updateSkills).toHaveBeenCalledWith({
+        techSkills: [],
+        softSkills: [],
+      });
+      expect(onAddSkills).toHaveBeenCalledWith({
+        techSkills: ["React"],
+        softSkills: ["Teamwork"],
+      });
+    });
+  });
+
+  it("updates selected tech skills", async () => {
+    (updateSkills as jest.Mock).mockResolvedValue({
+      techSkills: ["JavaScript"],
+      softSkills: [],
+    });
+    renderModal();
+
+    const techSkillsSelect = screen.getByRole("combobox", {
+      name: "Technical Skills",
+    });
+    await userEvent.click(techSkillsSelect);
+    await userEvent.type(techSkillsSelect, "JavaScript{enter}");
+
+    fireEvent.click(screen.getByText("Save"));
+
+    await waitFor(() => {
+      expect(updateSkills).toHaveBeenCalledWith({
+        techSkills: ["JavaScript"],
+        softSkills: [],
+      });
+    });
+  });
+
+  it("clears the session on unauthorized error", async () => {
+    const clearSession = jest.fn();
+    (updateSkills as jest.Mock).mockRejectedValue({
+      response: { status: 401 },
+      isAxiosError: true,
+    });
+
+    renderModal({ clearSession });
+
+    fireEvent.click(screen.getByText("Save"));
+
+    await waitFor(() => {
+      expect(clearSession).toHaveBeenCalled();
     });
   });
 });

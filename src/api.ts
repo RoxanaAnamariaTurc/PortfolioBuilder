@@ -1,122 +1,153 @@
 import axios from "axios";
-import { Project } from "./frontend/components/UserDashboard/UserDashboard";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-export const fetchProjects = async (portfolioToken: string) => {
-  const projectsResponse = await axios.get(
-    `${API_BASE_URL}/projects/${portfolioToken}`
-  );
-  return projectsResponse.data;
+const withCredentialsConfig = { withCredentials: true };
+
+export const fetchProjects = async () => {
+  const response = await axios.get(`${API_BASE_URL}/projects`, withCredentialsConfig);
+  return response.data;
 };
 
-export const fetchSkills = async (portfolioToken: string) => {
-  const skillsResponse = await axios.get(
-    `${API_BASE_URL}/user/${portfolioToken}/skills`
-  );
-  return skillsResponse.data;
+export const fetchSkills = async () => {
+  const response = await axios.get(`${API_BASE_URL}/skills`, withCredentialsConfig);
+  return response.data;
 };
 
-export const deleteProject = async (userId: string, projectId: string) => {
-  await axios.delete(`${API_BASE_URL}/users/${userId}/projects/${projectId}`);
+export const deleteProject = async (projectId: string) => {
+  await axios.delete(`${API_BASE_URL}/projects/${projectId}`, withCredentialsConfig);
 };
 
 export const loginUser = async (email: string, password: string) => {
-  try {
-    const response = await axios.post(
-      `${API_BASE_URL}/login`,
-      { email, password },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
-    if (response.status === 200) {
-      localStorage.setItem("portfolioToken", response.data.token);
+  const response = await axios.post(
+    `${API_BASE_URL}/login`,
+    { email, password },
+    {
+      ...withCredentialsConfig,
+      headers: {
+        "Content-Type": "application/json",
+      },
     }
-    return response.data;
-  } catch (error: any) {
-    localStorage.removeItem("portfolioToken");
-    console.error("Error during login:", error);
-    throw error;
-  }
+  );
+  return response.data;
 };
 
 export const registerUser = async (formData: FormData) => {
   const response = await axios.post(`${API_BASE_URL}/register`, formData, {
+    ...withCredentialsConfig,
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
-  localStorage.setItem("portfolioToken", response.data.token);
-  return response;
+  return response.data;
 };
 
 export const createProject = async (formData: FormData) => {
-  const apiUrl = `${API_BASE_URL}/projects`;
-
-  try {
-    const response = await axios.post(apiUrl, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error: any) {
-    console.error(
-      "Error creating project:",
-      error.response ? error.response.data : error.message
-    );
-    throw error;
-  }
+  const response = await axios.post(`${API_BASE_URL}/projects`, formData, {
+    ...withCredentialsConfig,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
 };
 
 export const editProject = async (
-  userId: string,
   projectId: string | undefined,
   formData: FormData
 ) => {
   const response = await axios.put(
-    `${API_BASE_URL}/projects/${userId}/${projectId}`,
-    formData
+    `${API_BASE_URL}/projects/${projectId}`,
+    formData,
+    {
+      ...withCredentialsConfig,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
-  const updatedProject = response.data.find(
-    (project: Project) => project._id === projectId
-  );
-
-  return updatedProject;
+  return response.data;
 };
 
-export const addSkills = async (
-  portfolioToken: string,
-  skills: { techSkills: string[]; softSkills: string[] }
-) => {
-  const response = await axios.post(
-    `${API_BASE_URL}/user/${portfolioToken}/skills`,
-    { skills }
+export const updateSkills = async (skills: {
+  techSkills: string[];
+  softSkills: string[];
+}) => {
+  const response = await axios.put(
+    `${API_BASE_URL}/skills`,
+    { skills },
+    {
+      ...withCredentialsConfig,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
   return response.data;
 };
 
 export const editUserDetails = async (
-  portfolioToken: string,
-  formData: { fullName: string; email: string; jobTitle: string },
-  userId: string
+  formData: { fullName: string; email: string; jobTitle: string }
 ) => {
-  const config = {
+  const response = await axios.put(`${API_BASE_URL}/user`, formData, {
+    ...withCredentialsConfig,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${portfolioToken}`,
     },
-  };
+  });
+  return response.data;
+};
 
-  const response = await axios.put(
-    `${API_BASE_URL}/user/${userId}`,
-    JSON.stringify(formData),
-    config
+export const getCurrentUser = async () => {
+  const response = await axios.get(`${API_BASE_URL}/me`, withCredentialsConfig);
+  return response.data;
+};
+
+export const refreshSession = async () => {
+  const response = await axios.post(
+    `${API_BASE_URL}/refresh`,
+    {},
+    {
+      ...withCredentialsConfig,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
+  return response.data;
+};
 
+export const logoutUser = async () => {
+  const response = await axios.post(
+    `${API_BASE_URL}/logout`,
+    {},
+    {
+      ...withCredentialsConfig,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const rotatePortfolioToken = async () => {
+  const response = await axios.post(
+    `${API_BASE_URL}/portfolio/token/rotate`,
+    {},
+    {
+      ...withCredentialsConfig,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const fetchPublicProjects = async (portfolioToken: string) => {
+  const response = await axios.get(
+    `${API_BASE_URL}/projects/${portfolioToken}`
+  );
   return response.data;
 };

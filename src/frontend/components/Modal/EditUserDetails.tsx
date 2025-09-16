@@ -6,11 +6,15 @@ import { editUserDetails } from "../../../api";
 import { getModalStyles } from "./Modal.style";
 import { useTheme } from "../../../hooks/useTheme";
 import LoadingBars from "../LoadingBars/LoadingBars";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const EditUserDetails: React.FC<{ closeModal: () => void }> = ({
   closeModal,
 }) => {
-  const { user, setUser } = useContext(UserContext) as UserContextProps;
+  const { user, setUser, clearSession } =
+    useContext(UserContext) as UserContextProps;
+  const navigate = useNavigate();
 
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -39,20 +43,27 @@ const EditUserDetails: React.FC<{ closeModal: () => void }> = ({
           jobTitle,
         };
 
-        const portfolioToken = localStorage.getItem("portfolioToken") || "";
-        const userId = localStorage.getItem("userId") || "";
-        await editUserDetails(portfolioToken, formData, userId);
+        const response = await editUserDetails(formData);
 
-        setUser({
-          ...user,
-          fullName,
-          email,
-          jobTitle,
-        });
-        setLoading(false);
+        if (response.user) {
+          setUser(response.user);
+        } else {
+          setUser({
+            ...user,
+            fullName,
+            email,
+            jobTitle,
+          });
+        }
       }
     } catch (error) {
-      console.error("Error editing user details", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        clearSession();
+        navigate("/login");
+      } else {
+        console.error("Error editing user details", error);
+      }
+    } finally {
       setLoading(false);
     }
     closeModal();

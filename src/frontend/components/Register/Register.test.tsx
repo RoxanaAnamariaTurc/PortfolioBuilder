@@ -5,23 +5,38 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ThemeProvider } from "@emotion/react";
 import Register from "./Register";
 import { theme, MyTheme } from "../../../theme";
-import { UserContext } from "../../../UserContext";
+import { UserContext, UserContextProps } from "../../../UserContext";
 import { MemoryRouter } from "react-router-dom";
 import { registerUser } from "../../../api";
 
-jest.mock("axios", () => ({
-  get: jest.fn(),
-  post: jest.fn(),
-}));
 jest.mock("../../../api", () => ({
-  registerUser: jest.fn(() => Promise.resolve({ status: 200, data: {} })),
+  registerUser: jest.fn(() =>
+    Promise.resolve({
+      user: { id: "1" },
+      portfolioToken: "token",
+    })
+  ),
 }));
 
+const defaultContextValue: UserContextProps = {
+  user: null,
+  setUser: jest.fn(),
+  portfolioToken: null,
+  setPortfolioToken: jest.fn(),
+  refreshUser: jest.fn(),
+  clearSession: jest.fn(),
+  loading: false,
+};
+
 describe("Register component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("renders a form", async () => {
     render(
       <MemoryRouter>
-        <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
+        <UserContext.Provider value={defaultContextValue}>
           <ThemeProvider theme={theme as MyTheme}>
             <Register />
           </ThemeProvider>
@@ -31,11 +46,12 @@ describe("Register component", () => {
     const form = await screen.findByTestId("register-form");
     expect(form).toBeInTheDocument();
   });
+
   it("renders Register form and handles submit", async () => {
     const mockSubmit = jest.fn();
     const { getByTestId, getByLabelText } = render(
       <MemoryRouter>
-        <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
+        <UserContext.Provider value={defaultContextValue}>
           <ThemeProvider theme={theme as MyTheme}>
             <Register onSubmit={mockSubmit} />
           </ThemeProvider>
@@ -61,6 +77,7 @@ describe("Register component", () => {
     fireEvent.submit(form);
     await waitFor(() => expect(registerUser).toHaveBeenCalledTimes(1));
   });
+
   it("alerts the user if the user is already registered", async () => {
     (registerUser as jest.Mock).mockImplementationOnce(() =>
       Promise.reject({
@@ -70,7 +87,7 @@ describe("Register component", () => {
     );
     const { getByTestId, getByLabelText } = render(
       <MemoryRouter>
-        <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
+        <UserContext.Provider value={defaultContextValue}>
           <ThemeProvider theme={theme as MyTheme}>
             <Register />
           </ThemeProvider>
@@ -101,11 +118,11 @@ describe("Register component", () => {
       "User already registered!"
     );
   });
+
   it("form doesnt submit if a required field is missing", async () => {
-    const mockRegister = jest.fn();
     const { getByTestId } = render(
       <MemoryRouter>
-        <UserContext.Provider value={{ user: null, setUser: jest.fn() }}>
+        <UserContext.Provider value={defaultContextValue}>
           <ThemeProvider theme={theme as MyTheme}>
             <Register />
           </ThemeProvider>
@@ -124,6 +141,6 @@ describe("Register component", () => {
 
     fireEvent.click(submitButton);
 
-    expect(mockRegister).not.toHaveBeenCalled();
+    expect(registerUser).toHaveBeenCalledTimes(0);
   });
 });

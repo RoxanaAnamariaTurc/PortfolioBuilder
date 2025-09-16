@@ -14,7 +14,8 @@ type RegisterProps = {
 };
 
 const Register: React.FC<RegisterProps> = () => {
-  const { setUser } = useContext(UserContext) as UserContextProps;
+  const { setUser, setPortfolioToken } =
+    useContext(UserContext) as UserContextProps;
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({
@@ -96,13 +97,13 @@ const Register: React.FC<RegisterProps> = () => {
         formData.append("profileImage", profileImage.files[0]);
       }
       try {
-        const response = await registerUser(formData);
+        const data = await registerUser(formData);
 
-        if (response.status === 201 || response.status === 200) {
-          setUser(response.data);
-          navigate("/login");
-        } else if (response.status === 400) {
-          setError("User already registered!");
+        if (data.user) {
+          setUser(data.user);
+          setPortfolioToken(data.portfolioToken ?? null);
+          setError("");
+          navigate("/userdashboard");
         }
       } catch (err) {
         if (isAxiosError(err) && err.response) {

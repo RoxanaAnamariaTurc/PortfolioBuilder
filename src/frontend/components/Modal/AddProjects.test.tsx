@@ -7,171 +7,141 @@ import {
   render,
   fireEvent,
   cleanup,
-  within,
   waitFor,
-  act,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
-
-jest.mock("axios", () => ({
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-}));
+import {
+  createProject,
+  editProject,
+} from "../../../api";
+import { UserContext, UserContextProps } from "../../../UserContext";
+import { MemoryRouter } from "react-router-dom";
 
 jest.mock("../../../api", () => ({
+  createProject: jest.fn(),
   editProject: jest.fn(),
 }));
 
-(axios.post as jest.Mock).mockResolvedValue({ data: [] });
-(axios.put as jest.Mock).mockResolvedValue({
-  data: [
-    {
-      _id: "1",
-      name: "Project Name",
-      description: "Project Description",
-      link: "Project Link",
-      image: "Project Image",
-    },
-  ],
-});
 afterEach(cleanup);
 
 describe("Add Projects Modal", () => {
-  // Mock localStorage
-  let localStorageMock: { [key: string]: string };
+  const closeModal = jest.fn();
+  const onProjectSubmission = jest.fn();
+  const clearSession = jest.fn();
+
+  const renderModal = (
+    props: Partial<React.ComponentProps<typeof AddProjectsModal>> = {}
+  ) => {
+    const contextValue = {
+      user: null,
+      setUser: jest.fn(),
+      portfolioToken: null,
+      setPortfolioToken: jest.fn(),
+      refreshUser: jest.fn(),
+      clearSession,
+      loading: false,
+    } as UserContextProps;
+
+    return render(
+      <MemoryRouter>
+        <UserContext.Provider value={contextValue}>
+          <ThemeProvider theme={theme as MyTheme}>
+            <AddProjectsModal
+              closeModal={closeModal}
+              onProjectSubmission={onProjectSubmission}
+              isOpen
+              {...props}
+            />
+          </ThemeProvider>
+        </UserContext.Provider>
+      </MemoryRouter>
+    );
+  };
+
   beforeEach(() => {
-    localStorageMock = {};
-    global.localStorage = {
-      getItem: jest.fn((key) => localStorageMock[key]),
-      setItem: jest.fn((key, value) => {
-        localStorageMock[key] = value;
-      }),
-      clear: jest.fn(() => {
-        localStorageMock = {};
-      }),
-      removeItem: jest.fn((key) => {
-        delete localStorageMock[key];
-      }),
-    } as any;
+    jest.clearAllMocks();
   });
 
-  // Mock alert
-  beforeAll(() => {
-    window.alert = jest.fn();
-  });
   it("renders without crashing", () => {
-    render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddProjectsModal
-          closeModal={() => {}}
-          onProjectSubmission={() => {}}
-          isOpen
-        />
-      </ThemeProvider>
-    );
+    renderModal();
   });
+
   it("handles input change", () => {
-    const { getByLabelText } = render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddProjectsModal
-          closeModal={() => {}}
-          onProjectSubmission={() => {}}
-          isOpen
-        />
-      </ThemeProvider>
-    );
+    const { getByLabelText } = renderModal();
     const nameInput = getByLabelText("Project Name") as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: "Project Name" } });
     expect(nameInput.value).toBe("Project Name");
   });
 
-  it("handles cancel  button click", async () => {
-    window.alert = jest.fn();
-    const mockCloseModal = jest.fn();
-    const { getByText } = render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddProjectsModal
-          closeModal={mockCloseModal}
-          onProjectSubmission={() => {}}
-          isOpen
-        />
-      </ThemeProvider>
-    );
-    const cancelButton = getByText("Cancel");
-    const clickableElement = within(cancelButton).getByText("Cancel");
-
-    //Mocking the form submission
-    const form = clickableElement.closest("form");
-    const submit = form?.onsubmit;
-    if (form) {
-      form.onsubmit = function (e) {
-        e.preventDefault();
-        submit?.bind(form)(e);
-      };
-    }
-    userEvent.click(clickableElement);
-
-    await waitFor(() => {
-      expect(mockCloseModal).toHaveBeenCalled();
+  it("creates a project on submit", async () => {
+    (createProject as jest.Mock).mockResolvedValue({
+      id: "1",
+      name: "Project Name",
+      description: "Project Description",
+      image: "Project Image",
+      link: "https://project.com",
     });
-  });
-  it("updates formState on input change", () => {
-    const { getByLabelText } = render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddProjectsModal
-          closeModal={() => {}}
-          onProjectSubmission={() => {}}
-          isOpen
-        />
-      </ThemeProvider>
-    );
-    const nameInput = getByLabelText("Project Name") as HTMLInputElement;
 
-    fireEvent.change(nameInput, { target: { value: "Project Name here" } });
-    expect(nameInput.value).toBe("Project Name here");
-
-    const linkInput = getByLabelText("Link") as HTMLInputElement;
-    fireEvent.change(linkInput, { target: { value: "www.link.com" } });
-    expect(linkInput.value).toBe("www.link.com");
-  });
-
-  it("shows an error message when trying to submit without a userId", async () => {
-    localStorage.removeItem("userId");
-    const mockLocalStorage = jest.spyOn(
-      window.localStorage.__proto__,
-      "getItem"
-    );
-    mockLocalStorage.mockImplementation(() => null);
-    const { getByText, findByTestId, getByLabelText } = render(
-      <ThemeProvider theme={theme as MyTheme}>
-        <AddProjectsModal
-          closeModal={() => {}}
-          onProjectSubmission={() => {}}
-          isOpen
-        />
-      </ThemeProvider>
-    );
-
+    const { getByLabelText, getByText } = renderModal();
     fireEvent.change(getByLabelText("Project Name"), {
-      target: { value: "Test Project" },
+      target: { value: "Project Name" },
     });
     fireEvent.change(getByLabelText("Description"), {
-      target: { value: "Test Description" },
+      target: { value: "Project Description" },
     });
     fireEvent.change(getByLabelText("Link"), {
-      target: { value: "https://test.com" },
-    });
-    const submitButton = getByText("Save");
-    act(() => {
-      fireEvent.click(submitButton);
+      target: { value: "https://project.com" },
     });
 
-    await waitFor(async () => {
-      const errorMessage = await findByTestId("error-message");
-      expect(errorMessage).toHaveTextContent("Please login to add a project");
+    fireEvent.click(getByText("Save"));
+
+    await waitFor(() => expect(createProject).toHaveBeenCalled());
+    expect(onProjectSubmission).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "1" }),
+      false
+    );
+  });
+
+  it("edits a project when projectToEdit is provided", async () => {
+    (editProject as jest.Mock).mockResolvedValue({
+      id: "2",
+      name: "Updated Project",
+      description: "Updated Description",
+      image: "image",
+      link: "https://updated.com",
     });
-    mockLocalStorage.mockRestore();
+
+    const projectToEdit = {
+      _id: "2",
+      name: "Old Project",
+      description: "Old Description",
+      image: "old",
+      link: "https://old.com",
+    };
+
+    const { getByText } = renderModal({ projectToEdit });
+
+    userEvent.click(getByText("Save"));
+
+    await waitFor(() => expect(editProject).toHaveBeenCalledWith("2", expect.any(FormData)));
+    expect(onProjectSubmission).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "2" }),
+      true
+    );
+  });
+
+  it("clears the session on unauthorized response", async () => {
+    (createProject as jest.Mock).mockRejectedValue({
+      response: { status: 401 },
+      isAxiosError: true,
+    });
+
+    const { getByText } = renderModal();
+
+    fireEvent.click(getByText("Save"));
+
+    await waitFor(() => {
+      expect(clearSession).toHaveBeenCalled();
+    });
   });
 });
