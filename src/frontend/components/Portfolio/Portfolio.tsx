@@ -10,6 +10,7 @@ const Portfolio: React.FC = () => {
   const { token } = useParams<{ token: string }>();
   const { style } = useThemeContext();
 
+
   const { data } = usePortfolioQuery(token);
   const user = data?.user ?? null;
   const projects: Project[] = user?.projects ?? [];

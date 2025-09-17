@@ -41,6 +41,7 @@ const UserDashboard: React.FC = () => {
 
   const navigate = useNavigate();
 
+
   const portfolioToken =
     typeof window !== "undefined"
       ? localStorage.getItem("portfolioToken")

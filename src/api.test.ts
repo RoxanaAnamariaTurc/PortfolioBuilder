@@ -12,6 +12,16 @@ import {
 jest.mock("axios");
 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const env = import.meta.env as unknown as Record<string, string | undefined>;
+const originalApiUrl = env.VITE_API_URL;
+
+beforeEach(() => {
+  env.VITE_API_URL = "http://localhost:3001";
+});
+
+afterAll(() => {
+  env.VITE_API_URL = originalApiUrl;
+});
 
 describe("Testing the api functions", () => {
   afterEach(() => {
@@ -101,6 +111,73 @@ describe("Testing the api functions", () => {
     mockedAxios.post.mockResolvedValue(response);
     const result = await registerUser(mockData);
     expect(result).toEqual(response);
+  });
+
+  it("creates a project", async () => {
+    const mockData = new FormData();
+    mockData.append("name", "Project 1");
+    mockData.append("description", "Description");
+    mockData.append("projectImage", "imageUrl");
+    const response = { data: { id: 1, name: "Project 1" } };
+    mockedAxios.post.mockResolvedValue(response);
+    const result = await createProject(mockData);
+    expect(result).toEqual(response.data);
+  });
+  it("throws an error when the request fails", async () => {
+    const error = new Error("Network error");
+    mockedAxios.post.mockRejectedValue(error);
+    await expect(createProject(new FormData())).rejects.toThrow(
+      "Network error"
+    );
+  });
+  it("edits a project", async () => {
+    const mockData = new FormData();
+    mockData.append("name", "Project 1");
+    mockData.append("description", "Description");
+    mockData.append("projectImage", "imageUrl");
+    const response = { data: [{ _id: "1", name: "Project 1" }] };
+    const userId = "1";
+    const projectId = "1";
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
+    mockedAxios.put.mockResolvedValue(response);
+    const result = await editProject(userId, projectId, mockData);
+    expect(result).toEqual(
+      response.data.find((project) => project._id === projectId)
+    );
+    expect(mockedAxios.put).toHaveBeenCalledWith(
+      `${API_BASE_URL}/projects/${userId}/${projectId}`,
+      mockData
+    );
+
+    // Check if axios.put was called only once
+    expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+  });
+  it("throws an error when the request fails", async () => {
+    const error = new Error("Network error");
+    mockedAxios.put.mockRejectedValue(error);
+    await expect(editProject("1", "1", new FormData())).rejects.toThrow(
+      "Network error"
+    );
+  });
+  it("adds skills", async () => {
+    const mockData = {
+      techSkills: ["JavaScript", "React"],
+      softSkills: ["Team Player"],
+    };
+    const response = { data: { techSkills: ["JavaScript", "React"] } };
+    mockedAxios.post.mockResolvedValue(response);
+    const result = await addSkills("1", mockData);
+    expect(result).toEqual(response.data);
+  });
+  it("throws an error when the request fails", async () => {
+    const error = new Error("Network error");
+    mockedAxios.post.mockRejectedValue(error);
+    await expect(
+      addSkills("1", {
+        techSkills: ["JavaScript", "React"],
+        softSkills: ["Team Player"],
+      })
+    ).rejects.toThrow("Network error");
   });
 
   it("edits user details", async () => {

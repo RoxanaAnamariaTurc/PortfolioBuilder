@@ -14,6 +14,7 @@ import { UserContext, UserContextProps } from "../../../UserContext";
 
 jest.mock("axios");
 
+
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockProjects: Project[] = [
@@ -78,6 +79,7 @@ const createWrapper = () => {
 
 describe("UserDashboard", () => {
   beforeEach(() => {
+
     process.env.REACT_APP_API_URL = "http://localhost:3001";
     localStorage.setItem("portfolioToken", "mockToken");
     localStorage.setItem("userId", "1");
@@ -98,6 +100,10 @@ describe("UserDashboard", () => {
   afterEach(() => {
     localStorage.clear();
     jest.resetAllMocks();
+  });
+
+  afterAll(() => {
+    env.VITE_API_URL = originalApiUrl;
   });
 
   it("renders user profile information", async () => {
