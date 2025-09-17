@@ -1,64 +1,20 @@
 /** @jsxImportSource @emotion/react */
-import React, { useCallback } from "react";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import { User } from "../../../UserContext";
-import { Skills } from "../UserDashboard/UserDashboard";
 import { useThemeContext } from "../ThemeContext";
-import LoadingBars from "../LoadingBars/LoadingBars";
 import projectImage from "../../../images/projectImage.jpg";
-
-interface Project {
-  _id?: string;
-  name: string;
-  description: string;
-  image: string;
-  link?: string;
-}
+import { usePortfolioQuery } from "../../../api";
+import { Project, Skills } from "../../../types";
 
 const Portfolio: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [skills, setSkills] = useState<Skills>({
-    techSkills: [],
-    softSkills: [],
-  });
-  const [loading, setLoading] = useState(true);
-
   const { token } = useParams<{ token: string }>();
   const { style } = useThemeContext();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
 
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/portfolio/${token}`);
-
-      const { user } = response.data;
-
-      setUser(user);
-      setProjects(user.projects);
-      setSkills(user.skills);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [API_BASE_URL, token]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  if (loading) {
-    const bars = [
-      { width: "300px", delay: "0s" },
-      { width: "200px", delay: "0.2s" },
-      { width: "300px", delay: "0.4s" },
-    ];
-    return <LoadingBars bars={bars} />;
-  }
+  const { data } = usePortfolioQuery(token);
+  const user = data?.user ?? null;
+  const projects: Project[] = user?.projects ?? [];
+  const skills: Skills = user?.skills ?? { techSkills: [], softSkills: [] };
 
   return (
     <main css={style.portfolio}>

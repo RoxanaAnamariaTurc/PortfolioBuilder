@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
+import { useContext, useMemo, useRef, useState } from "react";
 import { useTheme } from "../../../hooks/useTheme";
 import { getUserdashboardStyles } from "./UserDashboard.style";
 import avatar from "../../../images/avatar.png";
 import projectImage from "../../../images/projectImage.jpg";
 import { UserContext, UserContextProps } from "../../../UserContext";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Footer from "../Footer/Footer";
 import AddProjectsModal from "../Modal/AddProjectsModal";
 import AddSkillsModal from "../Modal/AddSkillsModal";
@@ -12,102 +12,71 @@ import Header from "../Header/Header";
 import Button from "../Button/Button";
 import { useNavigate } from "react-router-dom";
 import { useThemeContext } from "../ThemeContext";
-import { fetchProjects, fetchSkills } from "../../../api";
+import {
+  useProjectsQuery,
+  useSkillsQuery,
+  useDeleteProjectMutation,
+} from "../../../api";
 import DeleteModal from "../Modal/DeleteModal";
-import axios from "axios";
 import LoadingBars from "../LoadingBars/LoadingBars";
 import EditUserDetails from "../Modal/EditUserDetails";
 import Modal from "../Modal/Modal";
-import { deleteProject } from "../../../api";
-
-export interface Project {
-  _id?: string;
-  name: string;
-  description: string;
-  image: string;
-  link: string;
-}
-
-export interface Skills {
-  techSkills: string[];
-  softSkills: string[];
-}
+import { Project, Skills } from "../../../types";
 
 const UserDashboard: React.FC = () => {
   const { toggleTheme, currentTheme } = useThemeContext();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<string | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [skills, setSkills] = useState<Skills>({
-    techSkills: [],
-    softSkills: [],
-  });
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
-  const [showFullDescription, setShowFullDescription] = useState<{
-    [key: string]: boolean;
-  }>({});
-
+  const [showFullDescription, setShowFullDescription] = useState<
+    Record<string, boolean>
+  >({});
   const [projectIdToDelete, setProjectIdToDelete] = useState<string | null>(
     null
   );
-  const [isLoading, setIsLoading] = useState(false);
   const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const theme = useTheme();
-  const styles = getUserdashboardStyles(
-    theme,
-    isModalOpen,
-    isEditUserModalOpen
-  );
   const openButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const { user, setUser } = useContext(UserContext) as UserContextProps;
+  const { user } = useContext(UserContext) as UserContextProps;
 
-  const techSkillsOption = skills.techSkills.map((skill) => ({
-    value: skill,
-    label: skill,
-  }));
-
-  const softSkillsOption = skills.softSkills.map((skill) => ({
-    value: skill,
-    label: skill,
-  }));
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
 
-  const fetchUserData = useCallback(
-    async (token: string) => {
-      try {
-        const userResponse = await axios.get(`${API_BASE_URL}/user/${token}`);
-        setUser(userResponse.data.user);
+  const portfolioToken =
+    typeof window !== "undefined"
+      ? localStorage.getItem("portfolioToken")
+      : null;
 
-        // Fetch projects
-        setIsLoading(true);
-        const projectsData = await fetchProjects(token);
-        setProjects(projectsData);
-        setIsLoading(false);
+  const projectsQuery = useProjectsQuery(portfolioToken);
+  const skillsQuery = useSkillsQuery(portfolioToken);
+  const deleteProjectMutation = useDeleteProjectMutation(portfolioToken);
 
-        // Fetch skills
-        setIsLoading(true);
-        const skillsData = await fetchSkills(token);
-        setSkills(skillsData);
-        setIsLoading(false);
-      } catch (error) {
-        console.error(
-          "An error occurred while trying to fetch the user data",
-          error
-        );
-      }
-    },
-    [API_BASE_URL, setUser]
+  const skills = skillsQuery.data ?? { techSkills: [], softSkills: [] };
+  const projects = projectsQuery.data ?? [];
+
+  const techSkillsOption = useMemo(
+    () =>
+      skills.techSkills.map((skill) => ({
+        value: skill,
+        label: skill,
+      })),
+    [skills.techSkills]
   );
 
-  useEffect(() => {
-    const token = localStorage.getItem("portfolioToken");
-    if (token) {
-      fetchUserData(token);
-    }
-  }, [fetchUserData]);
+  const softSkillsOption = useMemo(
+    () =>
+      skills.softSkills.map((skill) => ({
+        value: skill,
+        label: skill,
+      })),
+    [skills.softSkills]
+  );
+
+  const styles = getUserdashboardStyles(
+    theme,
+    Boolean(modalType),
+    isEditUserModalOpen
+  );
 
   const handleOpenModal = (
     type: string,
@@ -115,8 +84,16 @@ const UserDashboard: React.FC = () => {
     projectId?: string
   ) => {
     setModalType(type);
-    if (project) setProjectToEdit(project);
-    if (projectId) setProjectIdToDelete(projectId);
+    if (project) {
+      setProjectToEdit(project);
+    } else {
+      setProjectToEdit(null);
+    }
+    if (projectId) {
+      setProjectIdToDelete(projectId);
+    } else {
+      setProjectIdToDelete(null);
+    }
   };
 
   const toggleDescription = (projectId: string) => {
@@ -131,7 +108,6 @@ const UserDashboard: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
     setModalType(null);
     setProjectToEdit(null);
     setProjectIdToDelete(null);
@@ -143,98 +119,44 @@ const UserDashboard: React.FC = () => {
   const handleCloseEditModal = () => {
     setIsEditUserModalOpen(false);
   };
+
   const handleEditUserModal = () => {
     setIsEditUserModalOpen(true);
   };
-  const handleDeleteProject = async () => {
-    const userId = localStorage.getItem("userId");
+
+  const handleDeleteProject = () => {
+    const userId =
+      user?.id ?? user?._id ?? localStorage.getItem("userId");
     if (!userId || !projectIdToDelete) {
       alert("Please login to delete a project");
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      await deleteProject(userId, projectIdToDelete);
-      setProjects((prevProjects) =>
-        prevProjects.filter((project) => project._id !== projectIdToDelete)
-      );
-      handleCloseModal();
-    } catch (error) {
-      console.error(
-        "An error occurred while trying to delete the project",
-        error
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const handleProjectSubmission = (
-    newProject: {
-      id: string;
-      name: string;
-      description: string;
-      image: string;
-      link: string;
-      _id?: string;
-    },
-    isEdit: boolean
-  ) => {
-    if (isEdit) {
-      setProjects((prevProjects) => {
-        const updatedProjects = prevProjects.map((project) =>
-          project._id === newProject._id
-            ? { ...project, ...newProject }
-            : project
-        );
-        return updatedProjects;
-      });
-    } else {
-      setProjects((prevProjects) => [
-        ...prevProjects,
-        {
-          _id: newProject._id,
-          name: newProject.name,
-          description: newProject.description,
-          image: newProject.image,
-          link: newProject.link,
+    deleteProjectMutation.mutate(
+      { userId, projectId: projectIdToDelete },
+      {
+        onSuccess: () => {
+          handleCloseModal();
         },
-      ]);
-    }
+        onError: (error) => {
+          console.error(
+            "An error occurred while trying to delete the project",
+            error
+          );
+        },
+      }
+    );
   };
 
-  useEffect(() => {
-    setIsModalOpen(false);
-  }, [projects]);
-
-  const handleAddSkills = async (newSkills: Skills) => {
-    setSkills((prevSkills) => ({
-      techSkills: Array.from(
-        new Set([...prevSkills.techSkills, ...newSkills.techSkills])
-      ),
-      softSkills: Array.from(
-        new Set([...prevSkills.softSkills, ...newSkills.softSkills])
-      ),
-    }));
-
-    const portfolioToken = localStorage.getItem("portfolioToken");
+  const navigateToPortfolio = () => {
     if (portfolioToken) {
-      try {
-        const updatedSkills = await fetchSkills(portfolioToken);
-        setSkills(updatedSkills);
-      } catch (error) {
-        console.error(
-          "An error occurred while trying to get updated skills",
-          error
-        );
-      }
+      navigate(`/portfolio/${portfolioToken}`);
     }
   };
 
   return (
     <div>
-      <Header isBlurred={isModalOpen || isEditUserModalOpen} />
+      <Header isBlurred={Boolean(modalType) || isEditUserModalOpen} />
       <div css={styles.userDashboard}>
         <div css={styles.userProfile}>
           <section
@@ -249,7 +171,7 @@ const UserDashboard: React.FC = () => {
                 css={styles.img}
                 src={
                   user?.profileImage
-                    ? `${API_BASE_URL}/${user.profileImage}`
+                    ? `${process.env.REACT_APP_API_URL}/${user.profileImage}`
                     : avatar
                 }
                 alt="user avatar"
@@ -303,7 +225,7 @@ const UserDashboard: React.FC = () => {
             >
               + Add skills
             </Button>
-            {isLoading ? (
+            {skillsQuery.isFetching ? (
               <LoadingBars type="circle" />
             ) : (
               <div css={styles.skills} aria-label="users-skills-section">
@@ -375,11 +297,7 @@ const UserDashboard: React.FC = () => {
                 }}
               ></div>
               <Button
-                onClick={() =>
-                  navigate(
-                    `/portfolio/${localStorage.getItem("portfolioToken")}`
-                  )
-                }
+                onClick={navigateToPortfolio}
                 width={"xlarge"}
                 height={"medium"}
                 borderRadius={"xsmall"}
@@ -391,7 +309,7 @@ const UserDashboard: React.FC = () => {
               </Button>
             </div>
           </div>
-          {isLoading ? (
+          {projectsQuery.isFetching ? (
             <LoadingBars type="circle" />
           ) : (
             <div css={styles.tableContainer}>
@@ -411,12 +329,14 @@ const UserDashboard: React.FC = () => {
                     projects
                       .filter((project) => project)
                       .map((project) => (
-                        <tr key={project._id}>
+                        <tr key={project._id ?? project.name}>
                           <td>{project.name}</td>
                           <td>
                             {showFullDescription[project._id ?? ""]
                               ? project.description
-                              : `${project.description.slice(0, 50)}${project.description.length > 50 ? "..." : ""}`}
+                              : `${project.description.slice(0, 50)}${
+                                  project.description.length > 50 ? "..." : ""
+                                }`}
                             {project.description.length > 50 && (
                               <Button
                                 width={"large"}
@@ -442,7 +362,7 @@ const UserDashboard: React.FC = () => {
                               css={styles.tableImg}
                               src={
                                 project?.image
-                                  ? `${API_BASE_URL}/${project.image}`
+                                  ? `${process.env.REACT_APP_API_URL}/${project.image}`
                                   : projectImage
                               }
                               alt="project"
@@ -500,23 +420,26 @@ const UserDashboard: React.FC = () => {
           {modalType === "addProject" && (
             <AddProjectsModal
               closeModal={handleCloseModal}
-              onProjectSubmission={handleProjectSubmission}
               projectToEdit={projectToEdit}
               isOpen={true}
+              userId={
+                user?.id ?? user?._id ?? localStorage.getItem("userId") ?? ""
+              }
+              portfolioToken={portfolioToken}
             />
           )}
           {modalType === "addSkills" && (
             <AddSkillsModal
               closeModal={handleCloseModal}
-              onAddSkills={handleAddSkills}
               currentSoftSkills={softSkillsOption}
               currentTechSkills={techSkillsOption}
+              portfolioToken={portfolioToken}
             />
           )}
           {modalType === "deleteProject" && (
             <DeleteModal
               closeModal={handleCloseModal}
-              isLoading={isLoading}
+              isLoading={deleteProjectMutation.isPending}
               onDelete={handleDeleteProject}
             />
           )}
