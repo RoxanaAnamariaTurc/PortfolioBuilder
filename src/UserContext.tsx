@@ -1,10 +1,6 @@
 import axios from "axios";
 import React, { useCallback, useMemo } from "react";
-import {
-  QueryKey,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { QueryKey, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "./types";
 
 export interface UserContextProps {
@@ -16,12 +12,10 @@ export const UserContext = React.createContext<UserContextProps | undefined>(
   undefined
 );
 
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const getPortfolioToken = () =>
-  (typeof window !== "undefined"
-    ? localStorage.getItem("portfolioToken")
-    : null);
+  typeof window !== "undefined" ? localStorage.getItem("portfolioToken") : null;
 
 export const getUserQueryKey = (token: string | null): QueryKey => [
   "user",
@@ -77,8 +71,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   return (
-    <UserContext.Provider value={contextValue}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
   );
 };

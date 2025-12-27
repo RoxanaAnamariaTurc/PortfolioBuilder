@@ -118,7 +118,7 @@ const Register: React.FC<RegisterProps> = () => {
   const style = getRegisterStyle(theme);
 
   return (
-    <div>
+    <div css={style.pageWrapper}>
       <div css={style.registerDiv}>
         <h1 css={style.h1}>Register</h1>
         {error && (

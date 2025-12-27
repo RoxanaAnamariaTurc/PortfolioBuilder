@@ -1,4 +1,5 @@
-import { Document, Schema, Types, model, models } from "mongoose";
+import { Document, Schema, Types, model } from "mongoose";
+import mongoose from "mongoose";
 
 export interface Project {
   _id?: Types.ObjectId;
@@ -61,6 +62,7 @@ const userSchema = new Schema<UserDocument>(
   { timestamps: true }
 );
 
-export const UserModel = models.User || model<UserDocument>("User", userSchema);
+export const UserModel =
+  mongoose.models.User || model<UserDocument>("User", userSchema);
 
 export default UserModel;

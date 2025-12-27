@@ -41,7 +41,6 @@ const UserDashboard: React.FC = () => {
 
   const navigate = useNavigate();
 
-
   const portfolioToken =
     typeof window !== "undefined"
       ? localStorage.getItem("portfolioToken")
@@ -125,8 +124,7 @@ const UserDashboard: React.FC = () => {
   };
 
   const handleDeleteProject = () => {
-    const userId =
-      user?.id ?? user?._id ?? localStorage.getItem("userId");
+    const userId = user?.id ?? user?._id ?? localStorage.getItem("userId");
     if (!userId || !projectIdToDelete) {
       alert("Please login to delete a project");
       return;
@@ -171,7 +169,7 @@ const UserDashboard: React.FC = () => {
                 css={styles.img}
                 src={
                   user?.profileImage
-                    ? `${process.env.REACT_APP_API_URL}/${user.profileImage}`
+                    ? `${import.meta.env.VITE_API_URL}/${user.profileImage}`
                     : avatar
                 }
                 alt="user avatar"
@@ -362,7 +360,9 @@ const UserDashboard: React.FC = () => {
                               css={styles.tableImg}
                               src={
                                 project?.image
-                                  ? `${process.env.REACT_APP_API_URL}/${project.image}`
+                                  ? `${import.meta.env.VITE_API_URL}/${
+                                      project.image
+                                    }`
                                   : projectImage
                               }
                               alt="project"

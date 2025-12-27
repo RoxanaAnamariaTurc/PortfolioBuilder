@@ -45,9 +45,9 @@ export const getWelcomeStyle = (theme: MyTheme) => {
       width: "10rem",
       fontSize: theme.sizes.small,
       "&:hover": {
-        backgroundColor: theme.colors.hover,
-        color: theme.colors.primary,
-        borderColor: theme.colors.hover,
+        backgroundColor: "#1a1a1a",
+        color: "#d4c4e3",
+        borderColor: theme.colors.primary,
       },
       "@media (max-width: 768px)": {
         width: "8rem",

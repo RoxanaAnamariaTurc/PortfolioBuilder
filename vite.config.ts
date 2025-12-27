@@ -9,16 +9,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react({
         jsxImportSource: "@emotion/react",
-        plugins: [
-          [
-            "@swc/plugin-emotion",
-            {
-              sourceMap: mode !== "production",
-              autoLabel: "dev-only",
-              labelFormat: "[local]",
-            },
-          ],
-        ],
       }),
     ],
     resolve: {
@@ -31,7 +21,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: 3000,
+      port: 3002,
     },
     preview: {
       host: true,
